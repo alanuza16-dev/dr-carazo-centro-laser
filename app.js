@@ -3,6 +3,7 @@ const AREAS = {
     label: "Ginecología",
     doctor: "Dr. Luis Diego Carazo",
     pin: "carazo2026",
+    password: "doctor2026",
     services: [
       "Consulta ginecológica",
       "IncontiLase FOTONA",
@@ -16,6 +17,7 @@ const AREAS = {
     label: "Estética LASER",
     doctor: "Esteticista profesional LASER FOTONA",
     pin: "laser2026",
+    password: "laseradmin2026",
     services: [
       "Valoración estética",
       "Tensado corporal y celulitis",
@@ -158,6 +160,13 @@ function bindEvents() {
   if ($("#block-slot")) $("#block-slot").addEventListener("click", blockSlot);
   if ($("#seed-reset")) $("#seed-reset").addEventListener("click", resetDemo);
   if ($("#profile-menu-toggle")) $("#profile-menu-toggle").addEventListener("click", toggleProfileMenu);
+  document.querySelectorAll("[data-video]").forEach((button) => {
+    button.addEventListener("click", () => openVideoModal(button.dataset.video, button.dataset.title));
+  });
+  if ($("#video-modal-close")) $("#video-modal-close").addEventListener("click", closeVideoModal);
+  if ($("#video-modal")) $("#video-modal").addEventListener("click", (event) => {
+    if (event.target.id === "video-modal") closeVideoModal();
+  });
   document.addEventListener("click", closeProfileMenu);
 }
 
@@ -307,6 +316,12 @@ function loginUser(event) {
   const role = $("#login-role").value;
   const name = $("#login-name").value.trim();
   const email = $("#login-email").value.trim();
+  const password = $("#login-password").value.trim();
+
+  if (password.length < 6) {
+    showNotice("La contraseña debe tener al menos 6 caracteres.", true);
+    return;
+  }
 
   if (role === "patient") {
     localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "patient", name, email }));
@@ -317,8 +332,8 @@ function loginUser(event) {
   const area = $("#admin-area").value;
   const pin = $("#admin-pin").value.trim();
 
-  if (pin !== AREAS[area].pin) {
-    showNotice("PIN incorrecto para este perfil.", true);
+  if (pin !== AREAS[area].pin || password !== AREAS[area].password) {
+    showNotice("Credenciales incorrectas para este perfil administrativo.", true);
     return;
   }
 
@@ -387,6 +402,26 @@ function getInitials(name = "") {
     .join("")
     .toUpperCase();
   return initials || "LC";
+}
+
+function openVideoModal(videoId, title = "Video informativo") {
+  const modal = $("#video-modal");
+  const frame = $("#video-frame");
+  const label = $("#video-modal-title");
+  if (!modal || !frame || !videoId) return;
+  frame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+  if (label) label.textContent = title;
+  modal.hidden = false;
+  document.body.classList.add("modal-open");
+}
+
+function closeVideoModal() {
+  const modal = $("#video-modal");
+  const frame = $("#video-frame");
+  if (!modal || !frame) return;
+  frame.src = "";
+  modal.hidden = true;
+  document.body.classList.remove("modal-open");
 }
 
 function updateBlockTimesFromAdminSelection() {

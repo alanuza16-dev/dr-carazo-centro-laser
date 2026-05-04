@@ -6,6 +6,7 @@
     <meta name="description" content="Servicios de ginecología, IncontiLase, labioplastía, hormonas bioidénticas y displasia de cérvix.">
     <title>Ginecología | Dr. Luis Diego Carazo</title>
     <link rel="stylesheet" href="styles.css">
+    <script defer src="app.js"></script>
   </head>
   <body>
     <header class="site-header">
@@ -121,11 +122,31 @@
           <p class="eyebrow">Videos informativos</p>
           <h2>Material educativo incluido desde la página original.</h2>
         </div>
-        <div class="video-grid">
-          <iframe src="https://www.youtube.com/embed/eio8_bAGWP8" title="Cómo corregir la incontinencia urinaria" allowfullscreen></iframe>
-          <iframe src="https://www.youtube.com/embed/UhLWdLxjpVs" title="Labioplastía" allowfullscreen></iframe>
-          <iframe src="https://www.youtube.com/embed/xbRsVPH9d80" title="Hormonas bioidénticas" allowfullscreen></iframe>
-          <iframe src="https://www.youtube.com/embed/YJlRarpUD3s" title="Displasia de cérvix" allowfullscreen></iframe>
+        <div class="video-grid media-grid">
+          <button class="media-video-card" type="button" data-video="eio8_bAGWP8" data-title="Cómo corregir la incontinencia urinaria">
+            <img src="https://img.youtube.com/vi/eio8_bAGWP8/hqdefault.jpg" alt="Video sobre incontinencia urinaria">
+            <span class="play-mark">Play</span>
+            <strong>Incontinencia urinaria</strong>
+            <small>Ver explicación médica</small>
+          </button>
+          <button class="media-video-card" type="button" data-video="UhLWdLxjpVs" data-title="Labioplastía">
+            <img src="https://img.youtube.com/vi/UhLWdLxjpVs/hqdefault.jpg" alt="Video sobre labioplastía">
+            <span class="play-mark">Play</span>
+            <strong>Labioplastía</strong>
+            <small>Ver procedimiento</small>
+          </button>
+          <button class="media-video-card" type="button" data-video="xbRsVPH9d80" data-title="Hormonas bioidénticas">
+            <img src="https://img.youtube.com/vi/xbRsVPH9d80/hqdefault.jpg" alt="Video sobre hormonas bioidénticas">
+            <span class="play-mark">Play</span>
+            <strong>Hormonas bioidénticas</strong>
+            <small>Ver información</small>
+          </button>
+          <button class="media-video-card" type="button" data-video="YJlRarpUD3s" data-title="Displasia de cérvix">
+            <img src="https://img.youtube.com/vi/YJlRarpUD3s/hqdefault.jpg" alt="Video sobre displasia de cérvix">
+            <span class="play-mark">Play</span>
+            <strong>Displasia de cérvix</strong>
+            <small>Ver tratamiento láser</small>
+          </button>
         </div>
       </section>
 
@@ -154,6 +175,16 @@
         </div>
       </section>
     </main>
+
+    <div class="video-modal" id="video-modal" hidden>
+      <div class="video-modal-card">
+        <div class="video-modal-top">
+          <strong id="video-modal-title">Video informativo</strong>
+          <button id="video-modal-close" type="button" aria-label="Cerrar video">Cerrar</button>
+        </div>
+        <iframe id="video-frame" title="Video informativo" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
+    </div>
 
     <footer class="site-footer">
       <p>© 2026 Dr. Luis Diego Carazo y Centro LASER de Estética.</p>

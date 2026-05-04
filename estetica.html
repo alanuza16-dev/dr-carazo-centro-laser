@@ -6,6 +6,7 @@
     <meta name="description" content="Centro LASER de Estética facial y corporal con tecnología Fotona.">
     <title>Centro LASER de Estética | Dr. Luis Diego Carazo</title>
     <link rel="stylesheet" href="styles.css">
+    <script defer src="app.js"></script>
   </head>
   <body>
     <header class="site-header">
@@ -69,13 +70,38 @@
           <p class="eyebrow">Videos de tratamientos</p>
           <h2>Material de la página original del Centro LASER.</h2>
         </div>
-        <div class="video-grid">
-          <iframe src="https://www.youtube.com/embed/eeI0Hw_6tqI" title="Tensado corporal y celulitis" allowfullscreen></iframe>
-          <iframe src="https://www.youtube.com/embed/lCJZp9oesEg" title="Rejuvenecimiento facial Fotona" allowfullscreen></iframe>
-          <iframe src="https://www.youtube.com/embed/WG8J2bVDnoA" title="Depilación Fotona" allowfullscreen></iframe>
+        <div class="video-grid media-grid">
+          <button class="media-video-card" type="button" data-video="eeI0Hw_6tqI" data-title="Tensado corporal y celulitis">
+            <img src="https://img.youtube.com/vi/eeI0Hw_6tqI/hqdefault.jpg" alt="Video de tensado corporal y celulitis">
+            <span class="play-mark">Play</span>
+            <strong>Tensado corporal</strong>
+            <small>Ver tratamiento FOTONA</small>
+          </button>
+          <button class="media-video-card" type="button" data-video="lCJZp9oesEg" data-title="Rejuvenecimiento facial Fotona">
+            <img src="https://img.youtube.com/vi/lCJZp9oesEg/hqdefault.jpg" alt="Video de rejuvenecimiento facial Fotona">
+            <span class="play-mark">Play</span>
+            <strong>Rejuvenecimiento facial</strong>
+            <small>Ver protocolo 6D</small>
+          </button>
+          <button class="media-video-card" type="button" data-video="WG8J2bVDnoA" data-title="Depilación Fotona">
+            <img src="https://img.youtube.com/vi/WG8J2bVDnoA/hqdefault.jpg" alt="Video de depilación Fotona">
+            <span class="play-mark">Play</span>
+            <strong>Depilación FOTONA</strong>
+            <small>Ver experiencia láser</small>
+          </button>
         </div>
       </section>
     </main>
+
+    <div class="video-modal" id="video-modal" hidden>
+      <div class="video-modal-card">
+        <div class="video-modal-top">
+          <strong id="video-modal-title">Video informativo</strong>
+          <button id="video-modal-close" type="button" aria-label="Cerrar video">Cerrar</button>
+        </div>
+        <iframe id="video-frame" title="Video informativo" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
+    </div>
 
     <footer class="site-footer">
       <p>© 2026 Dr. Luis Diego Carazo y Centro LASER de Estética.</p>
