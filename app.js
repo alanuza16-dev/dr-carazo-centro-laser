@@ -36,8 +36,10 @@ let activeAdminArea = null;
 document.addEventListener("DOMContentLoaded", () => {
   seedControls();
   setDefaultDates();
-  renderServices();
-  renderSlots();
+  if ($("#booking-form")) {
+    renderServices();
+    renderSlots();
+  }
   bindEvents();
 });
 
@@ -111,34 +113,40 @@ function seedControls() {
     .map(([value, area]) => `<option value="${value}">${area.label}</option>`)
     .join("");
 
-  $("#booking-area").innerHTML = areaOptions;
-  $("#admin-area").innerHTML = areaOptions;
-  $("#block-time").innerHTML = AREAS.ginecologia.slots
-    .map((time) => `<option value="${time}">${time}</option>`)
-    .join("");
+  if ($("#booking-area")) $("#booking-area").innerHTML = areaOptions;
+  if ($("#admin-area")) $("#admin-area").innerHTML = areaOptions;
+  if ($("#block-time")) {
+    $("#block-time").innerHTML = AREAS.ginecologia.slots
+      .map((time) => `<option value="${time}">${time}</option>`)
+      .join("");
+  }
 }
 
 function setDefaultDates() {
   const today = toDateInput(new Date());
-  $("#booking-date").min = today;
-  $("#booking-date").value = today;
-  $("#block-date").min = today;
-  $("#block-date").value = today;
+  if ($("#booking-date")) {
+    $("#booking-date").min = today;
+    $("#booking-date").value = today;
+  }
+  if ($("#block-date")) {
+    $("#block-date").min = today;
+    $("#block-date").value = today;
+  }
 }
 
 function bindEvents() {
-  $("#booking-area").addEventListener("change", () => {
+  if ($("#booking-area")) $("#booking-area").addEventListener("change", () => {
     renderServices();
     renderSlots();
   });
-  $("#booking-service").addEventListener("change", renderSlots);
-  $("#booking-date").addEventListener("change", renderSlots);
-  $("#booking-time").addEventListener("change", syncSlotSelection);
-  $("#booking-form").addEventListener("submit", createAppointment);
-  $("#admin-login").addEventListener("click", loginAdmin);
-  $("#admin-area").addEventListener("change", updateBlockTimesFromAdminSelection);
-  $("#block-slot").addEventListener("click", blockSlot);
-  $("#seed-reset").addEventListener("click", resetDemo);
+  if ($("#booking-service")) $("#booking-service").addEventListener("change", renderSlots);
+  if ($("#booking-date")) $("#booking-date").addEventListener("change", renderSlots);
+  if ($("#booking-time")) $("#booking-time").addEventListener("change", syncSlotSelection);
+  if ($("#booking-form")) $("#booking-form").addEventListener("submit", createAppointment);
+  if ($("#admin-login")) $("#admin-login").addEventListener("click", loginAdmin);
+  if ($("#admin-area")) $("#admin-area").addEventListener("change", updateBlockTimesFromAdminSelection);
+  if ($("#block-slot")) $("#block-slot").addEventListener("click", blockSlot);
+  if ($("#seed-reset")) $("#seed-reset").addEventListener("click", resetDemo);
 }
 
 function renderServices() {
@@ -149,6 +157,7 @@ function renderServices() {
 }
 
 function renderSlots() {
+  if (!$("#booking-area")) return;
   const area = $("#booking-area").value;
   const date = $("#booking-date").value;
   const slots = AREAS[area].slots;
@@ -390,8 +399,9 @@ function formatDate(dateString) {
 
 function showMessage(id, message, isError = false) {
   const element = document.getElementById(id);
+  if (!element) return;
   element.textContent = message;
-  element.style.color = isError ? "#9a3412" : "#126c64";
+  element.style.color = isError ? "#9a3412" : "#9d4765";
 }
 
 function emptyState(message) {

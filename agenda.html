@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Agenda una cita en ginecología o estética LASER.">
+    <title>Agendar cita | Dr. Luis Diego Carazo</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="Ir al inicio">
+        <span class="brand-mark">LC</span>
+        <span>
+          <strong>Dr. Luis Diego Carazo</strong>
+          <small>Centro LASER Médico y Estético</small>
+        </span>
+      </a>
+      <nav class="main-nav" aria-label="Navegación principal">
+        <a href="index.html#ginecologia">Ginecología</a>
+        <a href="index.html#estetica">Estética</a>
+        <a href="agenda.html">Agendar</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <p class="eyebrow">Agenda para pacientes</p>
+        <h1>Reserva una cita según el área y el horario disponible.</h1>
+        <p>Selecciona el servicio, el día y el horario que mejor se ajuste. Esta versión conserva las citas en el navegador para presentar el flujo completo.</p>
+      </section>
+
+      <section class="section appointment-shell">
+        <div class="booking-layout">
+          <form class="booking-form" id="booking-form">
+            <div class="field-grid">
+              <label>
+                Área
+                <select id="booking-area" required></select>
+              </label>
+              <label>
+                Servicio
+                <select id="booking-service" required></select>
+              </label>
+              <label>
+                Fecha
+                <input id="booking-date" type="date" required>
+              </label>
+              <label>
+                Hora disponible
+                <select id="booking-time" required></select>
+              </label>
+              <label>
+                Nombre completo
+                <input id="patient-name" type="text" autocomplete="name" placeholder="Nombre de la paciente" required>
+              </label>
+              <label>
+                Teléfono
+                <input id="patient-phone" type="tel" autocomplete="tel" placeholder="+506 8888-8888" required>
+              </label>
+              <label>
+                Correo
+                <input id="patient-email" type="email" autocomplete="email" placeholder="correo@ejemplo.com" required>
+              </label>
+              <label>
+                Nota
+                <textarea id="patient-note" rows="3" placeholder="Motivo de consulta o comentario opcional"></textarea>
+              </label>
+            </div>
+            <button class="button primary wide" type="submit">Confirmar cita</button>
+            <p class="form-message" id="booking-message" role="status"></p>
+          </form>
+
+          <aside class="availability-card">
+            <div class="card-header">
+              <span class="tag">Disponibilidad</span>
+              <strong id="availability-title">Seleccione una fecha</strong>
+            </div>
+            <div class="slot-list" id="slot-list"></div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© 2026 Dr. Luis Diego Carazo y Centro LASER de Estética.</p>
+      <p>La información de esta versión se conserva localmente para fines de presentación.</p>
+    </footer>
+  </body>
+</html>

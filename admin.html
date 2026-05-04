@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Panel administrador para citas de ginecología y estética LASER.">
+    <title>Panel administrador | Dr. Luis Diego Carazo</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="Ir al inicio">
+        <span class="brand-mark">LC</span>
+        <span>
+          <strong>Dr. Luis Diego Carazo</strong>
+          <small>Centro LASER Médico y Estético</small>
+        </span>
+      </a>
+      <nav class="main-nav" aria-label="Navegación principal">
+        <a href="index.html#ginecologia">Ginecología</a>
+        <a href="index.html#estetica">Estética</a>
+        <a href="agenda.html">Agendar</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <p class="eyebrow">Panel administrador</p>
+        <h1>Control por doctor y por área.</h1>
+        <p>Cada perfil puede revisar sus citas, cancelar reservas y bloquear espacios no disponibles.</p>
+      </section>
+
+      <section class="section admin-shell">
+        <div class="admin-layout">
+          <aside class="admin-login">
+            <label>
+              Perfil
+              <select id="admin-area"></select>
+            </label>
+            <label>
+              PIN demo
+              <input id="admin-pin" type="password" placeholder="Digite el PIN">
+            </label>
+            <button class="button primary wide" id="admin-login" type="button">Entrar</button>
+            <p class="hint">Ginecología: <strong>carazo2026</strong><br>Estética: <strong>laser2026</strong></p>
+          </aside>
+
+          <div class="admin-panel" id="admin-panel" hidden>
+            <div class="admin-topline">
+              <div>
+                <span class="tag" id="admin-role"></span>
+                <h3 id="admin-title">Agenda</h3>
+              </div>
+              <button class="button secondary" id="seed-reset" type="button">Restaurar datos</button>
+            </div>
+
+            <div class="admin-tools">
+              <label>
+                Fecha para bloquear
+                <input id="block-date" type="date">
+              </label>
+              <label>
+                Hora
+                <select id="block-time"></select>
+              </label>
+              <label>
+                Motivo
+                <input id="block-reason" type="text" placeholder="Reunión, cirugía, descanso">
+              </label>
+              <button class="button secondary" id="block-slot" type="button">Bloquear espacio</button>
+            </div>
+
+            <div class="admin-summary" id="admin-summary"></div>
+            <div class="admin-columns">
+              <section>
+                <h4>Citas colocadas</h4>
+                <div class="admin-list" id="appointment-list"></div>
+              </section>
+              <section>
+                <h4>Espacios bloqueados</h4>
+                <div class="admin-list" id="block-list"></div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© 2026 Dr. Luis Diego Carazo y Centro LASER de Estética.</p>
+      <p>Panel preparado para conectar posteriormente con autenticación y base de datos.</p>
+    </footer>
+  </body>
+</html>

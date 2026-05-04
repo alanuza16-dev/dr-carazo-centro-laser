@@ -7,11 +7,10 @@
     <title>Dr. Luis Diego Carazo | Centro LASER</title>
     <link rel="preconnect" href="https://images.unsplash.com">
     <link rel="stylesheet" href="styles.css">
-    <script defer src="app.js"></script>
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="#inicio" aria-label="Ir al inicio">
+      <a class="brand" href="index.html" aria-label="Ir al inicio">
         <span class="brand-mark">LC</span>
         <span>
           <strong>Dr. Luis Diego Carazo</strong>
@@ -21,8 +20,8 @@
       <nav class="main-nav" aria-label="Navegación principal">
         <a href="#ginecologia">Ginecología</a>
         <a href="#estetica">Estética</a>
-        <a href="#agenda">Agendar</a>
-        <a href="#admin">Admin</a>
+        <a href="agenda.html">Agendar</a>
+        <a href="admin.html">Admin</a>
       </nav>
     </header>
 
@@ -35,7 +34,7 @@
           <h1>Tratamientos médicos y estéticos con agenda digital por área.</h1>
           <p>Una experiencia clara para pacientes: información confiable, selección de servicio, horarios disponibles y confirmación inmediata. Del otro lado, cada doctor administra únicamente su agenda.</p>
           <div class="hero-actions">
-            <a class="button primary" href="#agenda">Agendar cita</a>
+            <a class="button primary" href="agenda.html">Agendar cita</a>
             <a class="button ghost" href="#servicios">Ver servicios</a>
           </div>
         </div>
@@ -49,10 +48,6 @@
         <div class="metric">
           <strong>2 áreas</strong>
           <span>ginecología y centro LASER de estética</span>
-        </div>
-        <div class="metric">
-          <strong>Demo JS</strong>
-          <span>citas, bloqueos y panel administrador local</span>
         </div>
       </section>
 
@@ -118,128 +113,21 @@
         </div>
       </section>
 
-      <section class="section appointment-shell" id="agenda">
-        <div class="section-heading">
-          <p class="eyebrow">Agenda para pacientes</p>
-          <h2>Reserva una cita según el área y el horario disponible.</h2>
-          <p>Este demo guarda la información en el navegador. En producción se conecta a una base de datos y notificaciones.</p>
+      <section class="section action-band">
+        <div>
+          <p class="eyebrow">Siguiente paso</p>
+          <h2>Agenda tu visita o entra al panel del equipo médico.</h2>
         </div>
-
-        <div class="booking-layout">
-          <form class="booking-form" id="booking-form">
-            <div class="field-grid">
-              <label>
-                Área
-                <select id="booking-area" required></select>
-              </label>
-              <label>
-                Servicio
-                <select id="booking-service" required></select>
-              </label>
-              <label>
-                Fecha
-                <input id="booking-date" type="date" required>
-              </label>
-              <label>
-                Hora disponible
-                <select id="booking-time" required></select>
-              </label>
-              <label>
-                Nombre completo
-                <input id="patient-name" type="text" autocomplete="name" placeholder="Nombre de la paciente" required>
-              </label>
-              <label>
-                Teléfono
-                <input id="patient-phone" type="tel" autocomplete="tel" placeholder="+506 8888-8888" required>
-              </label>
-              <label>
-                Correo
-                <input id="patient-email" type="email" autocomplete="email" placeholder="correo@ejemplo.com" required>
-              </label>
-              <label>
-                Nota
-                <textarea id="patient-note" rows="3" placeholder="Motivo de consulta o comentario opcional"></textarea>
-              </label>
-            </div>
-            <button class="button primary wide" type="submit">Confirmar cita</button>
-            <p class="form-message" id="booking-message" role="status"></p>
-          </form>
-
-          <aside class="availability-card">
-            <div class="card-header">
-              <span class="tag">Disponibilidad</span>
-              <strong id="availability-title">Seleccione una fecha</strong>
-            </div>
-            <div class="slot-list" id="slot-list"></div>
-          </aside>
-        </div>
-      </section>
-
-      <section class="section admin-shell" id="admin">
-        <div class="section-heading">
-          <p class="eyebrow">Panel administrador</p>
-          <h2>Control por doctor y por área.</h2>
-          <p>Use el selector para entrar como ginecología o estética. Cada panel ve sus citas y bloquea sus propios espacios.</p>
-        </div>
-
-        <div class="admin-layout">
-          <aside class="admin-login">
-            <label>
-              Perfil
-              <select id="admin-area"></select>
-            </label>
-            <label>
-              PIN demo
-              <input id="admin-pin" type="password" placeholder="Digite el PIN">
-            </label>
-            <button class="button primary wide" id="admin-login" type="button">Entrar</button>
-            <p class="hint">Ginecología: <strong>carazo2026</strong><br>Estética: <strong>laser2026</strong></p>
-          </aside>
-
-          <div class="admin-panel" id="admin-panel" hidden>
-            <div class="admin-topline">
-              <div>
-                <span class="tag" id="admin-role"></span>
-                <h3 id="admin-title">Agenda</h3>
-              </div>
-              <button class="button secondary" id="seed-reset" type="button">Restaurar demo</button>
-            </div>
-
-            <div class="admin-tools">
-              <label>
-                Fecha para bloquear
-                <input id="block-date" type="date">
-              </label>
-              <label>
-                Hora
-                <select id="block-time"></select>
-              </label>
-              <label>
-                Motivo
-                <input id="block-reason" type="text" placeholder="Reunión, cirugía, descanso">
-              </label>
-              <button class="button secondary" id="block-slot" type="button">Bloquear espacio</button>
-            </div>
-
-            <div class="admin-summary" id="admin-summary"></div>
-            <div class="admin-columns">
-              <section>
-                <h4>Citas colocadas</h4>
-                <div class="admin-list" id="appointment-list"></div>
-              </section>
-              <section>
-                <h4>Espacios bloqueados</h4>
-                <div class="admin-list" id="block-list"></div>
-              </section>
-            </div>
-          </div>
+        <div class="hero-actions">
+          <a class="button primary" href="agenda.html">Agendar cita</a>
+          <a class="button secondary" href="admin.html">Panel administrador</a>
         </div>
       </section>
     </main>
 
     <footer class="site-footer">
-      <p>© 2026 Demo web para Dr. Luis Diego Carazo y Centro LASER de Estética.</p>
-      <p>Contenido base exportado desde el sitio público de Leadpages. Esta demo no reemplaza criterio médico ni almacena datos reales.</p>
+      <p>© 2026 Dr. Luis Diego Carazo y Centro LASER de Estética.</p>
+      <p>Contenido base exportado desde el sitio público de Leadpages. Esta versión no reemplaza criterio médico ni almacena datos reales en servidor.</p>
     </footer>
   </body>
 </html>
