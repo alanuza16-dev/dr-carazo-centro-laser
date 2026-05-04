@@ -21,7 +21,7 @@
         <a href="index.html#ginecologia">Ginecología</a>
         <a href="index.html#estetica">Estética</a>
         <a href="agenda.html">Agendar</a>
-        <a href="admin.html">Admin</a>
+        <a href="login.html">Ingresar</a>
       </nav>
     </header>
 
@@ -29,31 +29,21 @@
       <section class="page-hero">
         <p class="eyebrow">Panel administrador</p>
         <h1>Control por doctor y por área.</h1>
-        <p>Cada perfil puede revisar sus citas, cancelar reservas y bloquear espacios no disponibles.</p>
+        <p>Cada perfil administra únicamente su categoría: ginecología o centro LASER de estética.</p>
       </section>
 
       <section class="section admin-shell">
-        <div class="admin-layout">
-          <aside class="admin-login">
-            <label>
-              Perfil
-              <select id="admin-area"></select>
-            </label>
-            <label>
-              PIN demo
-              <input id="admin-pin" type="password" placeholder="Digite el PIN">
-            </label>
-            <button class="button primary wide" id="admin-login" type="button">Entrar</button>
-            <p class="hint">Ginecología: <strong>carazo2026</strong><br>Estética: <strong>laser2026</strong></p>
-          </aside>
-
+        <div class="admin-layout dashboard-only">
           <div class="admin-panel" id="admin-panel" hidden>
             <div class="admin-topline">
               <div>
                 <span class="tag" id="admin-role"></span>
                 <h3 id="admin-title">Agenda</h3>
               </div>
-              <button class="button secondary" id="seed-reset" type="button">Restaurar datos</button>
+              <div class="inline-actions">
+                <button class="button secondary" id="seed-reset" type="button">Restaurar datos</button>
+                <button class="button secondary" id="admin-logout" type="button">Salir</button>
+              </div>
             </div>
 
             <div class="admin-tools">

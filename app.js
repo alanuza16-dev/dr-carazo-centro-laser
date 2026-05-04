@@ -27,6 +27,7 @@ const AREAS = {
 };
 
 const STORAGE_KEY = "lc-demo-agenda-v1";
+const SESSION_KEY = "lc-demo-session-v1";
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -36,9 +37,13 @@ let activeAdminArea = null;
 document.addEventListener("DOMContentLoaded", () => {
   seedControls();
   setDefaultDates();
+  hydrateSessionUI();
   if ($("#booking-form")) {
     renderServices();
     renderSlots();
+  }
+  if ($("#admin-panel")) {
+    initAdminPage();
   }
   bindEvents();
 });
@@ -135,6 +140,10 @@ function setDefaultDates() {
 }
 
 function bindEvents() {
+  if ($("#patient-login-form")) $("#patient-login-form").addEventListener("submit", loginPatient);
+  if ($("#admin-login-form")) $("#admin-login-form").addEventListener("submit", loginAdminUser);
+  if ($("#admin-logout")) $("#admin-logout").addEventListener("click", logoutUser);
+  if ($("#patient-logout")) $("#patient-logout").addEventListener("click", logoutUser);
   if ($("#booking-area")) $("#booking-area").addEventListener("change", () => {
     renderServices();
     renderSlots();
@@ -143,10 +152,18 @@ function bindEvents() {
   if ($("#booking-date")) $("#booking-date").addEventListener("change", renderSlots);
   if ($("#booking-time")) $("#booking-time").addEventListener("change", syncSlotSelection);
   if ($("#booking-form")) $("#booking-form").addEventListener("submit", createAppointment);
-  if ($("#admin-login")) $("#admin-login").addEventListener("click", loginAdmin);
   if ($("#admin-area")) $("#admin-area").addEventListener("change", updateBlockTimesFromAdminSelection);
   if ($("#block-slot")) $("#block-slot").addEventListener("click", blockSlot);
   if ($("#seed-reset")) $("#seed-reset").addEventListener("click", resetDemo);
+}
+
+function hydrateSessionUI() {
+  const session = getSession();
+  if ($("#patient-welcome") && session?.type === "patient") {
+    $("#patient-welcome").textContent = `Sesión de ${session.name}`;
+    $("#patient-name").value = session.name || "";
+    $("#patient-email").value = session.email || "";
+  }
 }
 
 function renderServices() {
@@ -232,12 +249,35 @@ function createAppointment(event) {
   if (activeAdminArea === area) renderAdmin();
 }
 
-function loginAdmin() {
+function loginPatient(event) {
+  event.preventDefault();
+  const name = $("#login-patient-name").value.trim();
+  const email = $("#login-patient-email").value.trim();
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "patient", name, email }));
+  window.location.href = "agenda.html";
+}
+
+function loginAdminUser(event) {
+  event.preventDefault();
   const area = $("#admin-area").value;
   const pin = $("#admin-pin").value.trim();
 
   if (pin !== AREAS[area].pin) {
     alert("PIN incorrecto para este perfil.");
+    return;
+  }
+
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "admin", area, name: AREAS[area].doctor }));
+  window.location.href = `admin.html?area=${area}`;
+}
+
+function initAdminPage() {
+  const session = getSession();
+  const queryArea = new URLSearchParams(window.location.search).get("area");
+  const area = queryArea || session?.area;
+
+  if (!session || session.type !== "admin" || !AREAS[area]) {
+    window.location.href = "login.html";
     return;
   }
 
@@ -249,8 +289,22 @@ function loginAdmin() {
   renderAdmin();
 }
 
+function getSession() {
+  try {
+    return JSON.parse(localStorage.getItem(SESSION_KEY));
+  } catch {
+    return null;
+  }
+}
+
+function logoutUser() {
+  localStorage.removeItem(SESSION_KEY);
+  window.location.href = "login.html";
+}
+
 function updateBlockTimesFromAdminSelection() {
   const area = activeAdminArea || $("#admin-area").value;
+  if (!$("#block-time")) return;
   $("#block-time").innerHTML = AREAS[area].slots
     .map((time) => `<option value="${time}">${time}</option>`)
     .join("");
