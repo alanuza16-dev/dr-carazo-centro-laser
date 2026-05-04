@@ -38,6 +38,8 @@ document.addEventListener("DOMContentLoaded", () => {
   seedControls();
   setDefaultDates();
   hydrateSessionUI();
+  renderAccountWidget();
+  guardBookingPage();
   if ($("#booking-form")) {
     renderServices();
     renderSlots();
@@ -140,8 +142,8 @@ function setDefaultDates() {
 }
 
 function bindEvents() {
-  if ($("#patient-login-form")) $("#patient-login-form").addEventListener("submit", loginPatient);
-  if ($("#admin-login-form")) $("#admin-login-form").addEventListener("submit", loginAdminUser);
+  if ($("#unified-login-form")) $("#unified-login-form").addEventListener("submit", loginUser);
+  if ($("#login-role")) $("#login-role").addEventListener("change", toggleLoginRoleFields);
   if ($("#admin-logout")) $("#admin-logout").addEventListener("click", logoutUser);
   if ($("#patient-logout")) $("#patient-logout").addEventListener("click", logoutUser);
   if ($("#booking-area")) $("#booking-area").addEventListener("change", () => {
@@ -155,6 +157,8 @@ function bindEvents() {
   if ($("#admin-area")) $("#admin-area").addEventListener("change", updateBlockTimesFromAdminSelection);
   if ($("#block-slot")) $("#block-slot").addEventListener("click", blockSlot);
   if ($("#seed-reset")) $("#seed-reset").addEventListener("click", resetDemo);
+  if ($("#profile-menu-toggle")) $("#profile-menu-toggle").addEventListener("click", toggleProfileMenu);
+  document.addEventListener("click", closeProfileMenu);
 }
 
 function hydrateSessionUI() {
@@ -164,6 +168,47 @@ function hydrateSessionUI() {
     $("#patient-name").value = session.name || "";
     $("#patient-email").value = session.email || "";
   }
+  toggleLoginRoleFields();
+}
+
+function guardBookingPage() {
+  if (!$("#booking-form")) return;
+  const session = getSession();
+  const canBook = session?.type === "patient";
+  const gate = $("#booking-auth-gate");
+  const bookingLayout = $(".booking-layout");
+  if (gate) gate.hidden = canBook;
+  if (bookingLayout) bookingLayout.hidden = !canBook;
+}
+
+function renderAccountWidget() {
+  const header = $(".site-header");
+  if (!header || $("#account-widget")) return;
+  const session = getSession();
+  const wrapper = document.createElement("div");
+  wrapper.className = "account-widget";
+  wrapper.id = "account-widget";
+
+  if (!session) {
+    wrapper.innerHTML = '<a class="profile-link" href="login.html">Crear perfil</a>';
+    header.appendChild(wrapper);
+    return;
+  }
+
+  const adminLink = session.type === "admin" ? `<a href="admin.html?area=${session.area}">Panel</a>` : "";
+  wrapper.innerHTML = `
+    <button class="profile-orb" id="profile-menu-toggle" type="button" aria-label="Abrir perfil">
+      ${getInitials(session.name)}
+    </button>
+    <div class="profile-menu" id="profile-menu" hidden>
+      <strong>${session.name}</strong>
+      <small>${session.type === "admin" ? AREAS[session.area].label : "Paciente"}</small>
+      <a href="agenda.html">Agendar</a>
+      ${adminLink}
+      <button id="patient-logout" type="button">Salir</button>
+    </div>
+  `;
+  header.appendChild(wrapper);
 }
 
 function renderServices() {
@@ -215,6 +260,14 @@ function getSlotStatus(area, date, time) {
 
 function createAppointment(event) {
   event.preventDefault();
+  const session = getSession();
+  if (session?.type !== "patient") {
+    showNotice("Primero crea tu perfil o inicia sesión para agendar.", true);
+    window.setTimeout(() => {
+      window.location.href = "login.html?next=agenda";
+    }, 900);
+    return;
+  }
   const area = $("#booking-area").value;
   const date = $("#booking-date").value;
   const time = $("#booking-time").value;
@@ -249,26 +302,36 @@ function createAppointment(event) {
   if (activeAdminArea === area) renderAdmin();
 }
 
-function loginPatient(event) {
+function loginUser(event) {
   event.preventDefault();
-  const name = $("#login-patient-name").value.trim();
-  const email = $("#login-patient-email").value.trim();
-  localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "patient", name, email }));
-  window.location.href = "agenda.html";
-}
+  const role = $("#login-role").value;
+  const name = $("#login-name").value.trim();
+  const email = $("#login-email").value.trim();
 
-function loginAdminUser(event) {
-  event.preventDefault();
+  if (role === "patient") {
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "patient", name, email }));
+    window.location.href = "agenda.html";
+    return;
+  }
+
   const area = $("#admin-area").value;
   const pin = $("#admin-pin").value.trim();
 
   if (pin !== AREAS[area].pin) {
-    alert("PIN incorrecto para este perfil.");
+    showNotice("PIN incorrecto para este perfil.", true);
     return;
   }
 
-  localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "admin", area, name: AREAS[area].doctor }));
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "admin", area, name: name || AREAS[area].doctor, email }));
   window.location.href = `admin.html?area=${area}`;
+}
+
+function toggleLoginRoleFields() {
+  if (!$("#login-role") || !$("#admin-fields")) return;
+  const isAdmin = $("#login-role").value === "admin";
+  $("#admin-fields").hidden = !isAdmin;
+  $("#admin-pin").required = isAdmin;
+  if ($("#admin-area")) $("#admin-area").required = isAdmin;
 }
 
 function initAdminPage() {
@@ -302,6 +365,30 @@ function logoutUser() {
   window.location.href = "login.html";
 }
 
+function toggleProfileMenu(event) {
+  event.stopPropagation();
+  const menu = $("#profile-menu");
+  if (menu) menu.hidden = !menu.hidden;
+}
+
+function closeProfileMenu(event) {
+  const widget = $("#account-widget");
+  const menu = $("#profile-menu");
+  if (!widget || !menu || widget.contains(event.target)) return;
+  menu.hidden = true;
+}
+
+function getInitials(name = "") {
+  const initials = name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+  return initials || "LC";
+}
+
 function updateBlockTimesFromAdminSelection() {
   const area = activeAdminArea || $("#admin-area").value;
   if (!$("#block-time")) return;
@@ -317,12 +404,12 @@ function blockSlot() {
   const status = getSlotStatus(activeAdminArea, date, time);
 
   if (status.status === "taken") {
-    alert("No se puede bloquear un espacio que ya tiene una cita confirmada.");
+    showNotice("No se puede bloquear un espacio que ya tiene una cita confirmada.", true);
     return;
   }
 
   if (status.status === "blocked") {
-    alert("Ese espacio ya está bloqueado.");
+    showNotice("Ese espacio ya está bloqueado.", true);
     return;
   }
 
@@ -338,6 +425,7 @@ function blockSlot() {
   $("#block-reason").value = "";
   renderAdmin();
   renderSlots();
+  showNotice("Espacio bloqueado correctamente.");
 }
 
 function renderAdmin() {
@@ -456,6 +544,31 @@ function showMessage(id, message, isError = false) {
   if (!element) return;
   element.textContent = message;
   element.style.color = isError ? "#9a3412" : "#9d4765";
+  showNotice(message, isError);
+}
+
+function showNotice(message, isError = false) {
+  let notice = $("#app-notice");
+  if (!notice) {
+    notice = document.createElement("div");
+    notice.id = "app-notice";
+    notice.className = "app-notice";
+    notice.setAttribute("role", "status");
+    notice.setAttribute("aria-live", "polite");
+    document.body.appendChild(notice);
+  }
+
+  notice.innerHTML = `
+    <span class="notice-mark" aria-hidden="true"></span>
+    <span>${message}</span>
+  `;
+  notice.classList.toggle("is-error", isError);
+  notice.classList.remove("is-visible");
+  window.clearTimeout(notice.hideTimer);
+  requestAnimationFrame(() => notice.classList.add("is-visible"));
+  notice.hideTimer = window.setTimeout(() => {
+    notice.classList.remove("is-visible");
+  }, 3400);
 }
 
 function emptyState(message) {

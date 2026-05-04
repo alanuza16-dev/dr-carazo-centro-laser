@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Ingreso para pacientes y administradores.">
-    <title>Ingreso | Dr. Luis Diego Carazo</title>
+    <meta name="description" content="Ingreso unico para pacientes y administradores.">
+    <title>Crear perfil | Dr. Luis Diego Carazo</title>
     <link rel="stylesheet" href="styles.css">
     <script defer src="app.js"></script>
   </head>
@@ -27,48 +27,50 @@
 
     <main>
       <section class="page-hero login-hero">
-        <p class="eyebrow">Acceso</p>
-        <h1>Ingreso de pacientes y administradores.</h1>
-        <p>Los pacientes entran para completar su reserva. Cada administrador entra a su categoría correspondiente.</p>
+        <p class="eyebrow">Perfil</p>
+        <h1>Un solo ingreso para pacientes y administradores.</h1>
+        <p>Crea tu perfil para agendar o entra con el acceso administrativo de ginecología o estética LASER.</p>
       </section>
 
-      <section class="section login-grid">
-        <form class="login-card" id="patient-login-form">
-          <span class="tag">Paciente</span>
-          <h2>Ingresar como paciente</h2>
-          <p>Guarda tus datos básicos para agilizar la reserva de cita.</p>
+      <section class="section login-grid single-login">
+        <form class="login-card featured unified-login" id="unified-login-form">
+          <span class="tag">Crear perfil / Ingresar</span>
+          <h2>Datos de acceso</h2>
+          <p>Elige el tipo de perfil. Si eres administrador, se habilitará el acceso a tu área.</p>
+          <label>
+            Tipo de perfil
+            <select id="login-role" required>
+              <option value="patient">Paciente</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </label>
           <label>
             Nombre completo
-            <input id="login-patient-name" type="text" autocomplete="name" required>
+            <input id="login-name" type="text" autocomplete="name" required>
           </label>
           <label>
             Correo
-            <input id="login-patient-email" type="email" autocomplete="email" required>
+            <input id="login-email" type="email" autocomplete="email" required>
           </label>
-          <button class="button primary wide" type="submit">Continuar a agenda</button>
-        </form>
-
-        <form class="login-card featured" id="admin-login-form">
-          <span class="tag">Administradores</span>
-          <h2>Entrar al panel</h2>
-          <p>Selecciona el área correspondiente. El panel queda dividido por categoría.</p>
-          <label>
-            Área administrativa
-            <select id="admin-area"></select>
-          </label>
-          <label>
-            PIN
-            <input id="admin-pin" type="password" placeholder="Digite el PIN" required>
-          </label>
-          <button class="button primary wide" type="submit">Entrar al panel</button>
-          <p class="hint">Ginecología: <strong>carazo2026</strong><br>Estética: <strong>laser2026</strong></p>
+          <div class="admin-fields" id="admin-fields" hidden>
+            <label>
+              Área administrativa
+              <select id="admin-area"></select>
+            </label>
+            <label>
+              PIN
+              <input id="admin-pin" type="password" placeholder="Digite el PIN">
+            </label>
+            <p class="hint">Ginecología: <strong>carazo2026</strong><br>Estética: <strong>laser2026</strong></p>
+          </div>
+          <button class="button primary wide" type="submit">Continuar</button>
         </form>
       </section>
     </main>
 
     <footer class="site-footer">
       <p>© 2026 Dr. Luis Diego Carazo y Centro LASER de Estética.</p>
-      <p>Accesos preparados como prototipo para conectar con autenticación real.</p>
+      <p>Acceso preparado como prototipo para conectar con autenticación real.</p>
     </footer>
   </body>
 </html>
