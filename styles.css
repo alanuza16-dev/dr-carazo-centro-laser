@@ -989,6 +989,7 @@ h4 {
 
 .beauty-showcase {
   display: flex;
+  align-items: center;
   gap: 0;
   overflow-x: auto;
   overflow-y: visible;
@@ -998,37 +999,50 @@ h4 {
     linear-gradient(90deg, rgba(247, 201, 211, .96), rgba(249, 186, 203, .88)),
     radial-gradient(circle at 50% 12%, rgba(255, 255, 255, .42), transparent 36%);
   scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
   scrollbar-width: thin;
 }
 
 .poster-card {
   position: relative;
-  flex: 0 0 min(360px, 78vw);
-  min-height: 560px;
+  flex: 0 0 min(560px, 82vw);
+  height: clamp(300px, 32vw, 420px);
   display: grid;
   align-content: center;
   justify-items: center;
   gap: 18px;
   overflow: hidden;
+  border: 0;
   color: var(--white);
   text-align: center;
   background: center/cover;
   box-shadow: 0 28px 70px rgba(29, 23, 26, .24);
+  cursor: pointer;
   scroll-snap-align: center;
-  transform: translateX(calc(var(--stack-shift, 0) * -34px)) rotate(var(--stack-rotate, 0deg));
-  transition: transform .32s ease, box-shadow .32s ease, filter .32s ease;
+  transform: translateX(calc(var(--stack-shift, 0) * -24px));
+  transition:
+    opacity 1.15s ease,
+    filter 1.15s ease,
+    transform .55s ease,
+    box-shadow .55s ease;
   z-index: var(--stack-index, 1);
 }
 
 .poster-card + .poster-card {
-  margin-left: clamp(-72px, -5vw, -46px);
+  margin-left: clamp(-56px, -4vw, -34px);
+}
+
+.beauty-showcase:hover .poster-card {
+  opacity: .56;
+  filter: blur(1.2px) saturate(.82);
 }
 
 .poster-card:hover,
 .poster-card:focus-within {
   z-index: 5;
-  filter: saturate(1.04);
-  transform: translateX(calc(var(--stack-shift, 0) * -34px)) translateY(-18px) scale(1.04) rotate(0deg);
+  opacity: 1;
+  filter: blur(0) saturate(1.05);
+  transform: translateX(calc(var(--stack-shift, 0) * -24px)) scale(1.025);
   box-shadow: 0 38px 90px rgba(29, 23, 26, .34);
 }
 
@@ -1047,7 +1061,8 @@ h4 {
 }
 
 .poster-card span,
-.poster-card strong {
+.poster-card strong,
+.poster-card em {
   position: relative;
   z-index: 1;
   max-width: 78%;
@@ -1071,24 +1086,46 @@ h4 {
   text-transform: uppercase;
 }
 
+.poster-card em {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, .6);
+  border-radius: 999px;
+  padding: 9px 14px;
+  color: var(--white);
+  background: rgba(21, 17, 19, .32);
+  backdrop-filter: blur(10px);
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.poster-card em::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 9px solid var(--gold);
+}
+
 .poster-card.sculpting {
-  background-image: url("https://images.unsplash.com/photo-1599058917765-a780eda07a3e?auto=format&fit=crop&w=900&q=80");
+  background-image: url("https://images.pexels.com/photos/5622199/pexels-photo-5622199.jpeg?auto=compress&cs=tinysrgb&w=1400");
   --stack-index: 1;
-  --stack-rotate: -1.5deg;
+  background-position: center 48%;
 }
 
 .poster-card.facial {
-  background-image: url("https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=80");
+  background-image: url("https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1400&q=80");
   --stack-index: 2;
   --stack-shift: .35;
-  --stack-rotate: .8deg;
 }
 
 .poster-card.hair {
-  background-image: url("https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=900&q=80");
+  background-image: url("https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1400&q=80");
   --stack-index: 3;
   --stack-shift: .7;
-  --stack-rotate: -1deg;
 }
 
 .booking-form,
@@ -1381,11 +1418,12 @@ textarea:focus {
   }
 
   .poster-card {
-    flex-basis: min(320px, 84vw);
+    flex-basis: min(420px, 84vw);
+    height: 300px;
   }
 
   .poster-card + .poster-card {
-    margin-left: -34px;
+    margin-left: -24px;
   }
 
   .action-band {
