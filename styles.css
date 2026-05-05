@@ -990,11 +990,12 @@ h4 {
 .beauty-showcase {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0;
   overflow-x: auto;
   overflow-y: visible;
-  padding-block: clamp(58px, 7vw, 92px);
-  padding-inline: clamp(26px, 6vw, 78px);
+  padding-block: clamp(34px, 4vw, 58px);
+  padding-inline: clamp(18px, 4vw, 56px);
   background:
     linear-gradient(90deg, rgba(247, 201, 211, .96), rgba(249, 186, 203, .88)),
     radial-gradient(circle at 50% 12%, rgba(255, 255, 255, .42), transparent 36%);
@@ -1005,8 +1006,8 @@ h4 {
 
 .poster-card {
   position: relative;
-  flex: 0 0 min(560px, 82vw);
-  height: clamp(300px, 32vw, 420px);
+  flex: 0 0 clamp(360px, 31vw, 640px);
+  height: clamp(240px, 21vw, 340px);
   display: grid;
   align-content: center;
   justify-items: center;
@@ -1022,26 +1023,24 @@ h4 {
   transform: translateX(calc(var(--stack-shift, 0) * -24px));
   transition:
     opacity 1.15s ease,
-    filter 1.15s ease,
     transform .55s ease,
     box-shadow .55s ease;
   z-index: var(--stack-index, 1);
 }
 
 .poster-card + .poster-card {
-  margin-left: clamp(-56px, -4vw, -34px);
+  margin-left: clamp(-54px, -3.4vw, -30px);
 }
 
-.beauty-showcase:hover .poster-card {
-  opacity: .56;
-  filter: blur(1.2px) saturate(.82);
+.beauty-showcase:has(.poster-card:hover) .poster-card,
+.beauty-showcase:has(.poster-card:focus-visible) .poster-card {
+  opacity: .58;
 }
 
 .poster-card:hover,
-.poster-card:focus-within {
+.poster-card:focus-visible {
   z-index: 5;
   opacity: 1;
-  filter: blur(0) saturate(1.05);
   transform: translateX(calc(var(--stack-shift, 0) * -24px)) scale(1.025);
   box-shadow: 0 38px 90px rgba(29, 23, 26, .34);
 }
@@ -1071,7 +1070,7 @@ h4 {
 
 .poster-card span {
   font-family: Georgia, serif;
-  font-size: 42px;
+  font-size: clamp(30px, 3vw, 46px);
   font-weight: 900;
   line-height: 1.05;
   text-transform: uppercase;
@@ -1082,7 +1081,7 @@ h4 {
   color: #9d4765;
   background: rgba(255, 255, 255, .86);
   border-radius: 8px;
-  font-size: 20px;
+  font-size: clamp(15px, 1.35vw, 20px);
   text-transform: uppercase;
 }
 
@@ -1414,12 +1413,13 @@ textarea:focus {
   }
 
   .beauty-showcase {
+    justify-content: flex-start;
     padding-inline: 18px;
   }
 
   .poster-card {
-    flex-basis: min(420px, 84vw);
-    height: 300px;
+    flex-basis: min(460px, 84vw);
+    height: 280px;
   }
 
   .poster-card + .poster-card {
@@ -1468,5 +1468,47 @@ textarea:focus {
   .section {
     padding-left: 16px;
     padding-right: 16px;
+  }
+
+  .beauty-showcase {
+    padding-block: 28px;
+    padding-inline: 16px;
+  }
+
+  .poster-card {
+    flex-basis: 86vw;
+    height: 250px;
+  }
+
+  .poster-card + .poster-card {
+    margin-left: -18px;
+  }
+
+  .poster-card::after {
+    inset: 24px;
+    border-width: 2px;
+  }
+
+  .poster-card span {
+    font-size: 28px;
+  }
+
+  .poster-card strong {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .poster-card em {
+    padding: 8px 11px;
+    font-size: 12px;
+  }
+
+  .video-modal {
+    padding: 12px;
+  }
+
+  .video-modal-top {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
