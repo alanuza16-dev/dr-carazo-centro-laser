@@ -1035,12 +1035,14 @@ h4 {
 .beauty-showcase:has(.poster-card:hover) .poster-card,
 .beauty-showcase:has(.poster-card:focus-visible) .poster-card {
   opacity: .58;
+  filter: blur(2px) saturate(.82);
 }
 
 .poster-card:hover,
 .poster-card:focus-visible {
   z-index: 5;
   opacity: 1;
+  filter: blur(0) saturate(1.05);
   transform: translateX(calc(var(--stack-shift, 0) * -24px)) scale(1.025);
   box-shadow: 0 38px 90px rgba(29, 23, 26, .34);
 }
