@@ -674,6 +674,21 @@ h4 {
   line-height: 1.7;
 }
 
+.auth-login-link {
+  margin-top: 16px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.auth-login-link a {
+  color: var(--teal-dark);
+  font-weight: 950;
+  text-decoration: underline;
+  text-decoration-color: rgba(199, 160, 75, .62);
+  text-underline-offset: 4px;
+}
+
 .action-band {
   display: flex;
   align-items: center;

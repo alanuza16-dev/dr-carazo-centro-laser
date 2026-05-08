@@ -31,6 +31,11 @@ const AREAS = {
 const STORAGE_KEY = "lc-demo-agenda-v1";
 const SESSION_KEY = "lc-demo-session-v1";
 const DEMO_USERS = {
+  "test": {
+    type: "patient",
+    name: "Test",
+    password: "1234"
+  },
   "ginecologia@drcarazo.demo": {
     type: "admin",
     area: "ginecologia",
@@ -54,6 +59,7 @@ let activeCalendarMonth = new Date();
 
 document.addEventListener("DOMContentLoaded", () => {
   handleSectionNavigation();
+  hydrateLoginModeFromUrl();
   seedControls();
   setDefaultDates();
   hydrateSessionUI();
@@ -221,8 +227,10 @@ function guardBookingPage() {
   const canBook = session?.type === "patient";
   const gate = $("#booking-auth-gate");
   const bookingLayout = $(".booking-layout");
+  const note = $("#patient-welcome");
   if (gate) gate.hidden = canBook;
   if (bookingLayout) bookingLayout.hidden = !canBook;
+  if (note) note.hidden = !canBook;
 }
 
 function renderAccountWidget() {
@@ -485,21 +493,24 @@ function loginUser(event) {
   event.preventDefault();
   const name = $("#login-name")?.value.trim() || "";
   const email = $("#login-email").value.trim();
+  const identifier = email.toLowerCase();
   const password = $("#login-password").value.trim();
   const passwordConfirm = $("#login-password-confirm")?.value.trim() || "";
 
-  if (!isValidEmail(email)) {
+  if (password.length < 6) {
+    if (!(loginMode === "login" && identifier === "test" && password === "1234")) {
+      showNotice("La contraseña debe tener al menos 6 caracteres.", true);
+      return;
+    }
+  }
+
+  if (loginMode !== "login" && !isValidEmail(email)) {
     showNotice("Ingresá un correo válido.", true);
     return;
   }
 
-  if (password.length < 6) {
-    showNotice("La contraseña debe tener al menos 6 caracteres.", true);
-    return;
-  }
-
   if (loginMode === "login") {
-    const account = DEMO_USERS[email.toLowerCase()];
+    const account = DEMO_USERS[identifier];
     if (account) {
       if (password !== account.password) {
         showNotice("Correo o contraseña incorrectos.", true);
@@ -509,9 +520,14 @@ function loginUser(event) {
         type: account.type,
         area: account.area,
         name: account.name,
-        email
+        email: identifier.includes("@") ? email : `${identifier}@demo.local`
       }));
-      window.location.href = `admin.html?area=${account.area}`;
+      window.location.href = account.type === "admin" ? `admin.html?area=${account.area}` : "agenda.html";
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      showNotice("Ingresá un correo válido o el usuario local de prueba.", true);
       return;
     }
 
@@ -540,6 +556,11 @@ function toggleLoginMode(event) {
   renderLoginMode();
 }
 
+function hydrateLoginModeFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("mode") === "login") loginMode = "login";
+}
+
 function renderLoginMode() {
   if (!$("#unified-login-form")) return;
   const isLogin = loginMode === "login";
@@ -549,9 +570,11 @@ function renderLoginMode() {
   const confirmField = $("#confirm-password-field");
   const passwordInput = $("#login-password");
   const confirmInput = $("#login-password-confirm");
+  const emailLabel = $("#login-email")?.closest("label");
 
   if (tag) tag.textContent = isLogin ? "Ingresar" : "Crear perfil";
   if (title) title.textContent = isLogin ? "Ingresá a tu cuenta" : "Datos de acceso";
+  if (emailLabel) emailLabel.firstChild.textContent = isLogin ? "Correo o usuario" : "Correo";
   if (nameField) nameField.hidden = isLogin;
   if (confirmField) confirmField.hidden = isLogin;
   if ($("#login-name")) $("#login-name").required = !isLogin;
