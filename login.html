@@ -36,13 +36,21 @@
         <form class="login-card featured unified-login" id="unified-login-form">
           <span class="tag">Crear perfil</span>
           <h2>Datos de acceso</h2>
+          <label id="full-name-field">
+            Nombre completo
+            <input id="login-name" type="text" autocomplete="name" required>
+          </label>
           <label>
             Correo
             <input id="login-email" type="email" autocomplete="email" required>
           </label>
           <label>
-            Contraseña
-            <input id="login-password" type="password" autocomplete="current-password" minlength="6" required>
+            Contraseña nueva
+            <input id="login-password" type="password" autocomplete="new-password" minlength="6" required>
+          </label>
+          <label id="confirm-password-field">
+            Confirmar contraseña
+            <input id="login-password-confirm" type="password" autocomplete="new-password" minlength="6" required>
           </label>
           <button class="button primary wide" id="login-submit" type="submit">Crear perfil</button>
           <p class="login-switch" id="login-switch">¿Ya tenés una cuenta? <a href="#" id="existing-account-link">Ingresar</a></p>

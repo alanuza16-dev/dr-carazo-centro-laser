@@ -328,8 +328,15 @@ function createAppointment(event) {
 
 function loginUser(event) {
   event.preventDefault();
+  const name = $("#login-name")?.value.trim() || "";
   const email = $("#login-email").value.trim();
   const password = $("#login-password").value.trim();
+  const passwordConfirm = $("#login-password-confirm")?.value.trim() || "";
+
+  if (!isValidEmail(email)) {
+    showNotice("Ingresá un correo válido.", true);
+    return;
+  }
 
   if (password.length < 6) {
     showNotice("La contraseña debe tener al menos 6 caracteres.", true);
@@ -358,7 +365,17 @@ function loginUser(event) {
     return;
   }
 
-  localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "patient", name: getNameFromEmail(email), email }));
+  if (!name) {
+    showNotice("Ingresá tu nombre completo para crear el perfil.", true);
+    return;
+  }
+
+  if (password !== passwordConfirm) {
+    showNotice("Las contraseñas no coinciden.", true);
+    return;
+  }
+
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "patient", name, email }));
   window.location.href = "agenda.html";
 }
 
@@ -373,9 +390,18 @@ function renderLoginMode() {
   const isLogin = loginMode === "login";
   const tag = $("#unified-login-form .tag");
   const title = $("#unified-login-form h2");
+  const nameField = $("#full-name-field");
+  const confirmField = $("#confirm-password-field");
+  const passwordInput = $("#login-password");
+  const confirmInput = $("#login-password-confirm");
 
   if (tag) tag.textContent = isLogin ? "Ingresar" : "Crear perfil";
   if (title) title.textContent = isLogin ? "Ingresá a tu cuenta" : "Datos de acceso";
+  if (nameField) nameField.hidden = isLogin;
+  if (confirmField) confirmField.hidden = isLogin;
+  if ($("#login-name")) $("#login-name").required = !isLogin;
+  if (confirmInput) confirmInput.required = !isLogin;
+  if (passwordInput) passwordInput.autocomplete = isLogin ? "current-password" : "new-password";
   if ($("#login-submit")) $("#login-submit").textContent = isLogin ? "Ingresar" : "Crear perfil";
   if ($("#login-switch")) {
     $("#login-switch").innerHTML = isLogin
@@ -383,6 +409,10 @@ function renderLoginMode() {
       : '¿Ya tenés una cuenta? <a href="#" id="existing-account-link">Ingresar</a>';
     $("#existing-account-link").addEventListener("click", toggleLoginMode);
   }
+}
+
+function isValidEmail(email = "") {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
 }
 
 function getNameFromEmail(email = "") {
