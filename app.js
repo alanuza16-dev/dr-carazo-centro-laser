@@ -70,8 +70,8 @@ document.addEventListener("DOMContentLoaded", () => {
     renderSlots();
     renderAreaChoices();
     renderDateChoices();
-    renderPatientAppointments();
   }
+  renderPatientAppointments();
   if ($("#admin-panel")) {
     initAdminPage();
   }
@@ -250,7 +250,7 @@ function renderAccountWidget() {
 
   const adminLink = session.type === "admin" ? `<a href="admin.html?area=${session.area}">Panel</a>` : "";
   const patientLinks = session.type === "patient"
-    ? '<a href="agenda.html">Agendar</a><a href="agenda.html?section=citas-agendadas">Citas agendadas</a>'
+    ? '<a href="agenda.html">Agendar</a><a href="citas.html">Citas agendadas</a>'
     : "";
   wrapper.innerHTML = `
     <button class="profile-orb" id="profile-menu-toggle" type="button" aria-label="Abrir perfil">

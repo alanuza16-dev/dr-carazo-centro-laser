@@ -725,6 +725,19 @@ h4 {
   gap: 18px;
 }
 
+.patient-summary-page {
+  max-width: 840px;
+  margin: 0 auto;
+}
+
+.patient-summary-page .patient-appointments-card {
+  min-height: 360px;
+}
+
+.patient-summary-actions {
+  margin-top: 22px;
+}
+
 .dashboard-only {
   display: block;
 }
