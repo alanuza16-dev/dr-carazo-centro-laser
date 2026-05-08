@@ -50,6 +50,7 @@ const $ = (selector) => document.querySelector(selector);
 const state = loadState();
 let activeAdminArea = null;
 let loginMode = "create";
+let activeCalendarMonth = new Date();
 
 document.addEventListener("DOMContentLoaded", () => {
   handleSectionNavigation();
@@ -176,6 +177,8 @@ function bindEvents() {
   if ($("#area-choice")) $("#area-choice").addEventListener("click", handleAreaChoice);
   if ($("#service-choice")) $("#service-choice").addEventListener("click", handleServiceChoice);
   if ($("#date-choice")) $("#date-choice").addEventListener("click", handleDateChoice);
+  if ($("#prev-month")) $("#prev-month").addEventListener("click", () => changeCalendarMonth(-1));
+  if ($("#next-month")) $("#next-month").addEventListener("click", () => changeCalendarMonth(1));
   if ($("#time-choice")) $("#time-choice").addEventListener("click", handleTimeChoice);
   if ($("#admin-area")) $("#admin-area").addEventListener("change", updateBlockTimesFromAdminSelection);
   if ($("#block-slot")) $("#block-slot").addEventListener("click", blockSlot);
@@ -320,24 +323,56 @@ function renderDateChoices() {
   if (!$("#date-choice") || !$("#booking-date")) return;
   const selected = $("#booking-date").value;
   const today = new Date();
-  const dates = Array.from({ length: 8 }, (_, index) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() + index);
+  const year = activeCalendarMonth.getFullYear();
+  const month = activeCalendarMonth.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const monthLabel = new Intl.DateTimeFormat("es-CR", { month: "long", year: "numeric" }).format(activeCalendarMonth);
+  const monthStart = new Date(year, month, 1);
+  const currentMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+  const isPastMonth = monthStart < currentMonthStart;
+
+  if ($("#current-month-label")) $("#current-month-label").textContent = monthLabel;
+  if ($("#prev-month")) $("#prev-month").disabled = isPastMonth;
+
+  const dates = Array.from({ length: daysInMonth }, (_, index) => {
+    const date = new Date(year, month, index + 1);
     return toDateInput(date);
   });
   $("#date-choice").innerHTML = dates.map((dateString) => {
     const [year, month, day] = dateString.split("-").map(Number);
     const date = new Date(year, month - 1, day);
+    const isPastDate = date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const dayName = new Intl.DateTimeFormat("es-CR", { weekday: "short" }).format(date);
     const monthName = new Intl.DateTimeFormat("es-CR", { month: "short" }).format(date);
     return `
-      <button class="date-card ${dateString === selected ? "is-selected" : ""}" type="button" data-date-choice="${dateString}">
+      <button class="date-card ${dateString === selected ? "is-selected" : ""}" type="button" data-date-choice="${dateString}" ${isPastDate ? "disabled" : ""}>
         <span>${dayName}</span>
         <strong>${day}</strong>
         <small>${monthName}</small>
       </button>
     `;
   }).join("");
+}
+
+function changeCalendarMonth(direction) {
+  activeCalendarMonth = new Date(activeCalendarMonth.getFullYear(), activeCalendarMonth.getMonth() + direction, 1);
+  const selected = $("#booking-date")?.value;
+  const today = new Date();
+  const monthStart = new Date(activeCalendarMonth.getFullYear(), activeCalendarMonth.getMonth(), 1);
+  const selectedDate = selected ? parseDateInput(selected) : null;
+  const selectedOutsideMonth = !selectedDate ||
+    selectedDate.getFullYear() !== activeCalendarMonth.getFullYear() ||
+    selectedDate.getMonth() !== activeCalendarMonth.getMonth();
+
+  if (selectedOutsideMonth && $("#booking-date")) {
+    const firstAvailable = monthStart < new Date(today.getFullYear(), today.getMonth(), 1)
+      ? today
+      : monthStart;
+    $("#booking-date").value = toDateInput(firstAvailable);
+  }
+
+  renderDateChoices();
+  renderSlots();
 }
 
 function renderTimeChoices(availability = []) {
@@ -779,6 +814,11 @@ function toDateInput(date) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function parseDateInput(dateString) {
+  const [year, month, day] = dateString.split("-").map(Number);
+  return new Date(year, month - 1, day);
 }
 
 function formatDate(dateString) {
