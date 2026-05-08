@@ -116,13 +116,23 @@
             <p class="form-message" id="booking-message" role="status"></p>
           </form>
 
-          <aside class="availability-card">
-            <div class="card-header">
-              <span class="tag">Disponibilidad</span>
-              <strong id="availability-title">Seleccione una fecha</strong>
-            </div>
-            <div class="slot-list" id="slot-list"></div>
-          </aside>
+          <div class="booking-side">
+            <aside class="availability-card">
+              <div class="card-header">
+                <span class="tag">Disponibilidad</span>
+                <strong id="availability-title">Seleccione una fecha</strong>
+              </div>
+              <div class="slot-list" id="slot-list"></div>
+            </aside>
+
+            <aside class="patient-appointments-card">
+              <div class="card-header">
+                <span class="tag">Citas agendadas</span>
+                <strong>Resumen de tus próximas visitas</strong>
+              </div>
+              <div class="patient-appointment-list" id="patient-appointment-list"></div>
+            </aside>
+          </div>
         </div>
       </section>
     </main>

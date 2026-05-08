@@ -478,6 +478,7 @@ h4 {
 
 .feature-panel,
 .availability-card,
+.patient-appointments-card,
 .booking-form,
 .admin-login,
 .admin-panel,
@@ -717,6 +718,11 @@ h4 {
   grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr);
   gap: 24px;
   align-items: start;
+}
+
+.booking-side {
+  display: grid;
+  gap: 18px;
 }
 
 .dashboard-only {
@@ -1169,6 +1175,7 @@ h4 {
 
 .booking-form,
 .availability-card,
+.patient-appointments-card,
 .admin-login,
 .admin-panel {
   padding: clamp(20px, 3vw, 30px);
@@ -1483,6 +1490,7 @@ textarea:focus {
 }
 
 .slot-list,
+.patient-appointment-list,
 .admin-list,
 .admin-summary {
   display: grid;
@@ -1490,6 +1498,7 @@ textarea:focus {
 }
 
 .slot,
+.patient-appointment,
 .admin-item,
 .summary-item {
   border: 1px solid var(--line);
@@ -1514,6 +1523,36 @@ textarea:focus {
   color: #8d3f5a;
   background: #fff0f6;
   border-color: #efc2d3;
+}
+
+.patient-appointment {
+  display: grid;
+  gap: 7px;
+}
+
+.patient-appointment strong {
+  color: var(--teal-dark);
+}
+
+.patient-appointment span {
+  font-weight: 800;
+}
+
+.patient-appointment small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.status-pill {
+  width: fit-content;
+  border: 1px solid rgba(199, 160, 75, .45);
+  border-radius: 999px;
+  padding: 5px 10px;
+  color: #9d4765;
+  background: #fff8fb;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 .admin-panel {

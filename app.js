@@ -70,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderSlots();
     renderAreaChoices();
     renderDateChoices();
+    renderPatientAppointments();
   }
   if ($("#admin-panel")) {
     initAdminPage();
@@ -485,6 +486,7 @@ function createAppointment(event) {
   renderServices();
   renderDateChoices();
   renderSlots();
+  renderPatientAppointments();
   showMessage("booking-message", `Cita confirmada para ${AREAS[area].label} el ${formatDate(date)} a las ${time}.`);
   if (activeAdminArea === area) renderAdmin();
 }
@@ -787,6 +789,39 @@ function renderAppointmentItem(item) {
   `;
 }
 
+function renderPatientAppointments() {
+  if (!$("#patient-appointment-list")) return;
+  const session = getSession();
+  if (session?.type !== "patient") {
+    $("#patient-appointment-list").innerHTML = emptyPatientAppointment("Iniciá sesión para ver tus citas agendadas.");
+    return;
+  }
+
+  const appointments = state.appointments
+    .filter((item) => item.email === session.email && item.status !== "cancelada")
+    .sort(sortByDateTime);
+
+  $("#patient-appointment-list").innerHTML = appointments.length
+    ? appointments.map(renderPatientAppointmentItem).join("")
+    : emptyPatientAppointment("Aún no tenés citas agendadas.");
+}
+
+function renderPatientAppointmentItem(item) {
+  return `
+    <article class="patient-appointment">
+      <strong>${formatDate(item.date)} · ${item.time}</strong>
+      <span>${AREAS[item.area].label}</span>
+      <small>${item.service}</small>
+      <small>${item.phone}${item.note ? ` · ${item.note}` : ""}</small>
+      <em class="status-pill">${item.status}</em>
+    </article>
+  `;
+}
+
+function emptyPatientAppointment(message) {
+  return `<article class="patient-appointment"><small>${message}</small></article>`;
+}
+
 function renderBlockItem(item) {
   return `
     <article class="admin-item">
@@ -806,6 +841,7 @@ function cancelAppointment(id) {
   saveState();
   renderAdmin();
   renderSlots();
+  renderPatientAppointments();
 }
 
 function deleteBlock(id) {
@@ -823,6 +859,7 @@ function resetDemo() {
   state.appointments = fresh.appointments;
   state.blocks = fresh.blocks;
   renderSlots();
+  renderPatientAppointments();
   if (activeAdminArea) renderAdmin();
 }
 
