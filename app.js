@@ -52,6 +52,7 @@ let activeAdminArea = null;
 let loginMode = "create";
 
 document.addEventListener("DOMContentLoaded", () => {
+  handleSectionNavigation();
   seedControls();
   setDefaultDates();
   hydrateSessionUI();
@@ -60,6 +61,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if ($("#booking-form")) {
     renderServices();
     renderSlots();
+    renderAreaChoices();
+    renderDateChoices();
   }
   if ($("#admin-panel")) {
     initAdminPage();
@@ -170,6 +173,10 @@ function bindEvents() {
   if ($("#booking-date")) $("#booking-date").addEventListener("change", renderSlots);
   if ($("#booking-time")) $("#booking-time").addEventListener("change", syncSlotSelection);
   if ($("#booking-form")) $("#booking-form").addEventListener("submit", createAppointment);
+  if ($("#area-choice")) $("#area-choice").addEventListener("click", handleAreaChoice);
+  if ($("#service-choice")) $("#service-choice").addEventListener("click", handleServiceChoice);
+  if ($("#date-choice")) $("#date-choice").addEventListener("click", handleDateChoice);
+  if ($("#time-choice")) $("#time-choice").addEventListener("click", handleTimeChoice);
   if ($("#admin-area")) $("#admin-area").addEventListener("change", updateBlockTimesFromAdminSelection);
   if ($("#block-slot")) $("#block-slot").addEventListener("click", blockSlot);
   if ($("#seed-reset")) $("#seed-reset").addEventListener("click", resetDemo);
@@ -183,6 +190,16 @@ function bindEvents() {
     if (event.target.id === "video-modal") closeVideoModal();
   });
   document.addEventListener("click", closeProfileMenu);
+}
+
+function handleSectionNavigation() {
+  const params = new URLSearchParams(window.location.search);
+  const section = params.get("section") || window.location.hash.replace("#", "");
+  if (!section) return;
+  window.requestAnimationFrame(() => {
+    document.getElementById(section)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.history.replaceState(null, "", window.location.pathname);
+  });
 }
 
 function hydrateSessionUI() {
@@ -240,6 +257,8 @@ function renderServices() {
   $("#booking-service").innerHTML = AREAS[area].services
     .map((service) => `<option value="${service}">${service}</option>`)
     .join("");
+  renderAreaChoices();
+  renderServiceChoices();
 }
 
 function renderSlots() {
@@ -263,6 +282,7 @@ function renderSlots() {
       return `<div class="slot ${className}"><strong>${slot.time}</strong><span>${label}</span>${detail}</div>`;
     })
     .join("");
+  renderTimeChoices(availability);
 }
 
 function syncSlotSelection() {
@@ -270,6 +290,98 @@ function syncSlotSelection() {
   document.querySelectorAll(".slot").forEach((slot) => {
     slot.toggleAttribute("data-selected", slot.textContent.includes(selected));
   });
+  document.querySelectorAll("[data-time-choice]").forEach((button) => {
+    button.classList.toggle("is-selected", button.dataset.timeChoice === selected);
+  });
+}
+
+function renderAreaChoices() {
+  if (!$("#area-choice") || !$("#booking-area")) return;
+  const selected = $("#booking-area").value;
+  $("#area-choice").innerHTML = Object.entries(AREAS).map(([value, area]) => `
+    <button class="choice-card ${value === selected ? "is-selected" : ""}" type="button" data-area-choice="${value}">
+      <strong>${area.label}</strong>
+      <span>${value === "ginecologia" ? "Consulta médica y procedimientos" : "Centro LASER de estética"}</span>
+    </button>
+  `).join("");
+}
+
+function renderServiceChoices() {
+  if (!$("#service-choice") || !$("#booking-service")) return;
+  const selected = $("#booking-service").value;
+  $("#service-choice").innerHTML = Array.from($("#booking-service").options).map((option) => `
+    <button class="choice-pill ${option.value === selected ? "is-selected" : ""}" type="button" data-service-choice="${option.value}">
+      ${option.value}
+    </button>
+  `).join("");
+}
+
+function renderDateChoices() {
+  if (!$("#date-choice") || !$("#booking-date")) return;
+  const selected = $("#booking-date").value;
+  const today = new Date();
+  const dates = Array.from({ length: 8 }, (_, index) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() + index);
+    return toDateInput(date);
+  });
+  $("#date-choice").innerHTML = dates.map((dateString) => {
+    const [year, month, day] = dateString.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    const dayName = new Intl.DateTimeFormat("es-CR", { weekday: "short" }).format(date);
+    const monthName = new Intl.DateTimeFormat("es-CR", { month: "short" }).format(date);
+    return `
+      <button class="date-card ${dateString === selected ? "is-selected" : ""}" type="button" data-date-choice="${dateString}">
+        <span>${dayName}</span>
+        <strong>${day}</strong>
+        <small>${monthName}</small>
+      </button>
+    `;
+  }).join("");
+}
+
+function renderTimeChoices(availability = []) {
+  if (!$("#time-choice")) return;
+  const selected = $("#booking-time")?.value;
+  const available = availability.filter((slot) => slot.status === "available");
+  $("#time-choice").innerHTML = available.length
+    ? available.map((slot) => `
+      <button class="time-chip ${slot.time === selected ? "is-selected" : ""}" type="button" data-time-choice="${slot.time}">
+        ${slot.time}
+      </button>
+    `).join("")
+    : '<p class="empty-choice">Sin espacios disponibles para esta fecha.</p>';
+}
+
+function handleAreaChoice(event) {
+  const button = event.target.closest("[data-area-choice]");
+  if (!button) return;
+  $("#booking-area").value = button.dataset.areaChoice;
+  renderServices();
+  renderSlots();
+}
+
+function handleServiceChoice(event) {
+  const button = event.target.closest("[data-service-choice]");
+  if (!button) return;
+  $("#booking-service").value = button.dataset.serviceChoice;
+  renderServiceChoices();
+  renderSlots();
+}
+
+function handleDateChoice(event) {
+  const button = event.target.closest("[data-date-choice]");
+  if (!button) return;
+  $("#booking-date").value = button.dataset.dateChoice;
+  renderDateChoices();
+  renderSlots();
+}
+
+function handleTimeChoice(event) {
+  const button = event.target.closest("[data-time-choice]");
+  if (!button) return;
+  $("#booking-time").value = button.dataset.timeChoice;
+  syncSlotSelection();
 }
 
 function getSlotStatus(area, date, time) {
@@ -295,10 +407,17 @@ function createAppointment(event) {
   const area = $("#booking-area").value;
   const date = $("#booking-date").value;
   const time = $("#booking-time").value;
+  const phone = $("#patient-phone").value.trim();
 
   if (!time || getSlotStatus(area, date, time).status !== "available") {
     showMessage("booking-message", "Ese espacio ya no está disponible. Seleccione otro horario.", true);
     renderSlots();
+    return;
+  }
+
+  if (!phone) {
+    showNotice("Ingresá un teléfono para confirmar la cita.", true);
+    $("#patient-phone").focus();
     return;
   }
 
@@ -308,9 +427,9 @@ function createAppointment(event) {
     service: $("#booking-service").value,
     date,
     time,
-    name: $("#patient-name").value.trim(),
-    phone: $("#patient-phone").value.trim(),
-    email: $("#patient-email").value.trim(),
+    name: session.name,
+    phone,
+    email: session.email,
     note: $("#patient-note").value.trim(),
     status: "confirmada",
     createdAt: new Date().toISOString()
@@ -321,6 +440,7 @@ function createAppointment(event) {
   $("#booking-area").value = area;
   $("#booking-date").value = date;
   renderServices();
+  renderDateChoices();
   renderSlots();
   showMessage("booking-message", `Cita confirmada para ${AREAS[area].label} el ${formatDate(date)} a las ${time}.`);
   if (activeAdminArea === area) renderAdmin();
@@ -405,8 +525,8 @@ function renderLoginMode() {
   if ($("#login-submit")) $("#login-submit").textContent = isLogin ? "Ingresar" : "Crear perfil";
   if ($("#login-switch")) {
     $("#login-switch").innerHTML = isLogin
-      ? '¿No tenés cuenta? <a href="#" id="existing-account-link">Crear perfil</a>'
-      : '¿Ya tenés una cuenta? <a href="#" id="existing-account-link">Ingresar</a>';
+      ? '¿No tenés cuenta? <a href="login.html" id="existing-account-link">Crear perfil</a>'
+      : '¿Ya tenés una cuenta? <a href="login.html" id="existing-account-link">Ingresar</a>';
     $("#existing-account-link").addEventListener("click", toggleLoginMode);
   }
 }

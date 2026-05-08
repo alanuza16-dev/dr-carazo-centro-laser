@@ -18,8 +18,8 @@
         </span>
       </a>
       <nav class="main-nav" aria-label="Navegación principal">
-        <a href="index.html#ginecologia">Ginecología</a>
-        <a href="index.html#estetica">Estética</a>
+        <a href="index.html?section=ginecologia">Ginecología</a>
+        <a href="index.html?section=estetica">Estética</a>
         <a href="agenda.html">Agendar</a>
         <a href="login.html">Ingresar</a>
       </nav>
@@ -33,7 +33,7 @@
       </section>
 
       <section class="section login-grid single-login">
-        <form class="login-card featured unified-login" id="unified-login-form">
+        <form class="login-card featured unified-login" id="unified-login-form" novalidate>
           <span class="tag">Crear perfil</span>
           <h2>Datos de acceso</h2>
           <label id="full-name-field">
@@ -53,7 +53,7 @@
             <input id="login-password-confirm" type="password" autocomplete="new-password" minlength="6" required>
           </label>
           <button class="button primary wide" id="login-submit" type="submit">Crear perfil</button>
-          <p class="login-switch" id="login-switch">¿Ya tenés una cuenta? <a href="#" id="existing-account-link">Ingresar</a></p>
+          <p class="login-switch" id="login-switch">¿Ya tenés una cuenta? <a href="login.html" id="existing-account-link">Ingresar</a></p>
         </form>
       </section>
     </main>

@@ -18,8 +18,8 @@
         </span>
       </a>
       <nav class="main-nav" aria-label="Navegación principal">
-        <a href="index.html#ginecologia">Ginecología</a>
-        <a href="index.html#estetica">Estética</a>
+        <a href="index.html?section=ginecologia">Ginecología</a>
+        <a href="index.html?section=estetica">Estética</a>
         <a href="agenda.html">Agendar</a>
         <a href="login.html">Ingresar</a>
       </nav>
@@ -41,40 +41,68 @@
           <a class="button primary" href="login.html?next=agenda">Crear perfil</a>
         </div>
         <div class="booking-layout">
-          <form class="booking-form" id="booking-form">
-            <div class="field-grid">
-              <label>
-                Área
-                <select id="booking-area" required></select>
-              </label>
-              <label>
-                Servicio
-                <select id="booking-service" required></select>
-              </label>
-              <label>
-                Fecha
-                <input id="booking-date" type="date" required>
-              </label>
-              <label>
-                Hora disponible
-                <select id="booking-time" required></select>
-              </label>
-              <label>
-                Nombre completo
-                <input id="patient-name" type="text" autocomplete="name" placeholder="Nombre de la paciente" required>
-              </label>
-              <label>
-                Teléfono
-                <input id="patient-phone" type="tel" autocomplete="tel" placeholder="+506 8888-8888" required>
-              </label>
-              <label>
-                Correo
-                <input id="patient-email" type="email" autocomplete="email" placeholder="correo@ejemplo.com" required>
-              </label>
-              <label>
-                Nota
-                <textarea id="patient-note" rows="3" placeholder="Motivo de consulta o comentario opcional"></textarea>
-              </label>
+          <form class="booking-form premium-booking" id="booking-form" novalidate>
+            <div class="booking-native-controls">
+              <select id="booking-area" required></select>
+              <select id="booking-service" required></select>
+              <input id="booking-date" type="date" required>
+              <select id="booking-time" required></select>
+              <input id="patient-name" type="hidden">
+              <input id="patient-email" type="hidden">
+            </div>
+
+            <div class="booking-step">
+              <span class="step-kicker">01</span>
+              <div>
+                <h3>Área</h3>
+                <p>Elegí la categoría de atención.</p>
+              </div>
+              <div class="choice-grid area-choice-grid" id="area-choice"></div>
+            </div>
+
+            <div class="booking-step">
+              <span class="step-kicker">02</span>
+              <div>
+                <h3>Servicio</h3>
+                <p>Seleccioná el tratamiento o consulta.</p>
+              </div>
+              <div class="choice-grid service-choice-grid" id="service-choice"></div>
+            </div>
+
+            <div class="booking-step">
+              <span class="step-kicker">03</span>
+              <div>
+                <h3>Fecha</h3>
+                <p>Próximos días disponibles.</p>
+              </div>
+              <div class="date-choice-strip" id="date-choice"></div>
+            </div>
+
+            <div class="booking-step">
+              <span class="step-kicker">04</span>
+              <div>
+                <h3>Hora</h3>
+                <p>Escogé uno de los espacios abiertos.</p>
+              </div>
+              <div class="time-choice-grid" id="time-choice"></div>
+            </div>
+
+            <div class="booking-step contact-step">
+              <span class="step-kicker">05</span>
+              <div>
+                <h3>Contacto</h3>
+                <p>Solo necesitamos un teléfono para confirmar.</p>
+              </div>
+              <div class="contact-grid">
+                <label>
+                  Teléfono
+                  <input id="patient-phone" type="tel" autocomplete="tel" placeholder="+506 8888-8888" required>
+                </label>
+                <label>
+                  Nota
+                  <textarea id="patient-note" rows="3" placeholder="Motivo de consulta o comentario opcional"></textarea>
+                </label>
+              </div>
             </div>
             <button class="button primary wide" type="submit">Confirmar cita</button>
             <p class="form-message" id="booking-message" role="status"></p>
