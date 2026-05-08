@@ -249,6 +249,9 @@ function renderAccountWidget() {
   }
 
   const adminLink = session.type === "admin" ? `<a href="admin.html?area=${session.area}">Panel</a>` : "";
+  const patientLinks = session.type === "patient"
+    ? '<a href="agenda.html">Agendar</a><a href="agenda.html?section=citas-agendadas">Citas agendadas</a>'
+    : "";
   wrapper.innerHTML = `
     <button class="profile-orb" id="profile-menu-toggle" type="button" aria-label="Abrir perfil">
       ${getInitials(session.name)}
@@ -256,7 +259,7 @@ function renderAccountWidget() {
     <div class="profile-menu" id="profile-menu" hidden>
       <strong>${session.name}</strong>
       <small>${session.type === "admin" ? AREAS[session.area].label : "Paciente"}</small>
-      <a href="agenda.html">Agendar</a>
+      ${patientLinks}
       ${adminLink}
       <button id="patient-logout" type="button">Salir</button>
     </div>
