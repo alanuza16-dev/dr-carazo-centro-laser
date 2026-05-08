@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Ingreso unico para pacientes y administradores.">
+    <meta name="description" content="Ingreso general para pacientes y equipo administrativo.">
     <title>Crear perfil | Dr. Luis Diego Carazo</title>
     <link rel="stylesheet" href="styles.css">
     <script defer src="app.js"></script>
@@ -28,22 +28,15 @@
     <main>
       <section class="page-hero login-hero">
         <p class="eyebrow">Perfil</p>
-        <h1>Un solo ingreso para pacientes y administradores.</h1>
-        <p>Crea tu perfil para agendar o entra con el acceso administrativo de ginecología o estética LASER.</p>
+        <h1>Ingreso general al perfil.</h1>
+        <p>Usa tu correo y contraseña. El sistema mostrará la agenda o el panel correcto según el perfil registrado.</p>
       </section>
 
       <section class="section login-grid single-login">
         <form class="login-card featured unified-login" id="unified-login-form">
-          <span class="tag">Crear perfil / Ingresar</span>
+          <span class="tag">Crear perfil</span>
           <h2>Datos de acceso</h2>
-          <p>Elige el tipo de perfil. Si eres administrador, se habilitará el acceso a tu área.</p>
-          <label>
-            Tipo de perfil
-            <select id="login-role" required>
-              <option value="patient">Paciente</option>
-              <option value="admin">Administrador</option>
-            </select>
-          </label>
+          <p>Este acceso es único para todos los usuarios. La validación de rol quedará conectada a la base de datos.</p>
           <label>
             Nombre completo
             <input id="login-name" type="text" autocomplete="name" required>
@@ -56,18 +49,8 @@
             Contraseña
             <input id="login-password" type="password" autocomplete="current-password" minlength="6" required>
           </label>
-          <div class="admin-fields" id="admin-fields" hidden>
-            <label>
-              Área administrativa
-              <select id="admin-area"></select>
-            </label>
-            <label>
-              PIN
-              <input id="admin-pin" type="password" placeholder="Digite el PIN">
-            </label>
-            <p class="hint">Acceso demo ginecología: contraseña <strong>doctor2026</strong> y PIN <strong>carazo2026</strong>.<br>Acceso demo estética: contraseña <strong>laseradmin2026</strong> y PIN <strong>laser2026</strong>.</p>
-          </div>
-          <button class="button primary wide" type="submit">Continuar</button>
+          <button class="button primary wide" id="login-submit" type="submit">Crear perfil</button>
+          <p class="login-switch" id="login-switch">¿Ya tenés una cuenta? <a href="#" id="existing-account-link">Ingresar</a></p>
         </form>
       </section>
     </main>

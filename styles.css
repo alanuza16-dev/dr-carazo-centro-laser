@@ -618,6 +618,20 @@ h4 {
   line-height: 1.7;
 }
 
+.login-switch {
+  margin-top: 2px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.login-switch a {
+  color: var(--teal-dark);
+  font-weight: 950;
+  text-decoration: underline;
+  text-decoration-color: rgba(199, 160, 75, .62);
+  text-underline-offset: 4px;
+}
+
 .admin-fields {
   display: grid;
   gap: 18px;
@@ -1032,14 +1046,14 @@ h4 {
   margin-left: clamp(-54px, -3.4vw, -30px);
 }
 
-.beauty-showcase:has(.poster-card:hover) .poster-card,
-.beauty-showcase:has(.poster-card:focus-visible) .poster-card {
+.poster-card.is-muted {
   opacity: .58;
   filter: blur(2px) saturate(.82);
 }
 
 .poster-card:hover,
-.poster-card:focus-visible {
+.poster-card:focus-visible,
+.poster-card.is-active {
   z-index: 5;
   opacity: 1;
   filter: blur(0) saturate(1.05);

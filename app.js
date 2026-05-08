@@ -30,11 +30,26 @@ const AREAS = {
 
 const STORAGE_KEY = "lc-demo-agenda-v1";
 const SESSION_KEY = "lc-demo-session-v1";
+const DEMO_USERS = {
+  "ginecologia@drcarazo.demo": {
+    type: "admin",
+    area: "ginecologia",
+    name: "Admin Ginecología",
+    password: "doctor2026"
+  },
+  "estetica@drcarazo.demo": {
+    type: "admin",
+    area: "estetica",
+    name: "Admin Estética",
+    password: "laseradmin2026"
+  }
+};
 
 const $ = (selector) => document.querySelector(selector);
 
 const state = loadState();
 let activeAdminArea = null;
+let loginMode = "create";
 
 document.addEventListener("DOMContentLoaded", () => {
   seedControls();
@@ -145,7 +160,6 @@ function setDefaultDates() {
 
 function bindEvents() {
   if ($("#unified-login-form")) $("#unified-login-form").addEventListener("submit", loginUser);
-  if ($("#login-role")) $("#login-role").addEventListener("change", toggleLoginRoleFields);
   if ($("#admin-logout")) $("#admin-logout").addEventListener("click", logoutUser);
   if ($("#patient-logout")) $("#patient-logout").addEventListener("click", logoutUser);
   if ($("#booking-area")) $("#booking-area").addEventListener("change", () => {
@@ -163,6 +177,7 @@ function bindEvents() {
   document.querySelectorAll("[data-video]").forEach((button) => {
     button.addEventListener("click", () => openVideoModal(button.dataset.video, button.dataset.title));
   });
+  bindCarouselHover();
   if ($("#video-modal-close")) $("#video-modal-close").addEventListener("click", closeVideoModal);
   if ($("#video-modal")) $("#video-modal").addEventListener("click", (event) => {
     if (event.target.id === "video-modal") closeVideoModal();
@@ -177,7 +192,7 @@ function hydrateSessionUI() {
     $("#patient-name").value = session.name || "";
     $("#patient-email").value = session.email || "";
   }
-  toggleLoginRoleFields();
+  renderLoginMode();
 }
 
 function guardBookingPage() {
@@ -313,7 +328,6 @@ function createAppointment(event) {
 
 function loginUser(event) {
   event.preventDefault();
-  const role = $("#login-role").value;
   const name = $("#login-name").value.trim();
   const email = $("#login-email").value.trim();
   const password = $("#login-password").value.trim();
@@ -323,30 +337,89 @@ function loginUser(event) {
     return;
   }
 
-  if (role === "patient") {
-    localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "patient", name, email }));
+  if (loginMode === "login") {
+    const account = DEMO_USERS[email.toLowerCase()];
+    if (account) {
+      if (password !== account.password) {
+        showNotice("Correo o contraseña incorrectos.", true);
+        return;
+      }
+      localStorage.setItem(SESSION_KEY, JSON.stringify({
+        type: account.type,
+        area: account.area,
+        name: account.name,
+        email
+      }));
+      window.location.href = `admin.html?area=${account.area}`;
+      return;
+    }
+
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "patient", name: name || "Paciente", email }));
     window.location.href = "agenda.html";
     return;
   }
 
-  const area = $("#admin-area").value;
-  const pin = $("#admin-pin").value.trim();
-
-  if (pin !== AREAS[area].pin || password !== AREAS[area].password) {
-    showNotice("Credenciales incorrectas para este perfil administrativo.", true);
+  if (!name) {
+    showNotice("Ingresá tu nombre completo para crear el perfil.", true);
     return;
   }
 
-  localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "admin", area, name: name || AREAS[area].doctor, email }));
-  window.location.href = `admin.html?area=${area}`;
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "patient", name, email }));
+  window.location.href = "agenda.html";
 }
 
-function toggleLoginRoleFields() {
-  if (!$("#login-role") || !$("#admin-fields")) return;
-  const isAdmin = $("#login-role").value === "admin";
-  $("#admin-fields").hidden = !isAdmin;
-  $("#admin-pin").required = isAdmin;
-  if ($("#admin-area")) $("#admin-area").required = isAdmin;
+function toggleLoginMode(event) {
+  event.preventDefault();
+  loginMode = loginMode === "create" ? "login" : "create";
+  renderLoginMode();
+}
+
+function renderLoginMode() {
+  if (!$("#unified-login-form")) return;
+  const isLogin = loginMode === "login";
+  const tag = $("#unified-login-form .tag");
+  const title = $("#unified-login-form h2");
+  const copy = $("#unified-login-form p");
+  const nameInput = $("#login-name");
+  const nameLabel = nameInput?.closest("label");
+
+  if (tag) tag.textContent = isLogin ? "Ingresar" : "Crear perfil";
+  if (title) title.textContent = isLogin ? "Ingresá a tu cuenta" : "Datos de acceso";
+  if (copy) copy.textContent = isLogin
+    ? "Usá tus credenciales. El sistema validará el rol y mostrará la experiencia correspondiente."
+    : "Este acceso es único para todos los usuarios. La validación de rol quedará conectada a la base de datos.";
+  if (nameLabel) nameLabel.hidden = isLogin;
+  if (nameInput) nameInput.required = !isLogin;
+  if ($("#login-submit")) $("#login-submit").textContent = isLogin ? "Ingresar" : "Crear perfil";
+  if ($("#login-switch")) {
+    $("#login-switch").innerHTML = isLogin
+      ? '¿No tenés cuenta? <a href="#" id="existing-account-link">Crear perfil</a>'
+      : '¿Ya tenés una cuenta? <a href="#" id="existing-account-link">Ingresar</a>';
+    $("#existing-account-link").addEventListener("click", toggleLoginMode);
+  }
+}
+
+function bindCarouselHover() {
+  const cards = document.querySelectorAll(".poster-card");
+  cards.forEach((card) => {
+    card.addEventListener("mouseenter", () => setCarouselActive(card));
+    card.addEventListener("focus", () => setCarouselActive(card));
+    card.addEventListener("mouseleave", clearCarouselActive);
+    card.addEventListener("blur", clearCarouselActive);
+  });
+}
+
+function setCarouselActive(activeCard) {
+  document.querySelectorAll(".poster-card").forEach((card) => {
+    card.classList.toggle("is-active", card === activeCard);
+    card.classList.toggle("is-muted", card !== activeCard);
+  });
+}
+
+function clearCarouselActive() {
+  document.querySelectorAll(".poster-card").forEach((card) => {
+    card.classList.remove("is-active", "is-muted");
+  });
 }
 
 function initAdminPage() {
