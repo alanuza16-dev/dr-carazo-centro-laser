@@ -33,7 +33,7 @@
       </section>
 
       <section class="section appointment-shell">
-        <p class="session-note" id="patient-welcome"></p>
+        <p class="session-note" id="patient-welcome" hidden></p>
         <div class="auth-gate" id="booking-auth-gate">
           <span class="tag">Perfil requerido</span>
           <h2>Para agendar, primero crea tu perfil o inicia sesión.</h2>
@@ -41,7 +41,7 @@
           <a class="button primary" href="login.html?next=agenda">Crear perfil</a>
           <p class="auth-login-link">Si ya tienes perfil, <a href="login.html?mode=login&next=agenda">ingresa aquí</a>.</p>
         </div>
-        <div class="booking-layout">
+        <div class="booking-layout" hidden>
           <form class="booking-form premium-booking" id="booking-form" novalidate>
             <div class="booking-native-controls">
               <select id="booking-area" required></select>

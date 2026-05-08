@@ -662,6 +662,11 @@ h4 {
   display: none;
 }
 
+.booking-layout[hidden],
+.session-note[hidden] {
+  display: none;
+}
+
 .auth-gate h2 {
   margin: 14px auto 12px;
   max-width: 580px;
