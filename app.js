@@ -3,7 +3,7 @@ const AREAS = {
     label: "Ginecología",
     doctor: "Dr. Luis Diego Carazo",
     pin: "carazo2026",
-    password: "doctor2026",
+    password: "123456",
     services: [
       "Consulta ginecológica",
       "IncontiLase FOTONA",
@@ -17,7 +17,7 @@ const AREAS = {
     label: "Estética LASER",
     doctor: "Esteticista profesional LASER FOTONA",
     pin: "laser2026",
-    password: "laseradmin2026",
+    password: "123456",
     services: [
       "Valoración estética",
       "Tensado corporal y celulitis",
@@ -34,19 +34,19 @@ const DEMO_USERS = {
   "test": {
     type: "patient",
     name: "Test",
-    password: "1234"
+    password: "123456"
   },
-  "ginecologia@drcarazo.demo": {
+  "admin1": {
     type: "admin",
     area: "ginecologia",
-    name: "Admin Ginecología",
-    password: "doctor2026"
+    name: "Admin 1",
+    password: "123456"
   },
-  "estetica@drcarazo.demo": {
+  "admin2": {
     type: "admin",
     area: "estetica",
-    name: "Admin Estética",
-    password: "laseradmin2026"
+    name: "Admin 2",
+    password: "123456"
   }
 };
 
@@ -498,10 +498,8 @@ function loginUser(event) {
   const passwordConfirm = $("#login-password-confirm")?.value.trim() || "";
 
   if (password.length < 6) {
-    if (!(loginMode === "login" && identifier === "test" && password === "1234")) {
-      showNotice("La contraseña debe tener al menos 6 caracteres.", true);
-      return;
-    }
+    showNotice("La contraseña debe tener al menos 6 caracteres.", true);
+    return;
   }
 
   if (loginMode !== "login" && !isValidEmail(email)) {
