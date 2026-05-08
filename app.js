@@ -328,7 +328,6 @@ function createAppointment(event) {
 
 function loginUser(event) {
   event.preventDefault();
-  const name = $("#login-name").value.trim();
   const email = $("#login-email").value.trim();
   const password = $("#login-password").value.trim();
 
@@ -354,17 +353,12 @@ function loginUser(event) {
       return;
     }
 
-    localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "patient", name: name || "Paciente", email }));
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "patient", name: getNameFromEmail(email), email }));
     window.location.href = "agenda.html";
     return;
   }
 
-  if (!name) {
-    showNotice("Ingresá tu nombre completo para crear el perfil.", true);
-    return;
-  }
-
-  localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "patient", name, email }));
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "patient", name: getNameFromEmail(email), email }));
   window.location.href = "agenda.html";
 }
 
@@ -379,17 +373,9 @@ function renderLoginMode() {
   const isLogin = loginMode === "login";
   const tag = $("#unified-login-form .tag");
   const title = $("#unified-login-form h2");
-  const copy = $("#unified-login-form p");
-  const nameInput = $("#login-name");
-  const nameLabel = nameInput?.closest("label");
 
   if (tag) tag.textContent = isLogin ? "Ingresar" : "Crear perfil";
   if (title) title.textContent = isLogin ? "Ingresá a tu cuenta" : "Datos de acceso";
-  if (copy) copy.textContent = isLogin
-    ? "Usá tus credenciales. El sistema validará el rol y mostrará la experiencia correspondiente."
-    : "Este acceso es único para todos los usuarios. La validación de rol quedará conectada a la base de datos.";
-  if (nameLabel) nameLabel.hidden = isLogin;
-  if (nameInput) nameInput.required = !isLogin;
   if ($("#login-submit")) $("#login-submit").textContent = isLogin ? "Ingresar" : "Crear perfil";
   if ($("#login-switch")) {
     $("#login-switch").innerHTML = isLogin
@@ -397,6 +383,15 @@ function renderLoginMode() {
       : '¿Ya tenés una cuenta? <a href="#" id="existing-account-link">Ingresar</a>';
     $("#existing-account-link").addEventListener("click", toggleLoginMode);
   }
+}
+
+function getNameFromEmail(email = "") {
+  const localPart = email.split("@")[0] || "Paciente";
+  return localPart
+    .split(/[._-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ") || "Paciente";
 }
 
 function bindCarouselHover() {
