@@ -169,14 +169,14 @@ textarea {
 }
 
 .profile-menu small {
-  color: var(--muted);
+  color: #4d657f;
 }
 
 .profile-menu a,
 .profile-menu button {
   border: 0;
   padding: 8px 0;
-  color: var(--teal-dark);
+  color: #9d2f78;
   background: transparent;
   text-align: left;
   font: inherit;
@@ -269,6 +269,7 @@ textarea {
     radial-gradient(circle at 100% 0%, rgba(244, 191, 209, .32), transparent 34%),
     linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(255, 247, 250, .96));
   box-shadow: 0 28px 70px rgba(21, 17, 19, .2);
+  color: #101b2d;
 }
 
 .chat-panel[hidden] {
@@ -285,7 +286,7 @@ textarea {
 
 .chat-panel-header button {
   border: 0;
-  color: var(--muted);
+  color: #4d657f;
   background: transparent;
   cursor: pointer;
   font-weight: 850;
@@ -298,7 +299,7 @@ textarea {
 
 .chat-panel p,
 .chat-panel small {
-  color: var(--muted);
+  color: #4d657f;
   line-height: 1.55;
 }
 
@@ -320,7 +321,7 @@ textarea {
 }
 
 .text-link {
-  color: var(--teal-dark);
+  color: #9d2f78;
   font-weight: 900;
   text-decoration: underline;
   text-decoration-color: rgba(199, 160, 75, .6);
@@ -383,9 +384,9 @@ textarea {
   display: inline-flex;
   align-items: center;
   width: fit-content;
-  color: #ffe3fb;
-  background: rgba(240, 95, 195, .18);
-  border: 1px solid rgba(248, 199, 239, .34);
+  color: #7b245a;
+  background: #ffe3f1;
+  border: 1px solid rgba(240, 95, 195, .34);
   border-radius: 999px;
   padding: 6px 10px;
   font-size: 12px;
@@ -468,7 +469,7 @@ h4 {
 }
 
 .button.secondary {
-  color: var(--teal-dark);
+  color: #123a63;
   background: var(--white);
   border-color: var(--line);
 }
@@ -713,6 +714,29 @@ h4 {
   color: #101b2d;
 }
 
+.feature-panel p,
+.availability-card p,
+.patient-appointments-card p,
+.booking-form p,
+.admin-login p,
+.admin-panel p,
+.login-card p,
+.lux-card p,
+.premium-panel p,
+.reference-card p,
+.feature-panel small,
+.availability-card small,
+.patient-appointments-card small,
+.booking-form small,
+.admin-login small,
+.admin-panel small,
+.login-card small,
+.lux-card small,
+.premium-panel small,
+.reference-card small {
+  color: #4d657f;
+}
+
 .feature-panel {
   padding: clamp(22px, 4vw, 34px);
 }
@@ -786,7 +810,7 @@ h4 {
 }
 
 .service-card p {
-  color: var(--muted);
+  color: #4d657f;
   line-height: 1.7;
 }
 
@@ -802,7 +826,7 @@ h4 {
   background: var(--white);
   border: 1px solid var(--line);
   border-radius: 999px;
-  color: var(--muted);
+  color: #4d657f;
   font-weight: 700;
 }
 
@@ -814,7 +838,7 @@ h4 {
 .session-note {
   max-width: 1180px;
   margin: 0 auto 18px;
-  color: var(--teal-dark);
+  color: #f8c7ef;
   font-weight: 900;
 }
 
@@ -842,7 +866,6 @@ h4 {
 }
 
 .login-card p {
-  color: var(--muted);
   line-height: 1.7;
 }
 
@@ -853,7 +876,7 @@ h4 {
 }
 
 .login-switch a {
-  color: var(--teal-dark);
+  color: #9d2f78;
   font-weight: 950;
   text-decoration: underline;
   text-decoration-color: rgba(199, 160, 75, .62);
@@ -915,7 +938,7 @@ h4 {
 }
 
 .auth-login-link a {
-  color: var(--teal-dark);
+  color: #9d2f78;
   font-weight: 950;
   text-decoration: underline;
   text-decoration-color: rgba(199, 160, 75, .62);
@@ -970,7 +993,7 @@ h4 {
 
 .huli-handoff small {
   display: block;
-  color: var(--muted);
+  color: #4d657f;
   line-height: 1.55;
 }
 
@@ -1517,7 +1540,7 @@ h4 {
 .time-chip {
   border: 1px solid rgba(217, 137, 168, .28);
   border-radius: 8px;
-  color: var(--ink);
+  color: #101b2d;
   background: #fff;
   box-shadow: 0 10px 24px rgba(157, 71, 101, .08);
   cursor: pointer;
@@ -1536,7 +1559,7 @@ h4 {
 .choice-pill.is-selected,
 .date-card.is-selected,
 .time-chip.is-selected {
-  color: var(--teal-dark);
+  color: #9d2f78;
   background: linear-gradient(135deg, #fff0f6, #fffaf2);
   border-color: rgba(199, 160, 75, .62);
   box-shadow: 0 16px 34px rgba(157, 71, 101, .14);
@@ -1551,7 +1574,7 @@ h4 {
 }
 
 .choice-card span {
-  color: var(--muted);
+  color: #4d657f;
   font-size: 12px;
   line-height: 1.35;
 }
@@ -1626,7 +1649,7 @@ h4 {
 
 .date-card span,
 .date-card small {
-  color: var(--muted);
+  color: #4d657f;
   font-size: 12px;
   font-weight: 850;
   text-transform: capitalize;
@@ -1650,7 +1673,7 @@ h4 {
 }
 
 .empty-choice {
-  color: var(--muted);
+  color: #4d657f;
   font-weight: 800;
 }
 
@@ -1664,7 +1687,7 @@ h4 {
 label {
   display: grid;
   gap: 8px;
-  color: var(--muted);
+  color: #4d657f;
   font-size: 13px;
   font-weight: 800;
 }
@@ -1675,7 +1698,7 @@ textarea {
   width: 100%;
   min-height: 46px;
   padding: 11px 12px;
-  color: var(--ink);
+  color: #101b2d;
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -1700,7 +1723,7 @@ textarea:focus {
 .form-message,
 .hint {
   margin-top: 14px;
-  color: var(--muted);
+  color: #4d657f;
   line-height: 1.6;
 }
 
@@ -1792,7 +1815,7 @@ textarea:focus {
 }
 
 .slot.is-taken {
-  color: var(--muted);
+  color: #6e7f93;
   background: #f8f0f3;
 }
 
@@ -1808,7 +1831,7 @@ textarea:focus {
 }
 
 .patient-appointment strong {
-  color: var(--teal-dark);
+  color: #9d2f78;
 }
 
 .patient-appointment span {
@@ -1816,7 +1839,7 @@ textarea:focus {
 }
 
 .patient-appointment small {
-  color: var(--muted);
+  color: #4d657f;
   line-height: 1.45;
 }
 
@@ -1864,11 +1887,11 @@ textarea:focus {
 .summary-item strong {
   display: block;
   font-size: 28px;
-  color: var(--teal-dark);
+  color: #9d2f78;
 }
 
 .summary-item span {
-  color: var(--muted);
+  color: #4d657f;
 }
 
 .admin-columns {
@@ -1887,11 +1910,11 @@ textarea:focus {
 }
 
 .admin-item strong {
-  color: var(--teal-dark);
+  color: #9d2f78;
 }
 
 .admin-item small {
-  color: var(--muted);
+  color: #4d657f;
   line-height: 1.45;
 }
 
