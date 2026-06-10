@@ -202,6 +202,7 @@ function guardBookingPage() {
 }
 
 function renderAccountWidget() {
+  if (document.body.dataset.accountWidget === "false") return;
   const header = $(".site-header");
   if (!header || $("#account-widget")) return;
   const session = getSession();
