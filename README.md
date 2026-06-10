@@ -1,23 +1,22 @@
-# Demo Dr. Luis Diego Carazo / Centro LASER
+# Demo Dr. Luis Diego Carazo
 
-Demo estatico en HTML, CSS y JavaScript para presentar dos areas de atencion:
+Demo estatico en HTML, CSS y JavaScript para presentar la experiencia ginecologica del Dr. Luis Diego Carazo.
 
-- Ginecologia: Dr. Luis Diego Carazo.
-- Estetica LASER: esteticista profesional FOTONA.
+La seccion de estetica se separo en el repositorio `jennydelgado_CentroEsteticaLaser`.
 
 Incluye:
 
 - Pagina publica con contenido exportado y reorganizado desde el sitio de Leadpages.
-- Sistema de citas para pacientes.
-- Panel administrador separado por area.
+- Sistema de citas ginecologicas para pacientes.
+- Panel administrador para agenda ginecologica.
 - Bloqueo y liberacion de espacios disponibles.
 - Cancelacion de citas.
 - Persistencia demo con `localStorage`.
 
 ## Accesos demo
 
-- Ginecologia: `carazo2026`
-- Estetica: `laser2026`
+- Cliente: `test` / `123456`
+- Administrador ginecologia: `admin1` / `123456`
 
 ## Ejecutar local
 

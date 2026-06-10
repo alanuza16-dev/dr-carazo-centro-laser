@@ -12,19 +12,6 @@ const AREAS = {
       "Tratamiento LASER de displasia de cérvix"
     ],
     slots: ["08:00", "09:00", "10:00", "11:00", "14:00", "15:00"]
-  },
-  estetica: {
-    label: "Estética LASER",
-    doctor: "Esteticista profesional LASER FOTONA",
-    pin: "laser2026",
-    password: "123456",
-    services: [
-      "Valoración estética",
-      "Tensado corporal y celulitis",
-      "Rejuvenecimiento facial",
-      "Depilación FOTONA"
-    ],
-    slots: ["09:00", "10:30", "12:00", "14:30", "16:00", "17:00"]
   }
 };
 
@@ -40,12 +27,6 @@ const DEMO_USERS = {
     type: "admin",
     area: "ginecologia",
     name: "Admin 1",
-    password: "123456"
-  },
-  "admin2": {
-    type: "admin",
-    area: "estetica",
-    name: "Admin 2",
     password: "123456"
   }
 };
@@ -103,19 +84,6 @@ function loadState() {
         note: "Consulta inicial por pérdidas de orina al ejercicio.",
         status: "confirmada",
         createdAt: new Date().toISOString()
-      },
-      {
-        id: crypto.randomUUID(),
-        area: "estetica",
-        service: "Rejuvenecimiento facial",
-        date: plus(3),
-        time: "14:30",
-        name: "Cliente demo",
-        phone: "+506 8777-0000",
-        email: "cliente@demo.com",
-        note: "Desea valoración facial.",
-        status: "confirmada",
-        createdAt: new Date().toISOString()
       }
     ],
     blocks: [
@@ -125,13 +93,6 @@ function loadState() {
         date: plus(4),
         time: "11:00",
         reason: "Procedimiento externo"
-      },
-      {
-        id: crypto.randomUUID(),
-        area: "estetica",
-        date: plus(5),
-        time: "16:00",
-        reason: "Capacitación"
       }
     ]
   };
@@ -316,7 +277,7 @@ function renderAreaChoices() {
   $("#area-choice").innerHTML = Object.entries(AREAS).map(([value, area]) => `
     <button class="choice-card ${value === selected ? "is-selected" : ""}" type="button" data-area-choice="${value}">
       <strong>${area.label}</strong>
-      <span>${value === "ginecologia" ? "Consulta médica y procedimientos" : "Centro LASER de estética"}</span>
+      <span>Consulta médica y procedimientos</span>
     </button>
   `).join("");
 }
@@ -813,7 +774,7 @@ function renderPatientAppointmentItem(item) {
   return `
     <article class="patient-appointment">
       <strong>${formatDate(item.date)} · ${item.time}</strong>
-      <span>${AREAS[item.area].label}</span>
+      <span>${AREAS[item.area]?.label || item.area}</span>
       <small>${item.service}</small>
       <small>${item.phone}${item.note ? ` · ${item.note}` : ""}</small>
       <em class="status-pill">${item.status}</em>
