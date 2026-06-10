@@ -17,6 +17,7 @@ const AREAS = {
 
 const STORAGE_KEY = "lc-demo-agenda-v1";
 const SESSION_KEY = "lc-demo-session-v1";
+const HULI_SCHEDULE_URL = "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542";
 const DEMO_USERS = {
   "test": {
     type: "patient",
@@ -45,6 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setDefaultDates();
   hydrateSessionUI();
   renderAccountWidget();
+  renderAppointmentChatWidget();
   guardBookingPage();
   if ($("#booking-form")) {
     renderServices();
@@ -152,6 +154,10 @@ function bindEvents() {
   if ($("#block-slot")) $("#block-slot").addEventListener("click", blockSlot);
   if ($("#seed-reset")) $("#seed-reset").addEventListener("click", resetDemo);
   if ($("#profile-menu-toggle")) $("#profile-menu-toggle").addEventListener("click", toggleProfileMenu);
+  if ($("#appointment-chat-toggle")) $("#appointment-chat-toggle").addEventListener("click", toggleAppointmentChat);
+  if ($("#appointment-chat-toggle-inline")) $("#appointment-chat-toggle-inline").addEventListener("click", toggleAppointmentChat);
+  if ($("#appointment-chat-close")) $("#appointment-chat-close").addEventListener("click", closeAppointmentChat);
+  if ($("#appointment-review-demo")) $("#appointment-review-demo").addEventListener("click", showAppointmentReviewNotice);
   document.querySelectorAll("[data-video]").forEach((button) => {
     button.addEventListener("click", () => openVideoModal(button.dataset.video, button.dataset.title));
   });
@@ -211,7 +217,7 @@ function renderAccountWidget() {
 
   const adminLink = session.type === "admin" ? `<a href="admin.html?area=${session.area}">Panel</a>` : "";
   const patientLinks = session.type === "patient"
-    ? '<a href="agenda.html">Agendar</a><a href="citas.html">Citas agendadas</a>'
+    ? `<a href="${HULI_SCHEDULE_URL}">Agendar en Huli</a><a href="citas.html">Citas agendadas</a>`
     : "";
   wrapper.innerHTML = `
     <button class="profile-orb" id="profile-menu-toggle" type="button" aria-label="Abrir perfil">
@@ -226,6 +232,53 @@ function renderAccountWidget() {
     </div>
   `;
   header.appendChild(wrapper);
+}
+
+function renderAppointmentChatWidget() {
+  if ($("#appointment-chat")) return;
+  document.body.insertAdjacentHTML("beforeend", `
+    <aside class="appointment-chat" id="appointment-chat" aria-label="Asistente de citas">
+      <button class="chat-fab" id="appointment-chat-toggle" type="button" aria-expanded="false" aria-controls="appointment-chat-panel">
+        <span class="robot-face" aria-hidden="true">
+          <span></span>
+        </span>
+        <strong>Citas</strong>
+      </button>
+      <div class="chat-panel" id="appointment-chat-panel" hidden>
+        <div class="chat-panel-header">
+          <span class="tag">Asistente de citas</span>
+          <button id="appointment-chat-close" type="button" aria-label="Cerrar asistente">Cerrar</button>
+        </div>
+        <h3>¿Buscás disponibilidad ginecológica?</h3>
+        <p>Pronto este asistente podrá consultar la disponibilidad de Huli y ayudarte a revisar citas programadas.</p>
+        <div class="chat-actions">
+          <a class="button primary wide" href="${HULI_SCHEDULE_URL}">Ver próximas citas en Huli</a>
+          <button class="button secondary wide" id="appointment-review-demo" type="button">Revisar cita programada</button>
+        </div>
+        <small>Conexión con Huli en preparación. Por ahora el botón principal abre la agenda oficial.</small>
+      </div>
+    </aside>
+  `);
+}
+
+function toggleAppointmentChat() {
+  const panel = $("#appointment-chat-panel");
+  const button = $("#appointment-chat-toggle");
+  if (!panel || !button) return;
+  panel.hidden = !panel.hidden;
+  button.setAttribute("aria-expanded", String(!panel.hidden));
+}
+
+function closeAppointmentChat() {
+  const panel = $("#appointment-chat-panel");
+  const button = $("#appointment-chat-toggle");
+  if (!panel || !button) return;
+  panel.hidden = true;
+  button.setAttribute("aria-expanded", "false");
+}
+
+function showAppointmentReviewNotice() {
+  showNotice("La revisión de citas quedará conectada con Huli en la siguiente fase.", false);
 }
 
 function renderServices() {

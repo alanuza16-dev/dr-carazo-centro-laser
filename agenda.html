@@ -20,7 +20,7 @@
       <nav class="main-nav" aria-label="Navegación principal">
         <a href="index.html?section=ginecologia">Ginecología</a>
         <a href="https://jennydelgadocentroesteticalaser.adminlanzah.workers.dev/">Estética</a>
-        <a href="agenda.html">Agendar</a>
+        <a href="https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542">Agendar</a>
         <a href="login.html">Ingresar</a>
       </nav>
     </header>
@@ -33,106 +33,15 @@
       </section>
 
       <section class="section appointment-shell">
-        <p class="session-note" id="patient-welcome" hidden></p>
-        <div class="auth-gate" id="booking-auth-gate">
-          <span class="tag">Perfil requerido</span>
-          <h2>Para agendar, primero crea tu perfil o inicia sesión.</h2>
-          <p>Esto permite guardar tus datos básicos y preparar la cita ginecológica correctamente.</p>
-          <a class="button primary" href="login.html?next=agenda">Crear perfil</a>
-          <p class="auth-login-link">Si ya tienes perfil, <a href="login.html?mode=login&next=agenda">ingresa aquí</a>.</p>
-        </div>
-        <div class="booking-layout" hidden>
-          <form class="booking-form premium-booking" id="booking-form" novalidate>
-            <div class="booking-native-controls">
-              <select id="booking-area" required></select>
-              <select id="booking-service" required></select>
-              <input id="booking-date" type="date" required>
-              <select id="booking-time" required></select>
-              <input id="patient-name" type="hidden">
-              <input id="patient-email" type="hidden">
-            </div>
-
-            <div class="booking-step">
-              <span class="step-kicker">01</span>
-              <div>
-                <h3>Área</h3>
-                <p>Elegí la categoría de atención.</p>
-              </div>
-              <div class="choice-grid area-choice-grid" id="area-choice"></div>
-            </div>
-
-            <div class="booking-step">
-              <span class="step-kicker">02</span>
-              <div>
-                <h3>Servicio</h3>
-                <p>Seleccioná el tratamiento o consulta.</p>
-              </div>
-              <div class="choice-grid service-choice-grid" id="service-choice"></div>
-            </div>
-
-            <div class="booking-step">
-              <span class="step-kicker">03</span>
-              <div>
-                <h3>Fecha</h3>
-                <p>Próximos días disponibles.</p>
-              </div>
-              <div class="date-picker-panel">
-                <div class="month-switcher">
-                  <button class="month-button" id="prev-month" type="button" aria-label="Mes anterior">‹</button>
-                  <strong id="current-month-label">Mes</strong>
-                  <button class="month-button" id="next-month" type="button" aria-label="Mes siguiente">›</button>
-                </div>
-                <div class="date-choice-strip" id="date-choice"></div>
-              </div>
-            </div>
-
-            <div class="booking-step">
-              <span class="step-kicker">04</span>
-              <div>
-                <h3>Hora</h3>
-                <p>Escogé uno de los espacios abiertos.</p>
-              </div>
-              <div class="time-choice-grid" id="time-choice"></div>
-            </div>
-
-            <div class="booking-step contact-step">
-              <span class="step-kicker">05</span>
-              <div>
-                <h3>Contacto</h3>
-                <p>Solo necesitamos un teléfono para confirmar.</p>
-              </div>
-              <div class="contact-grid">
-                <label>
-                  Teléfono
-                  <input id="patient-phone" type="tel" autocomplete="tel" placeholder="+506 8888-8888" required>
-                </label>
-                <label>
-                  Nota
-                  <textarea id="patient-note" rows="3" placeholder="Motivo de consulta o comentario opcional"></textarea>
-                </label>
-              </div>
-            </div>
-            <button class="button primary wide" type="submit">Confirmar cita</button>
-            <p class="form-message" id="booking-message" role="status"></p>
-          </form>
-
-          <div class="booking-side">
-            <aside class="availability-card">
-              <div class="card-header">
-                <span class="tag">Disponibilidad</span>
-                <strong id="availability-title">Seleccione una fecha</strong>
-              </div>
-              <div class="slot-list" id="slot-list"></div>
-            </aside>
-
-            <aside class="patient-appointments-card" id="citas-agendadas">
-              <div class="card-header">
-                <span class="tag">Citas agendadas</span>
-                <strong>Resumen de tus próximas visitas</strong>
-              </div>
-              <div class="patient-appointment-list" id="patient-appointment-list"></div>
-            </aside>
+        <div class="huli-handoff">
+          <span class="tag">Agenda oficial Huli</span>
+          <h2>La cita ginecológica se agenda directamente en Huli.</h2>
+          <p>Usamos el calendario oficial de Huli para consultar disponibilidad actualizada y confirmar la cita con el Dr. Luis Diego Carazo.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542">Abrir agenda Huli</a>
+            <button class="button secondary" type="button" id="appointment-chat-toggle-inline">Consultar con asistente</button>
           </div>
+          <small>Más adelante el asistente flotante podrá consultar disponibilidad y revisar citas programadas desde esta misma experiencia.</small>
         </div>
       </section>
     </main>

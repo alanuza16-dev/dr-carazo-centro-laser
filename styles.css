@@ -180,6 +180,130 @@ textarea {
   cursor: pointer;
 }
 
+.appointment-chat {
+  position: fixed;
+  right: clamp(16px, 3vw, 28px);
+  bottom: clamp(16px, 3vw, 28px);
+  z-index: 80;
+  display: grid;
+  justify-items: end;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.appointment-chat > * {
+  pointer-events: auto;
+}
+
+.chat-fab {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 58px;
+  border: 1px solid rgba(199, 160, 75, .56);
+  border-radius: 999px;
+  padding: 8px 16px 8px 8px;
+  color: var(--black);
+  background: linear-gradient(135deg, #fff, #ffeef5 62%, #f4bfd1);
+  box-shadow: 0 22px 50px rgba(157, 71, 101, .24);
+  cursor: pointer;
+  font-weight: 950;
+}
+
+.chat-fab:hover {
+  transform: translateY(-1px);
+}
+
+.robot-face {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(199, 160, 75, .5);
+  border-radius: 15px;
+  background:
+    radial-gradient(circle at 35% 42%, var(--black) 0 3px, transparent 4px),
+    radial-gradient(circle at 65% 42%, var(--black) 0 3px, transparent 4px),
+    linear-gradient(135deg, #fff, #f9d2df);
+}
+
+.robot-face::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  width: 2px;
+  height: 9px;
+  background: var(--gold);
+}
+
+.robot-face::after {
+  content: "";
+  position: absolute;
+  top: -12px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+.robot-face span {
+  width: 15px;
+  height: 5px;
+  margin-top: 16px;
+  border: 2px solid rgba(157, 71, 101, .72);
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
+}
+
+.chat-panel {
+  width: min(380px, calc(100vw - 32px));
+  border: 1px solid rgba(199, 160, 75, .45);
+  border-radius: 8px;
+  padding: 20px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(244, 191, 209, .32), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(255, 247, 250, .96));
+  box-shadow: 0 28px 70px rgba(21, 17, 19, .2);
+}
+
+.chat-panel[hidden] {
+  display: none;
+}
+
+.chat-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.chat-panel-header button {
+  border: 0;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  font-weight: 850;
+}
+
+.chat-panel h3 {
+  margin: 0 0 10px;
+  font-size: 25px;
+}
+
+.chat-panel p,
+.chat-panel small {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.chat-actions {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0 12px;
+}
+
 @keyframes menuBloom {
   from {
     opacity: 0;
@@ -710,6 +834,44 @@ h4 {
 
 .action-band h2 {
   max-width: 720px;
+}
+
+.huli-handoff {
+  max-width: 880px;
+  margin: 0 auto;
+  border: 1px solid rgba(199, 160, 75, .42);
+  border-radius: 8px;
+  padding: clamp(26px, 5vw, 58px);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(244, 191, 209, .28), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(255, 247, 250, .96));
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.huli-handoff h2 {
+  max-width: 720px;
+  margin: 16px auto 14px;
+  font-size: clamp(36px, 5vw, 62px);
+  line-height: .98;
+}
+
+.huli-handoff p {
+  max-width: 650px;
+  margin: 0 auto 22px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.huli-handoff .hero-actions {
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.huli-handoff small {
+  display: block;
+  color: var(--muted);
+  line-height: 1.55;
 }
 
 .booking-layout,
