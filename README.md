@@ -35,6 +35,34 @@ Configuracion recomendada:
 - Build output directory: `/`
 - Root directory: `/`
 
+## Cloudflare Worker con Wrangler
+
+Si el dominio esta publicado como Worker y no como Pages, use `wrangler.toml` y `worker.js`. El Worker sirve los archivos estaticos y enruta `/api/appointment-chat` al mismo handler de Huli.
+
+Antes del primer deploy:
+
+```bash
+npx.cmd wrangler login
+npx.cmd wrangler secret put HULI_API_KEY
+npx.cmd wrangler secret put HULI_ORGANIZATION_ID
+npx.cmd wrangler secret put HULI_DOCTOR_ID
+npx.cmd wrangler secret put HULI_LOOKBACK_DAYS
+npx.cmd wrangler secret put HULI_LOOKAHEAD_DAYS
+```
+
+Valores usados:
+
+- `HULI_ORGANIZATION_ID`: `562`
+- `HULI_DOCTOR_ID`: `542`
+- `HULI_LOOKBACK_DAYS`: `0`
+- `HULI_LOOKAHEAD_DAYS`: `14`
+
+Deploy:
+
+```bash
+npx.cmd wrangler deploy
+```
+
 ## Produccion
 
 Para convertir este demo en producto real hace falta conectar:
