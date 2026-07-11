@@ -1,6 +1,70 @@
 const HULI_API_BASE_URL = "https://api.huli.io/practice/v2";
 const OPENAI_API_URL = "https://api.openai.com/v1/responses";
 
+export async function onRequestGet({ request, env }) {
+  const url = new URL(request.url);
+  if (url.searchParams.get("mode") !== "diagnostics") {
+    return json({ ok: true, message: "Use ?mode=diagnostics&query=valor para probar la conexion con Huli." });
+  }
+
+  const query = String(url.searchParams.get("query") || "").trim();
+  const diagnostics = {
+    ok: false,
+    mode: "diagnostics",
+    query,
+    config: {
+      hasHuliApiKey: Boolean(env.HULI_API_KEY),
+      hasHuliOrganizationId: Boolean(env.HULI_ORGANIZATION_ID),
+      hasHuliDoctorId: Boolean(env.HULI_DOCTOR_ID),
+      hasOpenAiApiKey: Boolean(env.OPENAI_API_KEY)
+    },
+    steps: []
+  };
+
+  const huliConfigError = validateHuliConfig(env);
+  if (huliConfigError) {
+    diagnostics.steps.push({ step: "config", ok: false, message: huliConfigError });
+    return json(diagnostics, 500);
+  }
+
+  try {
+    const token = await getHuliToken(env);
+    diagnostics.steps.push({ step: "auth", ok: true, message: "Autenticacion con Huli correcta." });
+
+    if (!query) {
+      diagnostics.ok = true;
+      diagnostics.steps.push({ step: "query", ok: true, message: "Sin query de prueba. Agrega ?query=cedula o nombre para probar la busqueda." });
+      return json(diagnostics);
+    }
+
+    const patientFiles = await searchHuliPatients(env, token, query);
+    diagnostics.steps.push({
+      step: "patient-search",
+      ok: true,
+      message: `Busqueda de expediente correcta. Coincidencias: ${patientFiles.length}.`,
+      samplePatients: patientFiles.slice(0, 3).map(normalizeHuliPatient)
+    });
+
+    const appointments = await getHuliAppointmentsForPatients(env, token, patientFiles);
+    const normalizedAppointments = appointments
+      .map(normalizeHuliAppointment)
+      .filter(Boolean)
+      .filter((appointment) => !env.HULI_DOCTOR_ID || String(appointment.doctorId) === String(env.HULI_DOCTOR_ID));
+
+    diagnostics.ok = true;
+    diagnostics.steps.push({
+      step: "appointments",
+      ok: true,
+      message: `Lectura de citas correcta. Citas filtradas: ${normalizedAppointments.length}.`,
+      sampleAppointments: normalizedAppointments.slice(0, 5)
+    });
+    return json(diagnostics);
+  } catch (error) {
+    diagnostics.steps.push({ step: "runtime", ok: false, message: getSafeErrorMessage(error) });
+    return json(diagnostics, 500);
+  }
+}
+
 export async function onRequestPost({ request, env }) {
   try {
     const body = await request.json();

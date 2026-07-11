@@ -58,3 +58,15 @@ El boton flotante de `Citas` consulta `/api/appointment-chat`, una Cloudflare Pa
 - `HULI_LOOKAHEAD_DAYS`: opcional, dias hacia adelante para revisar citas. Por defecto `14`.
 
 El navegador solo envia la cedula o nombre escrito por el paciente. La busqueda de expediente y citas ocurre en servidor contra Huli.
+
+### Diagnostico rapido
+
+Para probar la conexion desde el sitio desplegado sin pasar por el chat, abra:
+
+`/api/appointment-chat?mode=diagnostics`
+
+Y para probar una busqueda real:
+
+`/api/appointment-chat?mode=diagnostics&query=valor`
+
+Ese endpoint devuelve JSON con el estado de configuracion, autenticacion con Huli, busqueda de expediente y lectura de citas.
