@@ -7,11 +7,13 @@ export async function onRequestGet({ request, env }) {
     return json({ ok: true, message: "Use ?mode=diagnostics&query=valor para probar la conexion con Huli." });
   }
 
-  const query = String(url.searchParams.get("query") || "").trim();
+  const rawQuery = String(url.searchParams.get("query") || "").trim();
+  const query = normalizeCedulaInput(rawQuery);
   const diagnostics = {
     ok: false,
     mode: "diagnostics",
-    query,
+    query: rawQuery,
+    normalizedQuery: query,
     config: {
       hasHuliApiKey: Boolean(env.HULI_API_KEY),
       hasHuliOrganizationId: Boolean(env.HULI_ORGANIZATION_ID),
@@ -31,9 +33,22 @@ export async function onRequestGet({ request, env }) {
     const token = await getHuliToken(env);
     diagnostics.steps.push({ step: "auth", ok: true, message: "Autenticacion con Huli correcta." });
 
+    if (hasLetters(rawQuery)) {
+      diagnostics.steps.push({
+        step: "query",
+        ok: false,
+        message: "La cedula de prueba no es valida. Usa solo numeros; guiones y espacios se limpian automaticamente."
+      });
+      return json(diagnostics, 400);
+    }
+
     if (!query) {
       diagnostics.ok = true;
-      diagnostics.steps.push({ step: "query", ok: true, message: "Sin query de prueba. Agrega ?query=cedula o nombre para probar la busqueda." });
+      diagnostics.steps.push({
+        step: "query",
+        ok: true,
+        message: "Sin query de prueba. Agrega ?query=cedula para probar la busqueda."
+      });
       return json(diagnostics);
     }
 
@@ -68,10 +83,15 @@ export async function onRequestGet({ request, env }) {
 export async function onRequestPost({ request, env }) {
   try {
     const body = await request.json();
-    const query = String(body.query || "").trim();
+    const rawQuery = String(body.query || "").trim();
+    const query = normalizeCedulaInput(rawQuery);
+
+    if (hasLetters(rawQuery)) {
+      return json({ reply: "Ese dato no parece una cedula valida. Ingresa solo numeros; puedes usar guiones o espacios si quieres." }, 400);
+    }
 
     if (!query) {
-      return json({ reply: "Necesito una cedula o un nombre completo para revisar la agenda." }, 400);
+      return json({ reply: "Necesito un numero de cedula para revisar la agenda." }, 400);
     }
 
     const huliConfigError = validateHuliConfig(env);
@@ -108,7 +128,7 @@ export async function onRequestPost({ request, env }) {
                   "Usa solamente los pacientes y citas devueltos por Huli.",
                   "No des diagnosticos ni consejos medicos.",
                   "No muestres numeros de cedula completos.",
-                  "Si no hay resultados, pide verificar la cedula o escribir el nombre completo."
+                  "Si no hay resultados, pide verificar la cedula."
                 ].join(" ")
               }
             ]
@@ -289,14 +309,12 @@ function normalizeHuliPatient(patient) {
 }
 
 function patientMatchesQuery(patient, query) {
-  const normalizedQuery = normalizeText(query);
   const queryDigits = onlyDigits(query);
   const personalData = patient.personalData || {};
   const patientIds = Array.isArray(personalData.patientIds) ? personalData.patientIds : [];
-  const name = normalizeText([personalData.firstName, personalData.lastName, personalData.knownAs].filter(Boolean).join(" "));
 
   if (queryDigits.length >= 6 && patientIds.some((id) => onlyDigits(id.idNumber) === queryDigits)) return true;
-  return normalizedQuery.length >= 4 && name.includes(normalizedQuery);
+  return false;
 }
 
 function normalizeHuliAppointment(appointment) {
@@ -328,7 +346,7 @@ function extractOutputText(payload) {
 
 function buildDeterministicReply(patientFiles, appointments) {
   if (!patientFiles.length) {
-    return "No encontre pacientes en Huli con ese dato. Verifica la cedula o intenta con el nombre completo.";
+    return "No encontre pacientes en Huli con esa cedula. Verifica el numero e intenta de nuevo.";
   }
 
   if (!appointments.length) {
@@ -353,6 +371,14 @@ function normalizeText(value) {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function normalizeCedulaInput(value) {
+  return String(value || "").replace(/\D/g, "");
+}
+
+function hasLetters(value) {
+  return /[A-Za-zÀ-ÖØ-öø-ÿ]/.test(String(value || ""));
 }
 
 function onlyDigits(value) {

@@ -57,7 +57,7 @@ El boton flotante de `Citas` consulta `/api/appointment-chat`, una Cloudflare Pa
 - `HULI_LOOKBACK_DAYS`: opcional, dias hacia atras para revisar citas. Por defecto `0`.
 - `HULI_LOOKAHEAD_DAYS`: opcional, dias hacia adelante para revisar citas. Por defecto `14`.
 
-El navegador solo envia la cedula o nombre escrito por el paciente. La busqueda de expediente y citas ocurre en servidor contra Huli. Si Huli bloquea la consulta de citas por paciente, el backend usa como respaldo las citas del doctor y valida el `idPatientFile` contra los expedientes encontrados por cedula o nombre.
+El navegador solo envia la cedula escrita por el paciente. Guiones, espacios y otros caracteres especiales se limpian antes de consultar Huli; si el dato incluye letras, el chat responde que no es una cedula valida. La busqueda de expediente y citas ocurre en servidor contra Huli. Si Huli bloquea la consulta de citas por paciente, el backend usa como respaldo las citas del doctor y valida el `idPatientFile` contra los expedientes encontrados por cedula.
 
 ### Diagnostico rapido
 

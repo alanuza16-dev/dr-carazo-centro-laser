@@ -252,19 +252,19 @@ function renderAppointmentChatWidget() {
         </div>
         <h3>Revisar una cita</h3>
         <div class="chat-messages" id="appointment-chat-messages" aria-live="polite">
-          <div class="chat-message bot">Hola, soy Sofi. Puedo ayudarte a revisar citas por numero de cedula o por nombre completo.</div>
+          <div class="chat-message bot">Hola, soy Sofi. Puedo ayudarte a revisar citas por numero de cedula.</div>
         </div>
         <form class="chat-form" id="appointment-chat-form">
           <label>
-            <span>Cedula o nombre</span>
-            <input id="appointment-chat-query" type="text" autocomplete="off" placeholder="Ej. 101110111 o Paciente demo" required>
+            <span>Cedula</span>
+            <input id="appointment-chat-query" type="text" inputmode="numeric" autocomplete="off" placeholder="Ej. 1-0111-0111" required>
           </label>
           <button class="button primary wide" type="submit">Consultar cita</button>
         </form>
         <div class="chat-actions">
           <a class="button secondary wide" href="${HULI_SCHEDULE_URL}">Abrir agenda Huli</a>
         </div>
-        <small>Para proteger datos sensibles, el asistente solo muestra datos basicos de agenda despues de recibir una cedula o nombre.</small>
+        <small>Para proteger datos sensibles, el asistente solo muestra datos basicos de agenda despues de recibir una cedula valida.</small>
       </div>
     </aside>
   `);
@@ -517,43 +517,83 @@ function createAppointment(event) {
 async function submitAppointmentChat(event) {
   event.preventDefault();
   const input = $("#appointment-chat-query");
-  const query = input?.value.trim();
-  if (!query) return;
+  const rawQuery = input?.value.trim() || "";
+  if (!rawQuery) return;
 
-  appendChatMessage(query, "user");
+  const cedula = normalizeCedulaInput(rawQuery);
+  appendChatMessage(rawQuery, "user");
+
+  if (hasLetters(rawQuery)) {
+    appendChatMessage("Ese dato no parece una cedula valida. Ingresa solo numeros; puedes usar guiones o espacios si quieres.", "bot", false, true);
+    input.focus();
+    return;
+  }
+
+  if (!cedula) {
+    appendChatMessage("Necesito un numero de cedula para revisar la cita.", "bot", false, true);
+    input.focus();
+    return;
+  }
+
   input.value = "";
+  const submitButton = event.submitter || $("#appointment-chat-form button[type='submit']");
+  if (submitButton) submitButton.disabled = true;
   const pending = appendChatMessage("Consultando la agenda...", "bot", true);
 
   try {
     const response = await fetch(CHAT_API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query })
+      body: JSON.stringify({ query: cedula })
     });
 
-    const payload = await response.json();
+    const payload = await parseJsonResponse(response);
     if (!response.ok && !payload.reply) throw new Error("chat-api-unavailable");
     pending.textContent = payload.reply || "No pude leer la respuesta de Huli en este momento.";
+    pending.classList.toggle("is-error", !response.ok);
   } catch (error) {
     pending.textContent = "No pude conectar con Huli en este momento. Intenta de nuevo en unos segundos.";
+    pending.classList.add("is-error");
+  } finally {
+    if (submitButton) submitButton.disabled = false;
   }
 }
 
-function appendChatMessage(message, type = "bot", returnNode = false) {
+function appendChatMessage(message, type = "bot", returnNode = false, isError = false) {
   const list = $("#appointment-chat-messages");
   if (!list) return null;
   const item = document.createElement("div");
   item.className = `chat-message ${type}`;
+  item.classList.toggle("is-error", isError);
   item.textContent = message;
   list.appendChild(item);
   list.scrollTop = list.scrollHeight;
   return returnNode ? item : null;
 }
 
+async function parseJsonResponse(response) {
+  const text = await response.text();
+  if (!text) return {};
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    return {};
+  }
+}
+
+function normalizeCedulaInput(value) {
+  return String(value || "").replace(/\D/g, "");
+}
+
+function hasLetters(value) {
+  return /[A-Za-zÀ-ÖØ-öø-ÿ]/.test(String(value || ""));
+}
+
 function loginUser(event) {
   event.preventDefault();
   const name = $("#login-name")?.value.trim() || "";
-  const cedula = $("#login-cedula")?.value.trim() || "";
+  const rawCedula = $("#login-cedula")?.value.trim() || "";
+  const cedula = normalizeCedulaInput(rawCedula);
   const email = $("#login-email").value.trim();
   const identifier = email.toLowerCase();
   const password = $("#login-password").value.trim();
@@ -598,6 +638,12 @@ function loginUser(event) {
 
   if (!name) {
     showNotice("Ingresá tu nombre completo para crear el perfil.", true);
+    return;
+  }
+
+  if (hasLetters(rawCedula)) {
+    showNotice("Ingresa una cedula valida usando solo numeros.", true);
+    $("#login-cedula")?.focus();
     return;
   }
 

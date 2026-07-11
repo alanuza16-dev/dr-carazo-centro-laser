@@ -296,6 +296,12 @@ textarea {
   background: #ffeef5;
 }
 
+.chat-message.is-error {
+  border-color: rgba(154, 52, 18, .28);
+  background: #fff7ed;
+  color: #7c2d12;
+}
+
 .chat-form {
   display: grid;
   gap: 10px;
