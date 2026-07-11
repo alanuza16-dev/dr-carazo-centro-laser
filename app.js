@@ -257,7 +257,7 @@ function renderAppointmentChatWidget() {
         <form class="chat-form" id="appointment-chat-form">
           <label>
             <span>Cedula</span>
-            <input id="appointment-chat-query" type="text" inputmode="numeric" autocomplete="off" placeholder="Ej. 1-0111-0111" required>
+            <input id="appointment-chat-query" type="text" inputmode="numeric" autocomplete="off" placeholder="Ej. 101110111" required>
           </label>
           <button class="button primary wide" type="submit">Consultar cita</button>
         </form>
