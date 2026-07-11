@@ -45,17 +45,17 @@ export async function onRequestGet({ request, env }) {
       samplePatients: patientFiles.slice(0, 3).map(normalizeHuliPatient)
     });
 
-    const appointments = await getHuliAppointmentsForPatients(env, token, patientFiles);
-    const normalizedAppointments = appointments
+    const appointmentLookup = await getHuliAppointments(env, token, patientFiles);
+    const normalizedAppointments = appointmentLookup.appointments
       .map(normalizeHuliAppointment)
-      .filter(Boolean)
-      .filter((appointment) => !env.HULI_DOCTOR_ID || String(appointment.doctorId) === String(env.HULI_DOCTOR_ID));
+      .filter(Boolean);
 
     diagnostics.ok = true;
     diagnostics.steps.push({
       step: "appointments",
       ok: true,
-      message: `Lectura de citas correcta. Citas filtradas: ${normalizedAppointments.length}.`,
+      strategy: appointmentLookup.strategy,
+      message: `Lectura de citas correcta por ${appointmentLookup.strategy}. Citas filtradas: ${normalizedAppointments.length}.`,
       sampleAppointments: normalizedAppointments.slice(0, 5)
     });
     return json(diagnostics);
@@ -79,11 +79,10 @@ export async function onRequestPost({ request, env }) {
 
     const token = await getHuliToken(env);
     const patientFiles = await searchHuliPatients(env, token, query);
-    const appointments = await getHuliAppointmentsForPatients(env, token, patientFiles);
-    const normalizedAppointments = appointments
+    const appointmentLookup = await getHuliAppointments(env, token, patientFiles);
+    const normalizedAppointments = appointmentLookup.appointments
       .map(normalizeHuliAppointment)
-      .filter(Boolean)
-      .filter((appointment) => !env.HULI_DOCTOR_ID || String(appointment.doctorId) === String(env.HULI_DOCTOR_ID));
+      .filter(Boolean);
 
     if (!env.OPENAI_API_KEY) {
       return json({ reply: buildDeterministicReply(patientFiles, normalizedAppointments) });
@@ -122,6 +121,7 @@ export async function onRequestPost({ request, env }) {
                 text: [
                   `Consulta del paciente: ${query}`,
                   `Pacientes encontrados en Huli: ${JSON.stringify(patientFiles.map(normalizeHuliPatient))}`,
+                  `Estrategia de busqueda de citas: ${appointmentLookup.strategy}`,
                   `Citas encontradas en Huli: ${JSON.stringify(normalizedAppointments)}`
                 ].join("\n")
               }
@@ -183,25 +183,26 @@ async function searchHuliPatients(env, token, query) {
 }
 
 async function getHuliAppointmentsForPatients(env, token, patientFiles) {
-  const from = new Date();
-  from.setDate(from.getDate() - Number(env.HULI_LOOKBACK_DAYS || 0));
-  const to = new Date();
-  to.setDate(to.getDate() + Number(env.HULI_LOOKAHEAD_DAYS || 14));
+  const { from, to } = getAppointmentRange(env);
 
   const appointmentsByPatient = await Promise.all(patientFiles.map(async (patient) => {
     const patientFileID = patient.id || patient.idPatientFile;
     if (!patientFileID) return [];
 
     const url = new URL(`${HULI_API_BASE_URL}/appointment/patient/${patientFileID}`);
-    url.searchParams.set("from", from.toISOString());
-    url.searchParams.set("to", to.toISOString());
+    url.searchParams.set("from", from);
+    url.searchParams.set("to", to);
     url.searchParams.set("limit", env.HULI_APPOINTMENT_LIMIT || "10");
     url.searchParams.set("offset", "0");
 
     const response = await fetch(url, {
       headers: huliHeaders(env, token)
     });
-    if (!response.ok) return [];
+    if (!response.ok) {
+      const error = new Error(`huli-patient-appointments-failed:${response.status}`);
+      error.status = response.status;
+      throw error;
+    }
 
     const payload = await response.json();
     const appointments = Array.isArray(payload.appointments) ? payload.appointments : [];
@@ -209,6 +210,65 @@ async function getHuliAppointmentsForPatients(env, token, patientFiles) {
   }));
 
   return appointmentsByPatient.flat();
+}
+
+async function getHuliAppointments(env, token, patientFiles) {
+  if (!patientFiles.length) return { strategy: "patient-file-empty", appointments: [] };
+
+  try {
+    const patientAppointments = await getHuliAppointmentsForPatients(env, token, patientFiles);
+    return {
+      strategy: "patient-appointments",
+      appointments: filterAppointmentsForPatientFiles(env, patientAppointments, patientFiles)
+    };
+  } catch (error) {
+    if (error.status !== 403) throw error;
+  }
+
+  const doctorAppointments = await getHuliAppointmentsForDoctor(env, token);
+  return {
+    strategy: "doctor-appointments-fallback",
+    appointments: filterAppointmentsForPatientFiles(env, doctorAppointments, patientFiles)
+  };
+}
+
+async function getHuliAppointmentsForDoctor(env, token) {
+  if (!env.HULI_DOCTOR_ID) throw new Error("huli-doctor-id-missing");
+
+  const { from, to } = getAppointmentRange(env);
+  const url = new URL(`${HULI_API_BASE_URL}/appointment/doctor/${env.HULI_DOCTOR_ID}`);
+  url.searchParams.set("from", from);
+  url.searchParams.set("to", to);
+  url.searchParams.set("limit", env.HULI_DOCTOR_APPOINTMENT_LIMIT || env.HULI_APPOINTMENT_LIMIT || "50");
+  url.searchParams.set("offset", "0");
+
+  const response = await fetch(url, {
+    headers: huliHeaders(env, token)
+  });
+  if (!response.ok) throw new Error(`huli-doctor-appointments-failed:${response.status}`);
+
+  const payload = await response.json();
+  return Array.isArray(payload.appointments) ? payload.appointments : [];
+}
+
+function filterAppointmentsForPatientFiles(env, appointments, patientFiles) {
+  const patientFileIds = new Set(patientFiles.map((patient) => String(patient.id || patient.idPatientFile)));
+  return appointments.filter((appointment) => {
+    const patientMatch = patientFileIds.has(String(appointment.idPatientFile || appointment.patientFile?.id || appointment.patientFile?.idPatientFile));
+    const doctorMatch = !env.HULI_DOCTOR_ID || String(appointment.idDoctor) === String(env.HULI_DOCTOR_ID);
+    return patientMatch && doctorMatch;
+  });
+}
+
+function getAppointmentRange(env) {
+  const from = new Date();
+  from.setDate(from.getDate() - Number(env.HULI_LOOKBACK_DAYS || 0));
+  const to = new Date();
+  to.setDate(to.getDate() + Number(env.HULI_LOOKAHEAD_DAYS || 14));
+  return {
+    from: from.toISOString(),
+    to: to.toISOString()
+  };
 }
 
 function huliHeaders(env, token) {
@@ -342,6 +402,15 @@ function getSafeErrorMessage(error) {
   }
   if (message.startsWith("huli-patient-search-failed")) {
     return "Huli rechazo la busqueda de expediente. Revisa permisos de la API key para consultar patient-file.";
+  }
+  if (message.startsWith("huli-patient-appointments-failed")) {
+    return "Huli rechazo la lectura de citas por paciente. El sistema intentara citas por doctor si ese permiso esta disponible.";
+  }
+  if (message === "huli-doctor-id-missing") {
+    return "Falta configurar HULI_DOCTOR_ID para consultar citas por doctor.";
+  }
+  if (message.startsWith("huli-doctor-appointments-failed")) {
+    return "Huli rechazo tambien la lectura de citas por doctor. Hay que habilitar permisos de citas para la API key.";
   }
   return "No pude revisar Huli en este momento. Intenta de nuevo en unos segundos.";
 }
