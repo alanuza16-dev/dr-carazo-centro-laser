@@ -44,3 +44,17 @@ Para convertir este demo en producto real hace falta conectar:
 - Notificaciones por correo, WhatsApp o SMS.
 - Reglas de disponibilidad por doctor.
 - Politicas de privacidad y consentimiento de datos sensibles.
+
+## Chatbot de citas
+
+El boton flotante de `Citas` consulta `/api/appointment-chat`, una Cloudflare Pages Function que busca pacientes y citas en Huli antes de redactar la respuesta con OpenAI desde servidor. Configure estas variables en Cloudflare Pages:
+
+- `HULI_API_KEY`: API key de Huli solicitada por el dueno de la organizacion.
+- `HULI_ORGANIZATION_ID`: organizacion Huli usada en el header `id_organization`.
+- `HULI_DOCTOR_ID`: opcional, doctor de la agenda del Dr. Carazo. El link actual usa `did=542`.
+- `OPENAI_API_KEY`: clave privada de OpenAI.
+- `OPENAI_MODEL`: modelo a usar, por ejemplo `gpt-5.6`.
+- `HULI_LOOKBACK_DAYS`: opcional, dias hacia atras para revisar citas. Por defecto `0`.
+- `HULI_LOOKAHEAD_DAYS`: opcional, dias hacia adelante para revisar citas. Por defecto `14`.
+
+El navegador solo envia la cedula o nombre escrito por el paciente. La busqueda de expediente y citas ocurre en servidor contra Huli.

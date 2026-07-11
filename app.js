@@ -18,6 +18,7 @@ const AREAS = {
 const STORAGE_KEY = "lc-demo-agenda-v1";
 const SESSION_KEY = "lc-demo-session-v1";
 const HULI_SCHEDULE_URL = "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542";
+const CHAT_API_URL = "/api/appointment-chat";
 const DEMO_USERS = {
   "test": {
     type: "patient",
@@ -81,6 +82,7 @@ function loadState() {
         date: plus(2),
         time: "09:00",
         name: "Paciente demo",
+        cedula: "101110111",
         phone: "+506 8888-0000",
         email: "paciente@demo.com",
         note: "Consulta inicial por pérdidas de orina al ejercicio.",
@@ -157,7 +159,7 @@ function bindEvents() {
   if ($("#appointment-chat-toggle")) $("#appointment-chat-toggle").addEventListener("click", toggleAppointmentChat);
   if ($("#appointment-chat-toggle-inline")) $("#appointment-chat-toggle-inline").addEventListener("click", toggleAppointmentChat);
   if ($("#appointment-chat-close")) $("#appointment-chat-close").addEventListener("click", closeAppointmentChat);
-  if ($("#appointment-review-demo")) $("#appointment-review-demo").addEventListener("click", showAppointmentReviewNotice);
+  if ($("#appointment-chat-form")) $("#appointment-chat-form").addEventListener("submit", submitAppointmentChat);
   document.querySelectorAll("[data-video]").forEach((button) => {
     button.addEventListener("click", () => openVideoModal(button.dataset.video, button.dataset.title));
   });
@@ -240,23 +242,29 @@ function renderAppointmentChatWidget() {
   document.body.insertAdjacentHTML("beforeend", `
     <aside class="appointment-chat" id="appointment-chat" aria-label="Asistente de citas">
       <button class="chat-fab" id="appointment-chat-toggle" type="button" aria-expanded="false" aria-controls="appointment-chat-panel">
-        <span class="robot-face" aria-hidden="true">
-          <span></span>
-        </span>
-        <strong>Citas</strong>
+        <img class="chat-avatar" src="assets/sofi-chat-avatar.svg" alt="" aria-hidden="true">
+        <strong>Sofi</strong>
       </button>
       <div class="chat-panel" id="appointment-chat-panel" hidden>
         <div class="chat-panel-header">
           <span class="tag">Asistente de citas</span>
           <button id="appointment-chat-close" type="button" aria-label="Cerrar asistente">Cerrar</button>
         </div>
-        <h3>¿Buscás disponibilidad ginecológica?</h3>
-        <p>Pronto este asistente podrá consultar la disponibilidad de Huli y ayudarte a revisar citas programadas.</p>
-        <div class="chat-actions">
-          <a class="button primary wide" href="${HULI_SCHEDULE_URL}">Ver próximas citas en Huli</a>
-          <button class="button secondary wide" id="appointment-review-demo" type="button">Revisar cita programada</button>
+        <h3>Revisar una cita</h3>
+        <div class="chat-messages" id="appointment-chat-messages" aria-live="polite">
+          <div class="chat-message bot">Hola, soy Sofi. Puedo ayudarte a revisar citas por numero de cedula o por nombre completo.</div>
         </div>
-        <small>Conexión con Huli en preparación. Por ahora el botón principal abre la agenda oficial.</small>
+        <form class="chat-form" id="appointment-chat-form">
+          <label>
+            <span>Cedula o nombre</span>
+            <input id="appointment-chat-query" type="text" autocomplete="off" placeholder="Ej. 101110111 o Paciente demo" required>
+          </label>
+          <button class="button primary wide" type="submit">Consultar cita</button>
+        </form>
+        <div class="chat-actions">
+          <a class="button secondary wide" href="${HULI_SCHEDULE_URL}">Abrir agenda Huli</a>
+        </div>
+        <small>Para proteger datos sensibles, el asistente solo muestra datos basicos de agenda despues de recibir una cedula o nombre.</small>
       </div>
     </aside>
   `);
@@ -276,10 +284,6 @@ function closeAppointmentChat() {
   if (!panel || !button) return;
   panel.hidden = true;
   button.setAttribute("aria-expanded", "false");
-}
-
-function showAppointmentReviewNotice() {
-  showNotice("La revisión de citas quedará conectada con Huli en la siguiente fase.", false);
 }
 
 function renderServices() {
@@ -490,6 +494,7 @@ function createAppointment(event) {
     date,
     time,
     name: session.name,
+    cedula: session.cedula || "",
     phone,
     email: session.email,
     note: $("#patient-note").value.trim(),
@@ -509,9 +514,46 @@ function createAppointment(event) {
   if (activeAdminArea === area) renderAdmin();
 }
 
+async function submitAppointmentChat(event) {
+  event.preventDefault();
+  const input = $("#appointment-chat-query");
+  const query = input?.value.trim();
+  if (!query) return;
+
+  appendChatMessage(query, "user");
+  input.value = "";
+  const pending = appendChatMessage("Consultando la agenda...", "bot", true);
+
+  try {
+    const response = await fetch(CHAT_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query })
+    });
+
+    if (!response.ok) throw new Error("chat-api-unavailable");
+    const payload = await response.json();
+    pending.textContent = payload.reply || "No pude leer la respuesta de Huli en este momento.";
+  } catch (error) {
+    pending.textContent = "No pude conectar con Huli en este momento. Intenta de nuevo en unos segundos.";
+  }
+}
+
+function appendChatMessage(message, type = "bot", returnNode = false) {
+  const list = $("#appointment-chat-messages");
+  if (!list) return null;
+  const item = document.createElement("div");
+  item.className = `chat-message ${type}`;
+  item.textContent = message;
+  list.appendChild(item);
+  list.scrollTop = list.scrollHeight;
+  return returnNode ? item : null;
+}
+
 function loginUser(event) {
   event.preventDefault();
   const name = $("#login-name")?.value.trim() || "";
+  const cedula = $("#login-cedula")?.value.trim() || "";
   const email = $("#login-email").value.trim();
   const identifier = email.toLowerCase();
   const password = $("#login-password").value.trim();
@@ -549,7 +591,7 @@ function loginUser(event) {
       return;
     }
 
-    localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "patient", name: getNameFromEmail(email), email }));
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "patient", name: getNameFromEmail(email), email, cedula }));
     window.location.href = "agenda.html";
     return;
   }
@@ -564,7 +606,7 @@ function loginUser(event) {
     return;
   }
 
-  localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "patient", name, email }));
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ type: "patient", name, email, cedula }));
   window.location.href = "agenda.html";
 }
 
@@ -585,6 +627,7 @@ function renderLoginMode() {
   const tag = $("#unified-login-form .tag");
   const title = $("#unified-login-form h2");
   const nameField = $("#full-name-field");
+  const cedulaField = $("#cedula-field");
   const confirmField = $("#confirm-password-field");
   const passwordInput = $("#login-password");
   const confirmInput = $("#login-password-confirm");
@@ -594,8 +637,10 @@ function renderLoginMode() {
   if (title) title.textContent = isLogin ? "Ingresá a tu cuenta" : "Datos de acceso";
   if (emailLabel) emailLabel.firstChild.textContent = isLogin ? "Correo o usuario" : "Correo";
   if (nameField) nameField.hidden = isLogin;
+  if (cedulaField) cedulaField.hidden = isLogin;
   if (confirmField) confirmField.hidden = isLogin;
   if ($("#login-name")) $("#login-name").required = !isLogin;
+  if ($("#login-cedula")) $("#login-cedula").required = !isLogin;
   if (confirmInput) confirmInput.required = !isLogin;
   if (passwordInput) passwordInput.autocomplete = isLogin ? "current-password" : "new-password";
   if ($("#login-submit")) $("#login-submit").textContent = isLogin ? "Ingresar" : "Crear perfil";

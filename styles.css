@@ -218,46 +218,14 @@ textarea {
   transform: translateY(-1px);
 }
 
-.robot-face {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
+.chat-avatar {
+  width: 46px;
+  height: 46px;
   border: 1px solid rgba(199, 160, 75, .5);
-  border-radius: 15px;
-  background:
-    radial-gradient(circle at 35% 42%, var(--black) 0 3px, transparent 4px),
-    radial-gradient(circle at 65% 42%, var(--black) 0 3px, transparent 4px),
-    linear-gradient(135deg, #fff, #f9d2df);
-}
-
-.robot-face::before {
-  content: "";
-  position: absolute;
-  top: -8px;
-  width: 2px;
-  height: 9px;
-  background: var(--gold);
-}
-
-.robot-face::after {
-  content: "";
-  position: absolute;
-  top: -12px;
-  width: 7px;
-  height: 7px;
   border-radius: 50%;
-  background: var(--gold);
-}
-
-.robot-face span {
-  width: 15px;
-  height: 5px;
-  margin-top: 16px;
-  border: 2px solid rgba(157, 71, 101, .72);
-  border-top: 0;
-  border-radius: 0 0 12px 12px;
+  background: #fff;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .7);
+  object-fit: cover;
 }
 
 .chat-panel {
@@ -301,6 +269,55 @@ textarea {
 .chat-panel small {
   color: #4d657f;
   line-height: 1.55;
+}
+
+.chat-messages {
+  display: grid;
+  gap: 10px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 4px 2px 12px;
+}
+
+.chat-message {
+  max-width: 88%;
+  border: 1px solid rgba(199, 160, 75, .34);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, .88);
+  color: #233143;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.chat-message.user {
+  justify-self: end;
+  border-color: rgba(157, 71, 101, .28);
+  background: #ffeef5;
+}
+
+.chat-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.chat-form label {
+  display: grid;
+  gap: 6px;
+  color: #4d657f;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.chat-form input {
+  width: 100%;
+  border: 1px solid rgba(199, 160, 75, .45);
+  border-radius: 8px;
+  padding: 11px 12px;
+  color: #101b2d;
+  background: #fff;
+  font: inherit;
 }
 
 .chat-actions {
