@@ -74,7 +74,7 @@ export async function onRequestPost({ request, env }) {
     const payload = await openAIResponse.json();
     return json({ reply: extractOutputText(payload) || buildDeterministicReply(patientFiles, normalizedAppointments) });
   } catch (error) {
-    return json({ reply: "No pude revisar Huli en este momento. Intenta de nuevo en unos segundos." }, 500);
+    return json({ reply: getSafeErrorMessage(error) }, 500);
   }
 }
 
@@ -94,7 +94,7 @@ async function getHuliToken(env) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ api_key: env.HULI_API_KEY })
   });
-  if (!response.ok) throw new Error("huli-auth-failed");
+  if (!response.ok) throw new Error(`huli-auth-failed:${response.status}`);
 
   const payload = await response.json();
   const token = payload?.data?.jwt;
@@ -111,7 +111,7 @@ async function searchHuliPatients(env, token, query) {
   const response = await fetch(url, {
     headers: huliHeaders(env, token)
   });
-  if (!response.ok) throw new Error("huli-patient-search-failed");
+  if (!response.ok) throw new Error(`huli-patient-search-failed:${response.status}`);
 
   const payload = await response.json();
   const patientFiles = Array.isArray(payload.patientFiles) ? payload.patientFiles : [];
@@ -266,4 +266,18 @@ function corsHeaders() {
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type"
   };
+}
+
+function getSafeErrorMessage(error) {
+  const message = error?.message || "";
+  if (message.startsWith("huli-auth-failed")) {
+    return "Huli rechazo la autenticacion. Revisa que HULI_API_KEY y HULI_ORGANIZATION_ID esten configurados correctamente.";
+  }
+  if (message === "huli-auth-missing-token") {
+    return "Huli respondio sin token de acceso. Revisa la API key de Huli.";
+  }
+  if (message.startsWith("huli-patient-search-failed")) {
+    return "Huli rechazo la busqueda de expediente. Revisa permisos de la API key para consultar patient-file.";
+  }
+  return "No pude revisar Huli en este momento. Intenta de nuevo en unos segundos.";
 }

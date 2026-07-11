@@ -531,8 +531,8 @@ async function submitAppointmentChat(event) {
       body: JSON.stringify({ query })
     });
 
-    if (!response.ok) throw new Error("chat-api-unavailable");
     const payload = await response.json();
+    if (!response.ok && !payload.reply) throw new Error("chat-api-unavailable");
     pending.textContent = payload.reply || "No pude leer la respuesta de Huli en este momento.";
   } catch (error) {
     pending.textContent = "No pude conectar con Huli en este momento. Intenta de nuevo en unos segundos.";
