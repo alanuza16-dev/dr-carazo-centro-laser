@@ -44,8 +44,8 @@ const NEEDS = {
     image: "assets/dr-luis-diego-carazo-premium.png",
     alt: "Retrato del Dr. Luis Diego Carazo",
     visualClass: "need-visual-hormonas",
-    visualTitle: "Hormonas",
-    visualMeta: "Seguimiento médico",
+    visualTitle: "Balance hormonal",
+    visualMeta: "Valoración médica",
     links: [
       { label: "Leer hormonas", href: "ginecologia.html#procedimientos" },
       { label: "Preguntar a Sofi", chat: true }

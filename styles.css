@@ -636,8 +636,12 @@ h3 {
   padding: clamp(24px, 4vw, 44px);
   color: var(--white);
   background:
-    radial-gradient(circle at 72% 20%, rgba(255, 255, 255, .2), transparent 22%),
+    linear-gradient(180deg, rgba(7, 25, 41, .08), rgba(7, 25, 41, .92)),
+    linear-gradient(90deg, rgba(7, 25, 41, .36), rgba(7, 25, 41, .08)),
+    url("assets/incontilase-fotona-system.jpg"),
     linear-gradient(135deg, #14364f, #061522);
+  background-position: center, center, 50% 52%, center;
+  background-size: cover, cover, cover, cover;
 }
 
 .need-visual::before,
@@ -647,8 +651,8 @@ h3 {
 }
 
 .need-visual::before {
-  inset: 18% auto auto 18%;
-  width: 46%;
+  inset: 14% auto auto 12%;
+  width: 38%;
   aspect-ratio: 1;
   border: 1px solid rgba(255, 255, 255, .22);
   border-radius: 999px;
@@ -677,9 +681,10 @@ h3 {
   display: block;
   max-width: 100%;
   font-family: var(--font-display);
-  font-size: clamp(28px, 3.25vw, 46px);
-  line-height: .96;
-  overflow-wrap: anywhere;
+  font-size: clamp(26px, 2.8vw, 40px);
+  line-height: 1;
+  overflow-wrap: normal;
+  hyphens: none;
   text-wrap: balance;
 }
 
@@ -692,26 +697,42 @@ h3 {
 
 .need-visual-intima {
   background:
-    linear-gradient(145deg, rgba(18, 132, 140, .92), rgba(7, 25, 41, .98)),
+    linear-gradient(180deg, rgba(7, 25, 41, .12), rgba(7, 25, 41, .92)),
+    linear-gradient(145deg, rgba(18, 132, 140, .46), rgba(7, 25, 41, .98)),
+    url("assets/incontilase-fotona-system.jpg"),
     var(--night);
+  background-position: center, center, 42% 48%, center;
+  background-size: cover, cover, 125%, cover;
 }
 
 .need-visual-hormonas {
   background:
+    linear-gradient(180deg, rgba(7, 25, 41, .02), rgba(7, 25, 41, .88)),
     radial-gradient(circle at 72% 24%, rgba(185, 145, 76, .32), transparent 24%),
+    url("assets/dr-luis-diego-carazo-premium.png"),
     linear-gradient(145deg, #28394a, #071929);
+  background-position: center, center, 72% 22%, center;
+  background-size: cover, cover, auto 114%, cover;
 }
 
 .need-visual-procedimientos {
   background:
+    linear-gradient(180deg, rgba(7, 25, 41, .04), rgba(7, 25, 41, .9)),
     linear-gradient(135deg, rgba(198, 80, 127, .38), transparent 42%),
+    url("assets/incontilase-fotona-system.jpg"),
     linear-gradient(145deg, #071929, #102d47);
+  background-position: center, center, 52% 52%, center;
+  background-size: cover, cover, 118%, cover;
 }
 
 .need-visual-general {
   background:
+    linear-gradient(180deg, rgba(7, 25, 41, .02), rgba(7, 25, 41, .88)),
     radial-gradient(circle at 24% 22%, rgba(255, 255, 255, .16), transparent 24%),
+    url("assets/dr-luis-diego-carazo-premium.png"),
     linear-gradient(145deg, #0f4d54, #071929);
+  background-position: center, center, 70% 20%, center;
+  background-size: cover, cover, auto 112%, cover;
 }
 
 .need-stage div {
@@ -1593,6 +1614,8 @@ h3 {
   .mobile-menu-toggle span,
   .mobile-menu-close span {
     position: absolute;
+    left: 50%;
+    top: 50%;
     width: 20px;
     height: 2px;
     border-radius: 999px;
@@ -1601,21 +1624,21 @@ h3 {
   }
 
   .mobile-menu-toggle span:first-child {
-    transform: translateY(-4px);
+    transform: translate(-50%, calc(-50% - 4px));
   }
 
   .mobile-menu-toggle span:last-child {
     width: 15px;
-    transform: translate(3px, 5px);
+    transform: translate(calc(-50% + 3px), calc(-50% + 5px));
   }
 
   body.nav-open .mobile-menu-toggle span:first-child {
-    transform: rotate(42deg);
+    transform: translate(-50%, -50%) rotate(42deg);
   }
 
   body.nav-open .mobile-menu-toggle span:last-child {
     width: 20px;
-    transform: rotate(-42deg);
+    transform: translate(-50%, -50%) rotate(-42deg);
   }
 
   body.nav-open .mobile-menu-toggle {
@@ -1715,11 +1738,11 @@ h3 {
   }
 
   .mobile-menu-close span:first-child {
-    transform: rotate(42deg);
+    transform: translate(-50%, -50%) rotate(42deg);
   }
 
   .mobile-menu-close span:last-child {
-    transform: rotate(-42deg);
+    transform: translate(-50%, -50%) rotate(-42deg);
   }
 
   .mobile-menu-cta {
@@ -2161,8 +2184,58 @@ h3 {
   }
 
   .closing-scene {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
     min-height: auto;
-    padding: 54px var(--mobile-x) 60px;
+    margin: 0;
+    padding: 42px var(--mobile-x) 52px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 86% 10%, rgba(198, 80, 127, .2), transparent 30%),
+      linear-gradient(155deg, #071522, #0f2c45 64%, #06111c);
+  }
+
+  .closing-scene::before {
+    position: absolute;
+    inset: 18px var(--mobile-x);
+    border: 1px solid rgba(255, 255, 255, .13);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, .045);
+    content: "";
+  }
+
+  .closing-scene > div:first-child,
+  .closing-scene > .hero-actions {
+    position: relative;
+    z-index: 1;
+    grid-column: auto;
+  }
+
+  .closing-scene > div:first-child {
+    padding: 18px 18px 0;
+  }
+
+  .closing-scene h2 {
+    max-width: 100%;
+    font-size: clamp(30px, 9vw, 40px);
+    line-height: 1;
+  }
+
+  .closing-scene p:not(.eyebrow) {
+    max-width: 100%;
+    margin-top: 14px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .closing-scene > .hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    margin: 0;
+    padding: 0 18px 18px;
+    justify-content: stretch;
   }
 
   .brand-footer {
