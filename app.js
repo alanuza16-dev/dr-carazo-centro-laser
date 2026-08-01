@@ -15,6 +15,9 @@ const NEEDS = {
     copy: "Información para mujeres con pérdidas de orina al toser, reír o hacer ejercicio.",
     image: "assets/incontilase-fotona-system.jpg",
     alt: "Equipo Fotona utilizado para procedimientos ginecológicos láser",
+    visualClass: "need-visual-orina",
+    visualTitle: "IncontiLase",
+    visualMeta: "Pérdidas al esfuerzo",
     links: [
       { label: "Ver IncontiLase", href: "ginecologia.html#incontilase" },
       { label: "Preguntar a Sofi", chat: true }
@@ -26,6 +29,9 @@ const NEEDS = {
     copy: "Orientación sobre sequedad, incomodidad, salud vaginal y alternativas que requieren valoración individual.",
     image: "assets/incontilase-fotona-system.jpg",
     alt: "Equipo Fotona relacionado con procedimientos de salud íntima femenina",
+    visualClass: "need-visual-intima",
+    visualTitle: "Salud íntima",
+    visualMeta: "Valoración individual",
     links: [
       { label: "Ver servicios", href: "ginecologia.html#procedimientos" },
       { label: "Agendar valoración", href: "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" }
@@ -37,6 +43,9 @@ const NEEDS = {
     copy: "Información general sobre terapia con hormonas bioidénticas y acompañamiento médico durante cambios hormonales.",
     image: "assets/dr-luis-diego-carazo-premium.png",
     alt: "Retrato del Dr. Luis Diego Carazo",
+    visualClass: "need-visual-hormonas",
+    visualTitle: "Hormonas",
+    visualMeta: "Seguimiento médico",
     links: [
       { label: "Leer hormonas", href: "ginecologia.html#procedimientos" },
       { label: "Preguntar a Sofi", chat: true }
@@ -48,6 +57,9 @@ const NEEDS = {
     copy: "Labioplastia, displasia de cérvix, tratamientos láser y procedimientos que requieren indicación clínica.",
     image: "assets/incontilase-fotona-system.jpg",
     alt: "Equipo Fotona usado como referencia tecnológica para procedimientos ginecológicos",
+    visualClass: "need-visual-procedimientos",
+    visualTitle: "Procedimientos",
+    visualMeta: "Criterio clínico",
     links: [
       { label: "Ver procedimientos", href: "ginecologia.html#procedimientos" },
       { label: "Agendar", href: "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" }
@@ -59,6 +71,9 @@ const NEEDS = {
     copy: "Agenda una valoración si necesitas revisar síntomas, controles, ultrasonidos o dudas ginecológicas generales.",
     image: "assets/dr-luis-diego-carazo-premium.png",
     alt: "Retrato del Dr. Luis Diego Carazo",
+    visualClass: "need-visual-general",
+    visualTitle: "Consulta",
+    visualMeta: "Agenda oficial",
     links: [
       { label: "Abrir Huli", href: "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" },
       { label: "FAQ", href: "faq.html" }
@@ -118,14 +133,15 @@ function bindNeedFinder() {
 
 function renderNeed(key) {
   const item = NEEDS[key] || NEEDS.orina;
-  const image = $("#need-image");
+  const visual = $("#need-visual");
   const count = $("#need-count");
   const title = $("#need-title");
   const copy = $("#need-copy");
   const links = $("#need-links");
-  if (image) {
-    image.src = item.image;
-    image.alt = item.alt || "";
+  if (visual) {
+    visual.className = `need-visual ${item.visualClass || ""}`.trim();
+    visual.setAttribute("aria-label", item.alt || item.title);
+    visual.innerHTML = `<span>${item.count}</span><strong>${item.visualTitle || item.title}</strong><em>${item.visualMeta || ""}</em>`;
   }
   if (count) count.textContent = item.count;
   if (title) title.textContent = item.title;
