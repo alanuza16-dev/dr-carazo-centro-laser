@@ -3,55 +3,21 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Resumen de citas agendadas para pacientes.">
-    <title>Citas agendadas | Dr. Luis Diego Carazo</title>
+    <title>Revisar Cita | Dr. Luis Diego Carazo</title>
     <link rel="stylesheet" href="styles.css">
     <script defer src="app.js"></script>
   </head>
   <body>
-    <header class="site-header">
-      <a class="brand" href="index.html" aria-label="Ir al inicio">
-        <span class="brand-mark">LC</span>
-        <span>
-          <strong>Dr. Luis Diego Carazo</strong>
-          <small>Ginecología especializada</small>
-        </span>
-      </a>
-      <nav class="main-nav" aria-label="Navegación principal">
-        <a href="index.html?section=ginecologia">Ginecología</a>
-        <a href="https://jennydelgadocentroesteticalaser.adminlanzah.workers.dev/">Estética</a>
-        <a href="https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542">Agendar</a>
-        <a href="login.html">Ingresar</a>
-      </nav>
-    </header>
-
-    <main>
-      <section class="page-hero">
-        <p class="eyebrow">Perfil del paciente</p>
-        <h1>Citas agendadas.</h1>
-        <p>Consulta tus próximas visitas confirmadas. Esta vista es únicamente informativa para el demo.</p>
-      </section>
-
-      <section class="section appointment-shell">
-        <div class="patient-summary-page">
-          <aside class="patient-appointments-card">
-            <div class="card-header">
-              <span class="tag">Citas agendadas</span>
-              <strong>Resumen de tus próximas visitas</strong>
-            </div>
-            <div class="patient-appointment-list" id="patient-appointment-list"></div>
-            <div class="inline-actions patient-summary-actions">
-              <a class="button primary" href="https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542">Agendar nueva cita</a>
-              <a class="button secondary" href="login.html?mode=login">Ingresar con otro perfil</a>
-            </div>
-          </aside>
+    <main class="section">
+      <div class="handoff-panel">
+        <p class="eyebrow">Sofi</p>
+        <h1>Revisa tu cita desde el chat.</h1>
+        <p>Para proteger datos sensibles, la consulta por cedula se hace desde Sofi y la validacion ocurre contra Huli en servidor.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="index.html">Abrir sitio</a>
+          <a class="button secondary" href="https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542">Abrir Huli</a>
         </div>
-      </section>
+      </div>
     </main>
-
-    <footer class="site-footer">
-      <p>© 2026 Dr. Luis Diego Carazo.</p>
-      <p>La información de esta versión se conserva localmente para fines de presentación.</p>
-    </footer>
   </body>
 </html>
