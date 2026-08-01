@@ -82,6 +82,8 @@ const NEEDS = {
 };
 
 const $ = (selector) => document.querySelector(selector);
+const focusableSelector = "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])";
+let lastMenuTrigger = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   renderAppointmentChatWidget();
@@ -104,14 +106,66 @@ function bindNavigation() {
     });
   }
 
-  $("#mobile-menu-toggle")?.addEventListener("click", () => {
-    const nav = $("#main-nav");
-    const button = $("#mobile-menu-toggle");
-    if (!nav || !button) return;
-    nav.toggleAttribute("data-open");
-    button.setAttribute("aria-expanded", String(nav.hasAttribute("data-open")));
-    document.body.classList.toggle("nav-open", nav.hasAttribute("data-open"));
+  const nav = $("#main-nav");
+  const button = $("#mobile-menu-toggle");
+  button?.addEventListener("click", toggleMobileMenu);
+  nav?.addEventListener("click", (event) => {
+    if (event.target === nav) closeMobileMenu();
+    if (event.target.closest("[data-close-menu]")) {
+      window.setTimeout(() => closeMobileMenu({ restoreFocus: false }), 0);
+    }
   });
+  nav?.addEventListener("keydown", trapMobileMenuFocus);
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && document.body.classList.contains("nav-open")) closeMobileMenu();
+    if (event.key === "Escape" && document.body.classList.contains("chat-open")) closeAppointmentChat();
+  });
+}
+
+function toggleMobileMenu() {
+  const nav = $("#main-nav");
+  if (!nav?.hasAttribute("data-open")) return openMobileMenu();
+  closeMobileMenu();
+}
+
+function openMobileMenu() {
+  const nav = $("#main-nav");
+  const button = $("#mobile-menu-toggle");
+  if (!nav || !button) return;
+  lastMenuTrigger = document.activeElement;
+  nav.setAttribute("data-open", "");
+  button.setAttribute("aria-expanded", "true");
+  button.setAttribute("aria-label", "Cerrar menú");
+  document.body.classList.add("nav-open");
+  window.requestAnimationFrame(() => nav.querySelector("[data-close-menu], a[href], button")?.focus());
+}
+
+function closeMobileMenu(options = {}) {
+  const nav = $("#main-nav");
+  const button = $("#mobile-menu-toggle");
+  if (!nav || !button) return;
+  nav.removeAttribute("data-open");
+  button.setAttribute("aria-expanded", "false");
+  button.setAttribute("aria-label", "Abrir menú");
+  document.body.classList.remove("nav-open");
+  if (options.restoreFocus !== false) (lastMenuTrigger || button).focus?.();
+}
+
+function trapMobileMenuFocus(event) {
+  if (event.key !== "Tab" || !document.body.classList.contains("nav-open")) return;
+  const nav = $("#main-nav");
+  const items = Array.from(nav?.querySelectorAll(focusableSelector) || [])
+    .filter((item) => item.offsetParent !== null);
+  if (!items.length) return;
+  const first = items[0];
+  const last = items[items.length - 1];
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
 }
 
 function bindHeaderScroll() {

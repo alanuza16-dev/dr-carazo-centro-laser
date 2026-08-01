@@ -18,13 +18,48 @@
           <small>Ginecología y Obstetricia</small>
         </span>
       </a>
-      <button class="mobile-menu-toggle" id="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav">Menú</button>
+      <button class="mobile-menu-toggle" id="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menú">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </button>
       <nav class="main-nav" id="main-nav" aria-label="Navegación principal">
-        <a href="ginecologia.html">Servicios</a>
-        <a href="#necesidades">Orientación</a>
-        <a href="articulos.html">Artículos</a>
-        <a href="https://jennydelgadocentroesteticalaser.adminlanzah.workers.dev/">Jenny Delgado</a>
-        <button class="nav-cta" type="button" data-open-chat>Asistente de citas</button>
+        <div class="desktop-nav">
+          <a href="ginecologia.html">Servicios</a>
+          <a href="#necesidades">Orientación</a>
+          <a href="articulos.html">Artículos</a>
+          <a href="https://jennydelgadocentroesteticalaser.adminlanzah.workers.dev/">Jenny Delgado</a>
+          <button class="nav-cta" type="button" data-open-chat>Asistente de citas</button>
+        </div>
+        <div class="mobile-menu-shell" aria-label="Menú móvil">
+          <div class="mobile-menu-head">
+            <div>
+              <span class="brand-mark">LC</span>
+              <strong>Dr. Carazo</strong>
+              <small>Agenda y ginecología láser</small>
+            </div>
+            <button class="mobile-menu-close" type="button" data-close-menu aria-label="Cerrar menú">
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+            </button>
+          </div>
+          <button class="mobile-menu-cta" type="button" data-open-chat data-close-menu>
+            <span>Agenda</span>
+            <strong>Abrir asistente de citas</strong>
+            <small>Consultar por cédula con Sofi</small>
+          </button>
+          <div class="mobile-menu-links">
+            <a href="index.html" aria-current="page" data-close-menu><span>01</span><strong>Inicio</strong><small>Vista principal</small></a>
+            <a href="ginecologia.html" data-close-menu><span>02</span><strong>Tratamientos</strong><small>Servicios ginecológicos</small></a>
+            <a href="ginecologia.html#incontilase" data-close-menu><span>03</span><strong>Tecnología Fotona</strong><small>IncontiLase y láser</small></a>
+            <a href="#necesidades" data-close-menu><span>04</span><strong>Orientación</strong><small>Buscar por necesidad</small></a>
+            <a href="faq.html" data-close-menu><span>05</span><strong>FAQ</strong><small>Preguntas frecuentes</small></a>
+            <a href="articulos.html" data-close-menu><span>06</span><strong>Artículos</strong><small>Lecturas aprobadas</small></a>
+          </div>
+          <div class="mobile-menu-secondary">
+            <a href="https://jennydelgadocentroesteticalaser.adminlanzah.workers.dev/" data-close-menu>Jenny Delgado</a>
+            <a href="https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" data-close-menu>Abrir Huli</a>
+          </div>
+        </div>
       </nav>
     </header>
 
@@ -34,7 +69,10 @@
         <div class="hero-kicker" aria-hidden="true">MED3758 / CR</div>
         <div class="hero-copy reveal">
           <p class="eyebrow">Medicina íntima femenina</p>
-          <h1>Ginecología láser con criterio clínico, tecnología y acompañamiento.</h1>
+          <h1>
+            <span class="desktop-title">Ginecología láser con criterio clínico, tecnología y acompañamiento.</span>
+            <span class="mobile-title">Ginecología láser con criterio clínico.</span>
+          </h1>
           <p>Atención especializada para mujeres que buscan orientación seria, agenda clara y valoración médica con el Dr. Luis Diego Carazo.</p>
           <div class="hero-actions">
             <button class="button primary" type="button" data-open-chat>Consultar cita con Sofi</button>
@@ -166,6 +204,13 @@
         </div>
       </section>
     </main>
+
+    <div class="mobile-bottom-bar" aria-label="Acción rápida">
+      <button type="button" data-open-chat>
+        <span>Chat de citas</span>
+        <strong>Sofi</strong>
+      </button>
+    </div>
 
     <footer class="brand-footer">
       <div class="footer-brand">
