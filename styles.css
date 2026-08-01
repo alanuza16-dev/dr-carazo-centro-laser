@@ -885,6 +885,15 @@ h3 {
   width: fit-content;
 }
 
+.developer-credit {
+  display: inline-block;
+  margin-top: 10px;
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, .32);
+  text-underline-offset: 4px;
+}
+
 .brand-footer small {
   align-self: end;
   line-height: 1.5;
@@ -1126,6 +1135,7 @@ h3 {
 
 .site-footer {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 18px;
   padding: 28px clamp(20px, 5vw, 70px);
@@ -1133,6 +1143,11 @@ h3 {
   color: var(--muted);
   background: var(--white);
   font-size: 14px;
+}
+
+.site-footer .developer-credit {
+  margin-top: 0;
+  text-decoration-color: rgba(19, 34, 53, .28);
 }
 
 .appointment-chat {
