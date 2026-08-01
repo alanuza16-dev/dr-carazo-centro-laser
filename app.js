@@ -110,16 +110,15 @@ function bindNavigation() {
   const button = $("#mobile-menu-toggle");
   button?.addEventListener("click", toggleMobileMenu);
   nav?.addEventListener("click", (event) => {
-    if (event.target === nav) closeMobileMenu();
-    if (event.target.closest("[data-close-menu]")) {
-      window.setTimeout(() => closeMobileMenu({ restoreFocus: false }), 0);
-    }
+    if (event.target === nav || event.target.closest("[data-close-menu]")) closeMobileMenu({ restoreFocus: false });
   });
   nav?.addEventListener("keydown", trapMobileMenuFocus);
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && document.body.classList.contains("nav-open")) closeMobileMenu();
     if (event.key === "Escape" && document.body.classList.contains("chat-open")) closeAppointmentChat();
   });
+  window.addEventListener("pageshow", () => closeMobileMenu({ restoreFocus: false }));
+  window.addEventListener("hashchange", () => closeMobileMenu({ restoreFocus: false }));
 }
 
 function toggleMobileMenu() {
