@@ -118,7 +118,7 @@ export async function onRequestPost({ request, env }) {
       return json({ reply: "Recibi muchas consultas seguidas. Intenta otra vez en un minuto." }, 429);
     }
 
-    const body = await request.json();
+    const body = await parseJsonBody(request);
     const mode = body.mode === "info" ? "info" : "appointment";
     const rawValue = String(body.query || body.message || "").trim();
 
@@ -163,12 +163,22 @@ export async function onRequestPost({ request, env }) {
 
     return json({ reply: reply || buildDeterministicAppointmentReply(patientFiles, normalizedAppointments) });
   } catch (error) {
-    return json({ reply: getSafeErrorMessage(error) }, 500);
+    return json({ reply: getSafeErrorMessage(error) }, error.status || 500);
   }
 }
 
 export async function onRequestOptions() {
   return new Response(null, { headers: corsHeaders() });
+}
+
+async function parseJsonBody(request) {
+  try {
+    return await request.json();
+  } catch (error) {
+    const invalidJson = new Error("invalid-json-body");
+    invalidJson.status = 400;
+    throw invalidJson;
+  }
 }
 
 async function answerInfoQuestion(rawQuestion, env) {
@@ -500,6 +510,9 @@ function getSafeErrorMessage(error) {
   }
   if (message.startsWith("huli-doctor-appointments-failed")) {
     return "Huli rechazo la lectura de citas por doctor. Hay que habilitar permisos de agenda para la API key.";
+  }
+  if (message === "invalid-json-body") {
+    return "La solicitud del chat no tiene un formato valido. Intenta de nuevo.";
   }
   return "No pude revisar Huli en este momento. Intenta de nuevo en unos segundos.";
 }
