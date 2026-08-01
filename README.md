@@ -8,7 +8,7 @@ Sitio medico estatico servido por Cloudflare Workers. La agenda real vive en Hul
 - Agenda nueva: enlace directo al calendario oficial Huli del doctor.
 - Revision de cita: `POST /api/appointment-chat` obtiene JWT de Huli y busca expediente/citas en la misma ejecucion.
 - Informacion general: Sofi responde solo con contenido aprobado del sitio.
-- Paginas demo antiguas (`agenda.html`, `login.html`, `admin.html`, `citas.html`) quedaron como handoff, sin localStorage ni usuarios demo.
+- Paginas antiguas (`agenda.html`, `login.html`, `admin.html`, `citas.html`) quedaron como handoff, sin localStorage ni usuarios locales.
 
 ## Variables y secretos
 
