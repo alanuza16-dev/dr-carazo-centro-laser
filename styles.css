@@ -570,8 +570,10 @@ h3 {
 
 .need-stage {
   display: grid;
-  grid-template-columns: minmax(220px, .72fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, .72fr) minmax(0, 1fr);
   gap: 0;
+  width: 100%;
+  min-width: 0;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
@@ -584,6 +586,7 @@ h3 {
   display: grid;
   align-content: end;
   gap: 12px;
+  min-width: 0;
   min-height: 430px;
   margin: 0;
   overflow: hidden;
@@ -628,10 +631,13 @@ h3 {
 }
 
 .need-visual strong {
-  max-width: 8ch;
+  display: block;
+  max-width: 100%;
   font-family: var(--font-display);
-  font-size: clamp(34px, 4vw, 58px);
-  line-height: .92;
+  font-size: clamp(28px, 3.25vw, 46px);
+  line-height: .96;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 
 .need-visual em {
@@ -669,6 +675,7 @@ h3 {
   display: grid;
   align-content: center;
   gap: 18px;
+  min-width: 0;
   padding: clamp(28px, 5vw, 56px);
   color: var(--white);
 }

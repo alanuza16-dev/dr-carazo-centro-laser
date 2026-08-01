@@ -58,8 +58,8 @@ const NEEDS = {
     image: "assets/incontilase-fotona-system.jpg",
     alt: "Equipo Fotona usado como referencia tecnológica para procedimientos ginecológicos",
     visualClass: "need-visual-procedimientos",
-    visualTitle: "Procedimientos",
-    visualMeta: "Criterio clínico",
+    visualTitle: "Plan clínico",
+    visualMeta: "Procedimientos",
     links: [
       { label: "Ver procedimientos", href: "ginecologia.html#procedimientos" },
       { label: "Agendar", href: "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" }
