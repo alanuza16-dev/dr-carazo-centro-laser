@@ -310,7 +310,7 @@ async function submitAppointmentChat(event) {
     return;
   }
 
-  if (mode === "appointment" && /[A-Za-z]/.test(rawValue)) {
+  if (mode === "appointment" && hasLetters(rawValue)) {
     appendChatMessage("Ese dato no parece una cedula valida. Ingresa solo numeros; guiones y espacios se limpian automaticamente.", "bot", false, true);
     return;
   }
@@ -331,7 +331,7 @@ async function submitAppointmentChat(event) {
     const response = await fetch(CHAT_API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mode, query: cleanValue, message: cleanValue })
+      body: JSON.stringify({ mode, query: cleanValue, message: rawValue, rawInput: rawValue })
     });
     const payload = await response.json().catch(() => ({}));
     pending.remove();
@@ -359,6 +359,10 @@ function appendChatMessage(message, type = "bot", pending = false, isError = fal
 
 function normalizeCedulaInput(value) {
   return String(value || "").replace(/\D/g, "");
+}
+
+function hasLetters(value) {
+  return /[A-Za-zÀ-ÿ]/.test(String(value || ""));
 }
 
 function maskForChat(value) {

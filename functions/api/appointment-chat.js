@@ -120,7 +120,7 @@ export async function onRequestPost({ request, env }) {
 
     const body = await parseJsonBody(request);
     const mode = body.mode === "info" ? "info" : "appointment";
-    const rawValue = String(body.query || body.message || "").trim();
+    const rawValue = String(body.rawInput || body.message || body.query || "").trim();
 
     if (mode === "info") {
       return answerInfoQuestion(rawValue, env);
@@ -130,7 +130,7 @@ export async function onRequestPost({ request, env }) {
       return json({ reply: "Ese dato no parece una cedula valida. Ingresa solo numeros; guiones y espacios se limpian automaticamente." }, 400);
     }
 
-    const query = normalizeCedulaInput(rawValue);
+    const query = normalizeCedulaInput(body.query || rawValue);
     if (!query) return json({ reply: "Necesito un numero de cedula para revisar la agenda." }, 400);
     if (query.length < 7) return json({ reply: "La cedula parece incompleta. Revisa el numero e intenta de nuevo." }, 400);
 
