@@ -110,7 +110,14 @@ function bindNavigation() {
   const button = $("#mobile-menu-toggle");
   button?.addEventListener("click", toggleMobileMenu);
   nav?.addEventListener("click", (event) => {
-    if (event.target === nav || event.target.closest("[data-close-menu]")) closeMobileMenu({ restoreFocus: false });
+    const closeTarget = event.target.closest("[data-close-menu]");
+    if (event.target === nav) {
+      closeMobileMenu({ restoreFocus: false });
+      return;
+    }
+    if (!closeTarget) return;
+    if (handleMobileHashNavigation(closeTarget, event)) return;
+    closeMobileMenu({ restoreFocus: false });
   });
   nav?.addEventListener("keydown", trapMobileMenuFocus);
   document.addEventListener("keydown", (event) => {
@@ -132,6 +139,7 @@ function openMobileMenu() {
   const button = $("#mobile-menu-toggle");
   if (!nav || !button) return;
   lastMenuTrigger = document.activeElement;
+  resetMobileMenuPanel(nav);
   nav.setAttribute("data-open", "");
   button.setAttribute("aria-expanded", "true");
   button.setAttribute("aria-label", "Cerrar menú");
@@ -144,10 +152,37 @@ function closeMobileMenu(options = {}) {
   const button = $("#mobile-menu-toggle");
   if (!nav || !button) return;
   nav.removeAttribute("data-open");
+  resetMobileMenuPanel(nav);
   button.setAttribute("aria-expanded", "false");
   button.setAttribute("aria-label", "Abrir menú");
   document.body.classList.remove("nav-open");
+  if (nav.contains(document.activeElement)) document.activeElement.blur();
   if (options.restoreFocus !== false) (lastMenuTrigger || button).focus?.();
+}
+
+function resetMobileMenuPanel(nav) {
+  nav.scrollTop = 0;
+  const shell = nav.querySelector(".mobile-menu-shell");
+  if (shell) shell.scrollTop = 0;
+}
+
+function handleMobileHashNavigation(target, event) {
+  const link = target.closest("a[href]");
+  if (!link) return false;
+  const destination = new URL(link.getAttribute("href"), window.location.href);
+  const samePage = destination.origin === window.location.origin && destination.pathname === window.location.pathname;
+  if (!samePage || !destination.hash) return false;
+  const section = document.querySelector(destination.hash);
+  if (!section) return false;
+  event.preventDefault();
+  closeMobileMenu({ restoreFocus: false });
+  window.history.pushState(null, "", destination.hash);
+  window.requestAnimationFrame(() => {
+    const headerHeight = $(".site-header")?.getBoundingClientRect().height || 0;
+    const top = section.getBoundingClientRect().top + window.scrollY - headerHeight - 18;
+    window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  });
+  return true;
 }
 
 function trapMobileMenuFocus(event) {
