@@ -8,6 +8,59 @@ const QUICK_TOPICS = [
   "Displasia de cervix"
 ];
 
+const NEEDS = {
+  orina: {
+    count: "01",
+    title: "IncontiLase FOTONA",
+    copy: "Informacion para mujeres con perdidas de orina al toser, reir o hacer ejercicio.",
+    image: "assets/incontilase-fotona-system.jpg",
+    links: [
+      { label: "Ver IncontiLase", href: "ginecologia.html#incontilase" },
+      { label: "Preguntar a Sofi", chat: true }
+    ]
+  },
+  intima: {
+    count: "02",
+    title: "Salud intima femenina",
+    copy: "Orientacion sobre sequedad, incomodidad, salud vaginal y alternativas que requieren valoracion individual.",
+    image: "https://images.unsplash.com/photo-1551190822-a9333d879b1f?auto=format&fit=crop&w=1200&q=80",
+    links: [
+      { label: "Ver servicios", href: "ginecologia.html#procedimientos" },
+      { label: "Agendar valoracion", href: "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" }
+    ]
+  },
+  hormonas: {
+    count: "03",
+    title: "Menopausia y hormonas",
+    copy: "Informacion general sobre terapia con hormonas bioidenticas y acompanamiento medico durante cambios hormonales.",
+    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80",
+    links: [
+      { label: "Leer hormonas", href: "ginecologia.html#procedimientos" },
+      { label: "Preguntar a Sofi", chat: true }
+    ]
+  },
+  procedimientos: {
+    count: "04",
+    title: "Procedimientos ginecologicos",
+    copy: "Labioplastia, displasia de cervix, tratamientos laser y procedimientos que requieren indicacion clinica.",
+    image: "https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&w=1200&q=80",
+    links: [
+      { label: "Ver procedimientos", href: "ginecologia.html#procedimientos" },
+      { label: "Agendar", href: "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" }
+    ]
+  },
+  general: {
+    count: "05",
+    title: "Consulta general",
+    copy: "Agenda una valoracion si necesitas revisar sintomas, controles, ultrasonidos o dudas ginecologicas generales.",
+    image: "assets/dr-luis-diego-carazo-premium.png",
+    links: [
+      { label: "Abrir Huli", href: "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" },
+      { label: "FAQ", href: "faq.html" }
+    ]
+  }
+};
+
 const $ = (selector) => document.querySelector(selector);
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -15,6 +68,10 @@ document.addEventListener("DOMContentLoaded", () => {
   bindNavigation();
   bindFaq();
   bindVideos();
+  bindNeedFinder();
+  bindOpenChatButtons();
+  bindHeaderScroll();
+  initReveal();
 });
 
 function bindNavigation() {
@@ -33,7 +90,71 @@ function bindNavigation() {
     if (!nav || !button) return;
     nav.toggleAttribute("data-open");
     button.setAttribute("aria-expanded", String(nav.hasAttribute("data-open")));
+    document.body.classList.toggle("nav-open", nav.hasAttribute("data-open"));
   });
+}
+
+function bindHeaderScroll() {
+  const header = $(".site-header");
+  if (!header) return;
+  const sync = () => header.toggleAttribute("data-condensed", window.scrollY > 28);
+  sync();
+  window.addEventListener("scroll", sync, { passive: true });
+}
+
+function bindNeedFinder() {
+  document.querySelectorAll("[data-need]").forEach((button) => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll("[data-need]").forEach((item) => item.classList.toggle("is-active", item === button));
+      renderNeed(button.dataset.need);
+    });
+  });
+}
+
+function renderNeed(key) {
+  const item = NEEDS[key] || NEEDS.orina;
+  const image = $("#need-image");
+  const count = $("#need-count");
+  const title = $("#need-title");
+  const copy = $("#need-copy");
+  const links = $("#need-links");
+  if (image) image.src = item.image;
+  if (count) count.textContent = item.count;
+  if (title) title.textContent = item.title;
+  if (copy) copy.textContent = item.copy;
+  if (links) {
+    links.innerHTML = item.links.map((link) => {
+      if (link.chat) return `<button type="button" data-open-chat>${link.label}</button>`;
+      return `<a href="${link.href}">${link.label}</a>`;
+    }).join("");
+    bindOpenChatButtons(links);
+  }
+}
+
+function bindOpenChatButtons(root = document) {
+  root.querySelectorAll("[data-open-chat]").forEach((button) => {
+    if (button.dataset.boundChat === "true") return;
+    button.dataset.boundChat = "true";
+    button.addEventListener("click", openAppointmentChat);
+  });
+}
+
+function initReveal() {
+  const items = document.querySelectorAll(".reveal");
+  if (!items.length) return;
+  if (!("IntersectionObserver" in window)) {
+    items.forEach((item) => item.classList.add("is-visible"));
+    return;
+  }
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.16 });
+  items.forEach((item) => observer.observe(item));
 }
 
 function bindFaq() {
@@ -109,6 +230,17 @@ function toggleAppointmentChat() {
   if (!panel || !button) return;
   panel.hidden = !panel.hidden;
   button.setAttribute("aria-expanded", String(!panel.hidden));
+  document.body.classList.toggle("chat-open", !panel.hidden);
+}
+
+function openAppointmentChat() {
+  const panel = $("#appointment-chat-panel");
+  const button = $("#appointment-chat-toggle");
+  if (!panel || !button) return;
+  panel.hidden = false;
+  button.setAttribute("aria-expanded", "true");
+  document.body.classList.add("chat-open");
+  $("#appointment-chat-query")?.focus();
 }
 
 function closeAppointmentChat() {
@@ -117,6 +249,7 @@ function closeAppointmentChat() {
   if (!panel || !button) return;
   panel.hidden = true;
   button.setAttribute("aria-expanded", "false");
+  document.body.classList.remove("chat-open");
 }
 
 function setChatMode(mode) {
