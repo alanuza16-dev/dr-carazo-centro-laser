@@ -283,8 +283,8 @@ select {
 .hero-copy {
   position: relative;
   z-index: 2;
-  grid-column: 2 / span 6;
-  max-width: 760px;
+  grid-column: 2 / span 5;
+  max-width: 680px;
 }
 
 .hero-copy::before {
@@ -336,10 +336,10 @@ h2 {
 }
 
 h1 {
-  max-width: 790px;
+  max-width: 690px;
   margin-top: 18px;
-  font-size: clamp(52px, 7vw, 96px);
-  line-height: .9;
+  font-size: clamp(50px, 6vw, 86px);
+  line-height: .92;
 }
 
 h2 {
@@ -397,7 +397,7 @@ h3 {
 .hero-portrait {
   position: relative;
   z-index: 1;
-  grid-column: 8 / span 6;
+  grid-column: 8 / -1;
   grid-row: 1 / span 2;
   align-self: end;
   margin: 0;
@@ -1353,8 +1353,8 @@ h3 {
 }
 
 .reveal {
-  opacity: 0;
-  transform: translateY(18px);
+  opacity: 1;
+  transform: translateY(0);
   transition: opacity var(--slow) var(--ease), transform var(--slow) var(--ease);
 }
 
