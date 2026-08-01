@@ -2,42 +2,42 @@
 
 ## Principios
 
-- Institucional, medico y tecnologico, sin sentirse futurista.
-- Composicion editorial con escenas, no secciones repetidas.
-- El retrato del doctor y la tecnologia Fotona son senales visuales primarias.
-- El chatbot se presenta como asistente de agenda, nunca como sustituto medico.
+- Institucional, médico y tecnológico, sin sentirse futurista.
+- Composición editorial con escenas, no secciones repetidas.
+- El retrato del doctor y la tecnología Fotona son señales visuales primarias.
+- El chatbot se presenta como asistente de agenda, nunca como sustituto médico.
 
 ## Paleta
 
 - Azul noche: `#071929`
-- Azul clinico: `#102b45`
-- Teal medico: `#12848c`
+- Azul clínico: `#102b45`
+- Teal médico: `#12848c`
 - Magenta tenue: `#c6507f`
 - Oro editorial: `#b9914c`
 - Papel claro: `#f4f7f8`
 - Tinta: `#132235`
 
-Uso correcto: azul noche para escenas institucionales, teal para accion primaria, magenta como acento luminoso.  
-Uso incorrecto: fondos dominados por magenta, gradientes brillantes o paletas monocromaticas.
+Uso correcto: azul noche para escenas institucionales, teal para acción primaria, magenta como acento luminoso.  
+Uso incorrecto: fondos dominados por magenta, gradientes brillantes o paletas monocromáticas.
 
-## Tipografia
+## Tipografía
 
 - Display: Georgia/Iowan style para titulares editoriales.
 - UI/body: Inter/system sans para interfaz y lectura.
-- Datos tecnicos: monospace del sistema.
+- Datos técnicos: monospace del sistema.
 - H1 desktop: `clamp(52px, 7vw, 96px)`.
 - H2 desktop: `clamp(34px, 5vw, 70px)`.
 
 ## Espaciado y Grid
 
-- Grid desktop: 12 columnas con margenes fluidos.
+- Grid desktop: 12 columnas con márgenes fluidos.
 - Escenas amplias: 100vh hero, 58vh CTA final.
 - Secciones compactas: autoridad y datos.
-- Movil: composiciones redisenadas en una columna, no solo apiladas.
+- Móvil: composiciones rediseñadas en una columna, no solo apiladas.
 
 ## Radios, Bordes y Sombras
 
-- Radio pequeno: `6px`.
+- Radio pequeño: `6px`.
 - Radio medio: `10px`.
 - Radio amplio: `18px` solo para piezas editoriales.
 - Bordes luminosos sutiles: `rgba(..., .16-.26)`.
@@ -45,16 +45,16 @@ Uso incorrecto: fondos dominados por magenta, gradientes brillantes o paletas mo
 
 ## Botones
 
-- Primario: teal solido con flecha direccional.
+- Primario: teal sólido con flecha direccional.
 - Secundario oscuro: transparente con borde refinado.
-- Texto: linea animada.
-- No usar botones pildora para todas las acciones.
+- Texto: línea animada.
+- No usar botones píldora para todas las acciones.
 
 ## Formularios y Chatbot
 
-- Inputs con borde sobrio, foco claro y copy no tecnico.
-- Sofi cerrado: boton flotante premium, pulso minimo.
-- Sofi abierto: panel lateral en desktop y casi pantalla completa en movil.
+- Inputs con borde sobrio, foco claro y copy no técnico.
+- Sofi cerrado: botón flotante premium, pulso mínimo.
+- Sofi abierto: panel lateral en desktop y casi pantalla completa en móvil.
 - Estados visibles: loading, error, privacidad y fallback a Huli.
 
 ## Movimiento
@@ -64,15 +64,15 @@ Uso incorrecto: fondos dominados por magenta, gradientes brillantes o paletas mo
 - Header se contrae al hacer scroll.
 - Respetar `prefers-reduced-motion`.
 
-## Imagenes
+## Imágenes
 
-- Retrato vertical del doctor: busto, fondo sobrio, luz clinica.
-- Tecnologia Fotona: imagen horizontal con espacio para datos superpuestos.
-- Evitar stock medico obvio cuando haya foto real disponible.
+- Retrato vertical del doctor: busto, fondo sobrio, luz clínica.
+- Tecnología Fotona: imagen horizontal con espacio para datos superpuestos.
+- Evitar stock médico obvio cuando haya foto real disponible.
 
 ## Accesibilidad
 
 - Botones reales para acciones.
 - `aria-live` en el chat y selector.
-- Navegacion movil con `aria-expanded`.
+- Navegación móvil con `aria-expanded`.
 - Contraste alto en escenas oscuras.

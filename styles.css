@@ -815,8 +815,8 @@ h3 {
   padding: clamp(78px, 10vw, 140px) 0;
   color: var(--white);
   background:
-    linear-gradient(135deg, rgba(7, 25, 41, .94), rgba(16, 43, 69, .84)),
-    url("https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&w=1800&q=80") center/cover;
+    radial-gradient(circle at 18% 42%, rgba(18, 132, 140, .22), transparent 34%),
+    linear-gradient(135deg, rgba(7, 25, 41, .98), rgba(16, 43, 69, .9));
 }
 
 .closing-scene > div:first-child {
@@ -999,8 +999,8 @@ h3 {
   padding: clamp(120px, 16vw, 180px) clamp(20px, 7vw, 92px) clamp(54px, 8vw, 90px);
   color: var(--white);
   background:
-    linear-gradient(90deg, rgba(7, 25, 41, .94), rgba(16, 43, 69, .62)),
-    url("https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&w=1600&q=80") center/cover;
+    radial-gradient(circle at 82% 24%, rgba(198, 80, 127, .18), transparent 34%),
+    linear-gradient(90deg, rgba(7, 25, 41, .98), rgba(16, 43, 69, .86));
 }
 
 .detail-hero.compact {

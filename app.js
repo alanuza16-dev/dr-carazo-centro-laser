@@ -4,16 +4,17 @@ const CHAT_API_URL = "/api/appointment-chat";
 const QUICK_TOPICS = [
   "IncontiLase",
   "Labioplastia",
-  "Hormonas bioidenticas",
-  "Displasia de cervix"
+  "Hormonas bioidénticas",
+  "Displasia de cérvix"
 ];
 
 const NEEDS = {
   orina: {
     count: "01",
     title: "IncontiLase FOTONA",
-    copy: "Informacion para mujeres con perdidas de orina al toser, reir o hacer ejercicio.",
+    copy: "Información para mujeres con pérdidas de orina al toser, reír o hacer ejercicio.",
     image: "assets/incontilase-fotona-system.jpg",
+    alt: "Equipo Fotona utilizado para procedimientos ginecológicos láser",
     links: [
       { label: "Ver IncontiLase", href: "ginecologia.html#incontilase" },
       { label: "Preguntar a Sofi", chat: true }
@@ -21,19 +22,21 @@ const NEEDS = {
   },
   intima: {
     count: "02",
-    title: "Salud intima femenina",
-    copy: "Orientacion sobre sequedad, incomodidad, salud vaginal y alternativas que requieren valoracion individual.",
-    image: "https://images.unsplash.com/photo-1551190822-a9333d879b1f?auto=format&fit=crop&w=1200&q=80",
+    title: "Salud íntima femenina",
+    copy: "Orientación sobre sequedad, incomodidad, salud vaginal y alternativas que requieren valoración individual.",
+    image: "assets/incontilase-fotona-system.jpg",
+    alt: "Equipo Fotona relacionado con procedimientos de salud íntima femenina",
     links: [
       { label: "Ver servicios", href: "ginecologia.html#procedimientos" },
-      { label: "Agendar valoracion", href: "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" }
+      { label: "Agendar valoración", href: "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" }
     ]
   },
   hormonas: {
     count: "03",
     title: "Menopausia y hormonas",
-    copy: "Informacion general sobre terapia con hormonas bioidenticas y acompanamiento medico durante cambios hormonales.",
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80",
+    copy: "Información general sobre terapia con hormonas bioidénticas y acompañamiento médico durante cambios hormonales.",
+    image: "assets/dr-luis-diego-carazo-premium.png",
+    alt: "Retrato del Dr. Luis Diego Carazo",
     links: [
       { label: "Leer hormonas", href: "ginecologia.html#procedimientos" },
       { label: "Preguntar a Sofi", chat: true }
@@ -41,9 +44,10 @@ const NEEDS = {
   },
   procedimientos: {
     count: "04",
-    title: "Procedimientos ginecologicos",
-    copy: "Labioplastia, displasia de cervix, tratamientos laser y procedimientos que requieren indicacion clinica.",
-    image: "https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&w=1200&q=80",
+    title: "Procedimientos ginecológicos",
+    copy: "Labioplastia, displasia de cérvix, tratamientos láser y procedimientos que requieren indicación clínica.",
+    image: "assets/incontilase-fotona-system.jpg",
+    alt: "Equipo Fotona usado como referencia tecnológica para procedimientos ginecológicos",
     links: [
       { label: "Ver procedimientos", href: "ginecologia.html#procedimientos" },
       { label: "Agendar", href: "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" }
@@ -52,8 +56,9 @@ const NEEDS = {
   general: {
     count: "05",
     title: "Consulta general",
-    copy: "Agenda una valoracion si necesitas revisar sintomas, controles, ultrasonidos o dudas ginecologicas generales.",
+    copy: "Agenda una valoración si necesitas revisar síntomas, controles, ultrasonidos o dudas ginecológicas generales.",
     image: "assets/dr-luis-diego-carazo-premium.png",
+    alt: "Retrato del Dr. Luis Diego Carazo",
     links: [
       { label: "Abrir Huli", href: "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" },
       { label: "FAQ", href: "faq.html" }
@@ -118,7 +123,10 @@ function renderNeed(key) {
   const title = $("#need-title");
   const copy = $("#need-copy");
   const links = $("#need-links");
-  if (image) image.src = item.image;
+  if (image) {
+    image.src = item.image;
+    image.alt = item.alt || "";
+  }
   if (count) count.textContent = item.count;
   if (title) title.textContent = item.title;
   if (copy) copy.textContent = item.copy;
@@ -191,17 +199,17 @@ function renderAppointmentChatWidget() {
           <span class="tag">Asistente del Dr. Carazo</span>
           <button class="icon-button text-close" id="appointment-chat-close" type="button" aria-label="Cerrar asistente">Cerrar</button>
         </div>
-        <h3>Agenda e informacion medica</h3>
+        <h3>Agenda e información médica</h3>
         <div class="chat-mode" role="tablist" aria-label="Modo de consulta">
           <button class="is-active" type="button" data-chat-mode="appointment">Cita</button>
-          <button type="button" data-chat-mode="info">Informacion</button>
+          <button type="button" data-chat-mode="info">Información</button>
         </div>
         <div class="chat-messages" id="appointment-chat-messages" aria-live="polite">
-          <div class="chat-message bot">Hola, soy Sofi. Puedo revisar si existe una cita por cedula o responder sobre servicios del sitio.</div>
+          <div class="chat-message bot">Hola, soy Sofi. Puedo revisar si existe una cita por cédula o responder sobre servicios del sitio.</div>
         </div>
         <form class="chat-form" id="appointment-chat-form">
           <label>
-            <span id="chat-input-label">Cedula</span>
+            <span id="chat-input-label">Cédula</span>
             <input id="appointment-chat-query" type="text" inputmode="numeric" autocomplete="off" placeholder="Ej. 101110111" required>
           </label>
           <button class="button primary wide" type="submit">Enviar</button>
@@ -210,7 +218,7 @@ function renderAppointmentChatWidget() {
         <div class="chat-actions">
           <a class="button secondary wide" href="${HULI_SCHEDULE_URL}" rel="noopener">Abrir agenda Huli</a>
         </div>
-        <small>El asistente no diagnostica, no sustituye consulta medica y no muestra cedulas completas.</small>
+        <small>El asistente no diagnostica, no sustituye consulta médica y no muestra cédulas completas.</small>
       </div>
     </aside>
   `);
@@ -264,7 +272,7 @@ function setChatMode(mode) {
     if (label) label.textContent = "Pregunta";
     if (input) {
       input.inputMode = "text";
-      input.placeholder = "Ej. Que es IncontiLase?";
+      input.placeholder = "Ej. ¿Qué es IncontiLase?";
       input.value = "";
       input.focus();
     }
@@ -272,7 +280,7 @@ function setChatMode(mode) {
     return;
   }
 
-  if (label) label.textContent = "Cedula";
+  if (label) label.textContent = "Cédula";
   if (input) {
     input.inputMode = "numeric";
     input.placeholder = "Ej. 101110111";
@@ -306,24 +314,24 @@ async function submitAppointmentChat(event) {
   const rawValue = input.value.trim();
 
   if (!rawValue) {
-    appendChatMessage(mode === "info" ? "Escribe una pregunta sobre los servicios." : "Necesito un numero de cedula para revisar la cita.", "bot", false, true);
+    appendChatMessage(mode === "info" ? "Escribe una pregunta sobre los servicios." : "Necesito un número de cédula para revisar la cita.", "bot", false, true);
     return;
   }
 
   if (mode === "appointment" && hasLetters(rawValue)) {
-    appendChatMessage("Ese dato no parece una cedula valida. Ingresa solo numeros; guiones y espacios se limpian automaticamente.", "bot", false, true);
+    appendChatMessage("Ese dato no parece una cédula válida. Ingresa solo números; guiones y espacios se limpian automáticamente.", "bot", false, true);
     return;
   }
 
   const cleanValue = mode === "appointment" ? normalizeCedulaInput(rawValue) : rawValue;
   if (mode === "appointment" && !cleanValue) {
-    appendChatMessage("Necesito un numero de cedula para revisar la cita.", "bot", false, true);
+    appendChatMessage("Necesito un número de cédula para revisar la cita.", "bot", false, true);
     return;
   }
 
   appendChatMessage(mode === "appointment" ? maskForChat(cleanValue) : rawValue, "user");
   input.value = "";
-  const pending = appendChatMessage(mode === "appointment" ? "Consultando Huli..." : "Revisando informacion aprobada...", "bot", true);
+  const pending = appendChatMessage(mode === "appointment" ? "Consultando Huli..." : "Revisando información aprobada...", "bot", true);
   const submitButton = $("#appointment-chat-form button[type='submit']");
   if (submitButton) submitButton.disabled = true;
 

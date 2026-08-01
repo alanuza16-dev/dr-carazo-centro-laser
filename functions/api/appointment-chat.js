@@ -7,33 +7,33 @@ const requestBuckets = new Map();
 const KNOWLEDGE_BASE = [
   {
     topic: "IncontiLase FOTONA",
-    keywords: ["incontilase", "incontinencia", "orina", "tos", "risa", "ejercicio", "laser vaginal"],
-    answer: "IncontiLase FOTONA es un tratamiento ginecologico laser orientado a incontinencia urinaria de esfuerzo. El sitio lo presenta como una opcion medica no quirurgica, con sesiones cortas y sin tiempo de recuperacion habitual. La indicacion real debe confirmarla el doctor en consulta."
+    keywords: ["incontilase", "incontinencia", "orina", "tos", "risa", "ejercicio", "laser vaginal", "láser vaginal"],
+    answer: "IncontiLase FOTONA es un tratamiento ginecológico láser orientado a incontinencia urinaria de esfuerzo. El sitio lo presenta como una opción médica no quirúrgica, con sesiones cortas y sin tiempo de recuperación habitual. La indicación real debe confirmarla el doctor en consulta."
   },
   {
     topic: "Labioplastia",
     keywords: ["labioplastia", "labios", "asimetria", "intima", "comodidad"],
-    answer: "La labioplastia se presenta como un procedimiento para mejorar comodidad, funcion y estetica intima cuando hay exceso de tejido o asimetria. Requiere valoracion medica para confirmar si aplica y explicar recuperacion, riesgos y expectativas."
+    answer: "La labioplastia se presenta como un procedimiento para mejorar comodidad, función y estética íntima cuando hay exceso de tejido o asimetría. Requiere valoración médica para confirmar si aplica y explicar recuperación, riesgos y expectativas."
   },
   {
-    topic: "Hormonas bioidenticas",
-    keywords: ["hormonas", "bioidenticas", "menopausia", "estradiol", "progesterona", "testosterona", "pellets"],
-    answer: "La terapia con hormonas bioidenticas se usa en pacientes seleccionadas, especialmente en etapa de menopausia o sintomas asociados. Puede incluir estradiol, progesterona y, en algunos casos, testosterona. La dosis y via se definen solamente despues de valoracion medica."
+    topic: "Hormonas bioidénticas",
+    keywords: ["hormonas", "bioidenticas", "bioidénticas", "menopausia", "estradiol", "progesterona", "testosterona", "pellets"],
+    answer: "La terapia con hormonas bioidénticas se usa en pacientes seleccionadas, especialmente en etapa de menopausia o síntomas asociados. Puede incluir estradiol, progesterona y, en algunos casos, testosterona. La dosis y vía se definen solamente después de valoración médica."
   },
   {
-    topic: "Displasia de cervix",
-    keywords: ["displasia", "cervix", "cuello uterino", "vph", "papiloma", "verrugas"],
-    answer: "El tratamiento laser de displasia de cervix se menciona para lesiones de bajo grado asociadas a VPH. Antes de cualquier procedimiento se necesita diagnostico, estudios y criterio del especialista."
+    topic: "Displasia de cérvix",
+    keywords: ["displasia", "cervix", "cérvix", "cuello uterino", "vph", "papiloma", "verrugas"],
+    answer: "El tratamiento láser de displasia de cérvix se menciona para lesiones de bajo grado asociadas a VPH. Antes de cualquier procedimiento se necesita diagnóstico, estudios y criterio del especialista."
   },
   {
     topic: "Agenda Huli",
     keywords: ["cita", "agenda", "huli", "agendar", "horario", "cancelar", "confirmar"],
-    answer: "Para agendar una cita nueva se usa la agenda oficial de Huli del Dr. Carazo. Para revisar si existe una cita, usa el modo Cita y escribe la cedula con solo numeros; guiones y espacios se limpian automaticamente."
+    answer: "Para agendar una cita nueva se usa la agenda oficial de Huli del Dr. Carazo. Para revisar si existe una cita, usa el modo Cita y escribe la cédula con solo números; guiones y espacios se limpian automáticamente."
   },
   {
     topic: "Relacion con Jenny Delgado",
-    keywords: ["jenny", "estetica", "facial", "corporal", "depilacion", "centro estetica"],
-    answer: "Los servicios esteticos faciales y corporales se manejan en el sitio separado de Jenny Delgado Centro de Estetica Laser. El sitio del Dr. Carazo mantiene el enfoque ginecologico y enlaza hacia Jenny cuando corresponde."
+    keywords: ["jenny", "estetica", "estética", "facial", "corporal", "depilacion", "depilación", "centro estetica", "centro estética"],
+    answer: "Los servicios estéticos faciales y corporales se manejan en el sitio separado de Jenny Delgado Centro de Estética Láser. El sitio del Dr. Carazo mantiene el enfoque ginecológico y enlaza hacia Jenny cuando corresponde."
   }
 ];
 
@@ -76,14 +76,14 @@ export async function onRequestGet({ request, env }) {
       diagnostics.steps.push({
         step: "query",
         ok: false,
-        message: "La cedula de prueba no es valida. Usa solo numeros; guiones y espacios se limpian automaticamente."
+        message: "La cédula de prueba no es válida. Usa solo números; guiones y espacios se limpian automáticamente."
       });
       return json(diagnostics, 400);
     }
 
     if (!query) {
       diagnostics.ok = true;
-      diagnostics.steps.push({ step: "query", ok: true, message: "Sin cedula de prueba." });
+      diagnostics.steps.push({ step: "query", ok: true, message: "Sin cédula de prueba." });
       return json(diagnostics);
     }
 
@@ -127,12 +127,12 @@ export async function onRequestPost({ request, env }) {
     }
 
     if (hasLetters(rawValue)) {
-      return json({ reply: "Ese dato no parece una cedula valida. Ingresa solo numeros; guiones y espacios se limpian automaticamente." }, 400);
+      return json({ reply: "Ese dato no parece una cédula válida. Ingresa solo números; guiones y espacios se limpian automáticamente." }, 400);
     }
 
     const query = normalizeCedulaInput(body.query || rawValue);
-    if (!query) return json({ reply: "Necesito un numero de cedula para revisar la agenda." }, 400);
-    if (query.length < 7) return json({ reply: "La cedula parece incompleta. Revisa el numero e intenta de nuevo." }, 400);
+    if (!query) return json({ reply: "Necesito un número de cédula para revisar la agenda." }, 400);
+    if (query.length < 7) return json({ reply: "La cédula parece incompleta. Revisa el número e intenta de nuevo." }, 400);
 
     const huliConfigError = validateHuliConfig(env);
     if (huliConfigError) return json({ reply: huliConfigError }, 500);
@@ -147,7 +147,7 @@ export async function onRequestPost({ request, env }) {
     }
 
     const prompt = [
-      `Cedula consultada: ${maskIdentifier(query)}`,
+      `Cédula consultada: ${maskIdentifier(query)}`,
       `Pacientes encontrados: ${JSON.stringify(patientFiles.map(normalizeHuliPatient))}`,
       `Estrategia de citas: ${appointmentLookup.strategy}`,
       `Citas encontradas: ${JSON.stringify(normalizedAppointments)}`
@@ -157,7 +157,7 @@ export async function onRequestPost({ request, env }) {
       "Eres Sofi, asistente de agenda del Dr. Luis Diego Carazo.",
       "Responde en espanol claro, breve y humano.",
       "Usa solamente los datos devueltos por Huli.",
-      "No diagnostiques, no recomiendes tratamientos y no muestres cedulas completas.",
+      "No diagnostiques, no recomiendes tratamientos y no muestres cédulas completas.",
       "Si no hay citas, indica que se encontro el expediente si aplica y recomienda abrir Huli para agendar."
     ].join(" "), prompt);
 
@@ -197,7 +197,7 @@ async function answerInfoQuestion(rawQuestion, env) {
 
   if (!matches.length) {
     return json({
-      reply: "Puedo responder sobre IncontiLase, labioplastia, hormonas bioidenticas, displasia de cervix y agenda Huli. Para sintomas o decisiones medicas, lo correcto es valoracion con el doctor."
+      reply: "Puedo responder sobre IncontiLase, labioplastia, hormonas bioidénticas, displasia de cérvix y agenda Huli. Para síntomas o decisiones médicas, lo correcto es valoración con el doctor."
     });
   }
 
@@ -393,7 +393,7 @@ function normalizeHuliAppointment(appointment) {
 
 function buildDeterministicAppointmentReply(patientFiles, appointments) {
   if (!patientFiles.length) {
-    return "No encontre un expediente en Huli con esa cedula. Verifica el numero o abre la agenda Huli para coordinar la cita.";
+    return "No encontré un expediente en Huli con esa cédula. Verifica el número o abre la agenda Huli para coordinar la cita.";
   }
   if (!appointments.length) {
     return "Encontre el expediente en Huli, pero no encontre citas activas en el rango consultado. Puedes abrir la agenda Huli para agendar o confirmar disponibilidad.";
@@ -497,19 +497,19 @@ function corsHeaders() {
 function getSafeErrorMessage(error) {
   const message = error?.message || "";
   if (message.startsWith("huli-auth-failed")) {
-    return "Huli rechazo la autenticacion. Revisa que HULI_API_KEY y HULI_ORGANIZATION_ID esten configurados correctamente.";
+    return "Huli rechazó la autenticación. Revisa que HULI_API_KEY y HULI_ORGANIZATION_ID estén configurados correctamente.";
   }
   if (message === "huli-auth-missing-token") {
-    return "Huli respondio sin token de acceso. Revisa la API key de Huli.";
+    return "Huli respondió sin token de acceso. Revisa la API key de Huli.";
   }
   if (message.startsWith("huli-patient-search-failed")) {
-    return "Huli rechazo la busqueda de expediente. Revisa permisos de la API key para consultar expedientes.";
+    return "Huli rechazó la búsqueda de expediente. Revisa permisos de la API key para consultar expedientes.";
   }
   if (message === "huli-doctor-id-missing") {
     return "Falta configurar HULI_DOCTOR_ID para consultar citas por doctor.";
   }
   if (message.startsWith("huli-doctor-appointments-failed")) {
-    return "Huli rechazo la lectura de citas por doctor. Hay que habilitar permisos de agenda para la API key.";
+    return "Huli rechazó la lectura de citas por doctor. Hay que habilitar permisos de agenda para la API key.";
   }
   if (message === "invalid-json-body") {
     return "La solicitud del chat no tiene un formato valido. Intenta de nuevo.";

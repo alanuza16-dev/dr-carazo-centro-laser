@@ -1,14 +1,14 @@
 # Dr. Luis Diego Carazo
 
-Sitio medico estatico servido por Cloudflare Workers. La agenda real vive en Huli y el chatbot escrito `Sofi` consulta Huli desde servidor cuando la paciente ingresa una cedula.
+Sitio médico estático servido por Cloudflare Workers. La agenda real vive en Huli y el chatbot escrito `Sofi` consulta Huli desde servidor cuando la paciente ingresa una cédula.
 
 ## Flujo productivo
 
-- Paginas publicas: `index.html`, `ginecologia.html`, `faq.html`, `articulos.html`.
+- Páginas públicas: `index.html`, `ginecologia.html`, `faq.html`, `articulos.html`.
 - Agenda nueva: enlace directo al calendario oficial Huli del doctor.
-- Revision de cita: `POST /api/appointment-chat` obtiene JWT de Huli y busca expediente/citas en la misma ejecucion.
-- Informacion general: Sofi responde solo con contenido aprobado del sitio.
-- Paginas internas heredadas (`agenda.html`, `login.html`, `admin.html`, `citas.html`) quedaron como referencias operativas sin agenda local ni usuarios locales.
+- Revisión de cita: `POST /api/appointment-chat` obtiene JWT de Huli y busca expediente/citas en la misma ejecución.
+- Información general: Sofi responde solo con contenido aprobado del sitio.
+- Páginas internas heredadas (`agenda.html`, `login.html`, `admin.html`, `citas.html`) quedaron como referencias operativas sin agenda local ni usuarios locales.
 
 ## Variables y secretos
 
@@ -31,14 +31,14 @@ Variables no sensibles recomendadas:
 - `OPENAI_MODEL`: `gpt-5-mini`
 - `ENABLE_DIAGNOSTICS`: usar `true` solo temporalmente para pruebas.
 
-## Diagnostico Huli
+## Diagnóstico Huli
 
-El diagnostico esta protegido. Use una de estas opciones:
+El diagnóstico está protegido. Use una de estas opciones:
 
 - Definir `ENABLE_DIAGNOSTICS=true` temporalmente.
 - Definir `DIAGNOSTICS_TOKEN` y llamar `/api/appointment-chat?mode=diagnostics&token=TOKEN&query=CEDULA`.
 
-La respuesta nunca debe mostrar el API key, JWT ni cedula completa.
+La respuesta nunca debe mostrar el API key, JWT ni cédula completa.
 
 ## Desarrollo
 
@@ -46,7 +46,7 @@ La respuesta nunca debe mostrar el API key, JWT ni cedula completa.
 npx.cmd wrangler dev
 ```
 
-Validacion rapida:
+Validación rápida:
 
 ```bash
 node --check app.js
