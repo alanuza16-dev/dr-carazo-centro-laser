@@ -86,6 +86,7 @@ const focusableSelector = "a[href], button:not([disabled]), input:not([disabled]
 let lastMenuTrigger = null;
 
 document.addEventListener("DOMContentLoaded", () => {
+  ensureMobileMenuStructure();
   renderAppointmentChatWidget();
   bindNavigation();
   bindFaq();
@@ -95,6 +96,68 @@ document.addEventListener("DOMContentLoaded", () => {
   bindHeaderScroll();
   initReveal();
 });
+
+function ensureMobileMenuStructure() {
+  const nav = $("#main-nav");
+  const button = $("#mobile-menu-toggle");
+  if (!nav || !button) return;
+
+  button.setAttribute("aria-label", "Abrir menú");
+  if (!button.querySelector("span")) {
+    button.textContent = "";
+    button.insertAdjacentHTML("beforeend", '<span aria-hidden="true"></span><span aria-hidden="true"></span>');
+  }
+
+  if (!nav.querySelector(".desktop-nav")) {
+    const desktopNav = document.createElement("div");
+    desktopNav.className = "desktop-nav";
+    Array.from(nav.children).forEach((child) => desktopNav.appendChild(child));
+    nav.appendChild(desktopNav);
+  }
+
+  if (!nav.querySelector(".mobile-menu-shell")) {
+    nav.insertAdjacentHTML("beforeend", `
+      <div class="mobile-menu-shell" aria-label="Menú móvil">
+        <div class="mobile-menu-head">
+          <div>
+            <span class="brand-mark">LC</span>
+            <strong>Dr. Carazo</strong>
+            <small>Agenda y ginecología láser</small>
+          </div>
+          <button class="mobile-menu-close" type="button" data-close-menu aria-label="Cerrar menú">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <button class="mobile-menu-cta" type="button" data-open-chat data-close-menu>
+          <span>Agenda</span>
+          <strong>Abrir asistente de citas</strong>
+          <small>Consultar por cédula con Sofi</small>
+        </button>
+        <div class="mobile-menu-links">
+          ${mobileMenuLink("index.html", "01", "Inicio", "Vista principal")}
+          ${mobileMenuLink("ginecologia.html", "02", "Tratamientos", "Servicios ginecológicos")}
+          ${mobileMenuLink("ginecologia.html#incontilase", "03", "Tecnología Fotona", "IncontiLase y láser")}
+          ${mobileMenuLink("index.html#necesidades", "04", "Orientación", "Buscar por necesidad")}
+          ${mobileMenuLink("faq.html", "05", "FAQ", "Preguntas frecuentes")}
+          ${mobileMenuLink("articulos.html", "06", "Artículos", "Lecturas aprobadas")}
+        </div>
+        <div class="mobile-menu-secondary">
+          <a href="https://jennydelgadocentroesteticalaser.adminlanzah.workers.dev/" data-close-menu>Jenny Delgado</a>
+          <a href="https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" data-close-menu>Abrir Huli</a>
+        </div>
+      </div>
+    `);
+  }
+}
+
+function mobileMenuLink(href, number, title, meta) {
+  const currentPath = window.location.pathname.split("/").pop() || "index.html";
+  const targetPath = href.split("#")[0] || "index.html";
+  const targetHash = href.includes("#") ? `#${href.split("#")[1]}` : "";
+  const current = currentPath === targetPath && window.location.hash === targetHash ? ' aria-current="page"' : "";
+  return `<a href="${href}"${current} data-close-menu><span>${number}</span><strong>${title}</strong><small>${meta}</small></a>`;
+}
 
 function bindNavigation() {
   const params = new URLSearchParams(window.location.search);
