@@ -366,13 +366,13 @@ function renderAppointmentChatWidget() {
           <span class="tag">Asistente del Dr. Carazo</span>
           <button class="icon-button text-close" id="appointment-chat-close" type="button" aria-label="Cerrar asistente">Cerrar</button>
         </div>
-        <h3>Agenda e información médica</h3>
+        <h3>Agenda y orientación básica</h3>
         <div class="chat-mode" role="tablist" aria-label="Modo de consulta">
           <button class="is-active" type="button" data-chat-mode="appointment">Cita</button>
           <button type="button" data-chat-mode="info">Información</button>
         </div>
         <div class="chat-messages" id="appointment-chat-messages" aria-live="polite">
-          <div class="chat-message bot">Hola, soy Sofi. Puedo revisar si existe una cita por cédula o responder sobre servicios del sitio.</div>
+          <div class="chat-message bot">Hola, soy Sofi. Puedo revisar citas por cédula y responder preguntas básicas de agenda o ginecología del Dr. Carazo.</div>
         </div>
         <form class="chat-form" id="appointment-chat-form">
           <label>
@@ -385,7 +385,7 @@ function renderAppointmentChatWidget() {
         <div class="chat-actions">
           <a class="button secondary wide" href="${HULI_SCHEDULE_URL}" rel="noopener">Abrir agenda Huli</a>
         </div>
-        <small>El asistente no diagnostica, no sustituye consulta médica y no muestra cédulas completas.</small>
+        <small>Sofi solo responde preguntas básicas de agenda y ginecología. No diagnostica, no sustituye consulta médica y no muestra cédulas completas.</small>
       </div>
     </aside>
   `);
