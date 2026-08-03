@@ -371,8 +371,13 @@ function renderAppointmentChatWidget() {
           <button class="is-active" type="button" data-chat-mode="appointment">Cita</button>
           <button type="button" data-chat-mode="info">Información</button>
         </div>
+        <div class="chat-intent-actions" aria-label="Opciones principales de Sofi">
+          <button type="button" data-chat-intent="schedule">Agendar cita</button>
+          <button type="button" data-chat-intent="appointment">Revisar cita</button>
+          <button type="button" data-chat-intent="info">Información básica</button>
+        </div>
         <div class="chat-messages" id="appointment-chat-messages" aria-live="polite">
-          <div class="chat-message bot">Hola, soy Sofi. Puedo revisar citas por cédula y responder preguntas básicas de agenda o ginecología del Dr. Carazo.</div>
+          <div class="chat-message bot">Hola, soy Sofi. ¿En qué te puedo ayudar hoy? Puedo ayudarte a agendar, revisar una cita por cédula o responder preguntas básicas sobre tratamientos ginecológicos disponibles.</div>
         </div>
         <form class="chat-form" id="appointment-chat-form">
           <label>
@@ -385,7 +390,7 @@ function renderAppointmentChatWidget() {
         <div class="chat-actions">
           <a class="button secondary wide" href="${HULI_SCHEDULE_URL}" rel="noopener">Abrir agenda Huli</a>
         </div>
-        <small>Sofi solo responde preguntas básicas de agenda y ginecología. No diagnostica, no sustituye consulta médica y no muestra cédulas completas.</small>
+        <small>Sofí solo responde preguntas básicas de agenda e información de tratamientos disponibles en ginecología. No diagnostica, no sustituye consulta médica.</small>
       </div>
     </aside>
   `);
@@ -395,6 +400,9 @@ function renderAppointmentChatWidget() {
   $("#appointment-chat-form")?.addEventListener("submit", submitAppointmentChat);
   document.querySelectorAll("[data-chat-mode]").forEach((button) => {
     button.addEventListener("click", () => setChatMode(button.dataset.chatMode));
+  });
+  document.querySelectorAll("[data-chat-intent]").forEach((button) => {
+    button.addEventListener("click", () => handleChatIntent(button.dataset.chatIntent));
   });
   renderQuickTopics();
 }
@@ -455,6 +463,25 @@ function setChatMode(mode) {
     input.focus();
   }
   if (topics) topics.hidden = true;
+}
+
+function handleChatIntent(intent) {
+  if (intent === "schedule") {
+    appendChatMessage("Quiero agendar una cita", "user");
+    appendChatMessage("Para agendar, Sofi te lleva a la agenda oficial de Huli. Ahí eliges el espacio disponible y completas los datos requeridos para la valoración con el Dr. Carazo.", "bot");
+    return;
+  }
+
+  if (intent === "info") {
+    setChatMode("info");
+    appendChatMessage("Quiero información básica", "user");
+    appendChatMessage("Claro. Pregúntame sobre tratamientos ginecológicos disponibles como IncontiLase, labioplastia, hormonas bioidénticas o displasia de cérvix.", "bot");
+    return;
+  }
+
+  setChatMode("appointment");
+  appendChatMessage("Quiero revisar una cita", "user");
+  appendChatMessage("Escribe la cédula solo con números. Si tiene guiones o espacios, Sofi los limpia automáticamente.", "bot");
 }
 
 function renderQuickTopics() {

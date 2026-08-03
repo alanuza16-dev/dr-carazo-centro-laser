@@ -1415,6 +1415,26 @@ h3 {
   margin-top: 12px;
 }
 
+.chat-intent-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0 4px;
+}
+
+.chat-intent-actions button {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  color: var(--teal-dark);
+  background: #f7fbfb;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 850;
+  text-align: center;
+}
+
 .quick-topics button {
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -1666,14 +1686,14 @@ h3 {
   }
 
   .mobile-menu-shell {
-    min-height: calc(100dvh - max(20px, env(safe-area-inset-top)) - max(20px, env(safe-area-inset-bottom)));
+    max-height: calc(100dvh - max(16px, env(safe-area-inset-top)) - max(16px, env(safe-area-inset-bottom)));
     display: grid;
-    grid-template-rows: auto auto 1fr auto;
-    gap: 18px;
+    grid-template-rows: auto auto auto auto;
+    gap: 12px;
     overflow-y: auto;
     border: 1px solid rgba(255, 255, 255, .14);
-    border-radius: 24px;
-    padding: 16px;
+    border-radius: 20px;
+    padding: 12px;
     color: var(--white);
     background:
       radial-gradient(circle at 88% 10%, rgba(198, 80, 127, .22), transparent 24%),
@@ -1692,14 +1712,14 @@ h3 {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: 12px;
   }
 
   .mobile-menu-head > div {
     display: grid;
-    grid-template-columns: 42px minmax(0, 1fr);
+    grid-template-columns: 38px minmax(0, 1fr);
     align-items: center;
-    gap: 9px 12px;
+    gap: 6px 10px;
   }
 
   .mobile-menu-head .brand-mark {
@@ -1712,18 +1732,18 @@ h3 {
   }
 
   .mobile-menu-head strong {
-    font-size: 17px;
+    font-size: 15px;
   }
 
   .mobile-menu-head small {
     color: rgba(255, 255, 255, .58);
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .mobile-menu-close {
     position: relative;
-    width: 46px;
-    height: 46px;
+    width: 40px;
+    height: 40px;
     flex: 0 0 auto;
     border: 1px solid rgba(255, 255, 255, .18);
     border-radius: 50%;
@@ -1742,11 +1762,11 @@ h3 {
 
   .mobile-menu-cta {
     display: grid;
-    gap: 6px;
+    gap: 4px;
     width: 100%;
     border: 1px solid rgba(255, 255, 255, .18);
-    border-radius: 18px;
-    padding: 18px;
+    border-radius: 16px;
+    padding: 13px;
     text-align: left;
     color: var(--white);
     background: linear-gradient(135deg, rgba(18, 132, 140, .92), rgba(86, 52, 77, .88));
@@ -1763,31 +1783,32 @@ h3 {
 
   .mobile-menu-cta strong {
     font-family: var(--font-display);
-    font-size: clamp(28px, 8vw, 40px);
-    line-height: .98;
+    font-size: clamp(22px, 6vw, 30px);
+    line-height: 1;
     font-weight: 620;
   }
 
   .mobile-menu-cta small {
     color: rgba(255, 255, 255, .72);
-    font-size: 14px;
+    font-size: 12px;
   }
 
   .mobile-menu-links {
     display: grid;
-    gap: 2px;
+    align-content: start;
+    gap: 0;
     border-block: 1px solid rgba(255, 255, 255, .12);
-    padding-block: 10px;
+    padding-block: 6px;
   }
 
   .mobile-menu-links a {
     display: grid;
-    grid-template-columns: 34px minmax(0, 1fr);
-    gap: 4px 12px;
-    min-height: 64px;
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 3px 10px;
+    min-height: 52px;
     align-content: center;
-    border-radius: 14px;
-    padding: 10px 12px;
+    border-radius: 12px;
+    padding: 7px 10px;
     color: rgba(255, 255, 255, .92);
   }
 
@@ -1802,7 +1823,7 @@ h3 {
 
   .mobile-menu-links strong {
     font-family: var(--font-display);
-    font-size: clamp(24px, 7vw, 34px);
+    font-size: clamp(19px, 5.6vw, 26px);
     line-height: 1;
     font-weight: 620;
   }
@@ -1810,7 +1831,7 @@ h3 {
   .mobile-menu-links small {
     grid-column: 2;
     color: rgba(255, 255, 255, .55);
-    font-size: 13px;
+    font-size: 11px;
   }
 
   .mobile-menu-secondary {
@@ -1822,9 +1843,9 @@ h3 {
   .mobile-menu-secondary a {
     border: 1px solid rgba(255, 255, 255, .14);
     border-radius: 999px;
-    padding: 10px 12px;
+    padding: 8px 10px;
     color: rgba(255, 255, 255, .74);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 800;
   }
 
@@ -2186,32 +2207,70 @@ h3 {
 
   .closing-scene > .hero-actions {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
     margin: 0;
     padding: 0 18px 18px;
     justify-content: stretch;
   }
 
+  .closing-scene > .hero-actions .button {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
   .brand-footer {
-    gap: 24px;
-    padding: 42px var(--mobile-x) calc(102px + env(safe-area-inset-bottom));
+    gap: 18px;
+    padding: 34px var(--mobile-x) calc(82px + env(safe-area-inset-bottom));
   }
 
   .brand-footer strong {
-    font-size: clamp(34px, 11vw, 46px);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 850;
+  }
+
+  .footer-brand span,
+  .footer-links span,
+  .footer-actions span,
+  .brand-footer a,
+  .footer-action,
+  .footer-bottom,
+  .footer-bottom small {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .footer-brand span,
+  .footer-links span,
+  .footer-actions span {
+    margin-bottom: 8px;
+    text-transform: none;
+    color: rgba(255, 255, 255, .62);
   }
 
   .footer-actions {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
   }
 
   .footer-action,
   .brand-footer a {
     width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .footer-action {
+    display: grid;
+    place-items: center;
   }
 
   .footer-bottom {
     display: grid;
+    gap: 8px;
   }
 
   .appointment-chat {
