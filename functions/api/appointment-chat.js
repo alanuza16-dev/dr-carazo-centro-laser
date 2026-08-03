@@ -226,7 +226,7 @@ async function askOpenAI(env, instructions, userInput) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      model: env.OPENAI_MODEL || "gpt-5-mini",
+      model: env.OPENAI_MODEL || "gpt-5.4-nano",
       input: [
         { role: "system", content: [{ type: "input_text", text: instructions }] },
         { role: "user", content: [{ type: "input_text", text: userInput }] }

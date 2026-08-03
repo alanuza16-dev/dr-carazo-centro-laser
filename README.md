@@ -28,7 +28,7 @@ Variables no sensibles recomendadas:
 - `HULI_DOCTOR_ID`: `542`
 - `HULI_LOOKBACK_DAYS`: `0`
 - `HULI_LOOKAHEAD_DAYS`: `14`
-- `OPENAI_MODEL`: `gpt-5-mini`
+- `OPENAI_MODEL`: `gpt-5.4-nano`
 - `ENABLE_DIAGNOSTICS`: usar `true` solo temporalmente para pruebas.
 
 ## Diagnóstico Huli
