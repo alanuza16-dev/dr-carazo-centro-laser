@@ -2223,6 +2223,14 @@ h3 {
   .brand-footer {
     gap: 18px;
     padding: 34px var(--mobile-x) calc(82px + env(safe-area-inset-bottom));
+    text-align: center;
+  }
+
+  .footer-brand,
+  .footer-links,
+  .footer-actions,
+  .footer-bottom {
+    justify-items: center;
   }
 
   .brand-footer strong {
@@ -2276,6 +2284,7 @@ h3 {
   .footer-bottom {
     display: grid;
     gap: 8px;
+    text-align: center;
   }
 
   .appointment-chat {
