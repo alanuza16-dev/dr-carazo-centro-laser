@@ -1602,7 +1602,7 @@ h3 {
   }
 
   body {
-    padding-bottom: calc(22px + env(safe-area-inset-bottom));
+    padding-bottom: 0;
   }
 
   body.nav-open .site-header {
@@ -2254,6 +2254,11 @@ h3 {
   .footer-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
+  }
+
+  .footer-actions span {
+    grid-column: 1 / -1;
+    text-align: center;
   }
 
   .footer-action,
