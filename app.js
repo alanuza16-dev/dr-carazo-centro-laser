@@ -75,7 +75,7 @@ const NEEDS = {
     visualTitle: "Consulta",
     visualMeta: "Agenda oficial",
     links: [
-      { label: "Abrir Huli", href: "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" },
+      { label: "Agendar cita", href: "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" },
       { label: "FAQ", href: "faq.html" }
     ]
   }
@@ -144,7 +144,7 @@ function ensureMobileMenuStructure() {
         </div>
         <div class="mobile-menu-secondary">
           <a href="https://jennydelgadocentroesteticalaser.adminlanzah.workers.dev/" data-close-menu>Jenny Delgado</a>
-          <a href="https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" data-close-menu>Abrir Huli</a>
+          <a href="https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" data-close-menu>Agendar cita</a>
         </div>
       </div>
     `);
@@ -388,7 +388,7 @@ function renderAppointmentChatWidget() {
         </form>
         <div class="quick-topics" id="quick-topics" hidden></div>
         <div class="chat-actions">
-          <a class="button secondary wide" href="${HULI_SCHEDULE_URL}" rel="noopener">Abrir agenda Huli</a>
+          <a class="button secondary wide" href="${HULI_SCHEDULE_URL}" rel="noopener">Agendar cita</a>
         </div>
         <small>Sofí solo responde preguntas básicas de agenda e información de tratamientos disponibles en ginecología. No diagnostica, no sustituye consulta médica.</small>
       </div>
@@ -468,7 +468,7 @@ function setChatMode(mode) {
 function handleChatIntent(intent) {
   if (intent === "schedule") {
     appendChatMessage("Quiero agendar una cita", "user");
-    appendChatMessage("Para agendar, Sofi te lleva a la agenda oficial de Huli. Ahí eliges el espacio disponible y completas los datos requeridos para la valoración con el Dr. Carazo.", "bot");
+    appendChatMessage("Para agendar, Sofi te lleva al calendario oficial de citas. Ahí eliges el espacio disponible y completas los datos requeridos para la valoración con el Dr. Carazo.", "bot");
     return;
   }
 
@@ -525,7 +525,7 @@ async function submitAppointmentChat(event) {
 
   appendChatMessage(mode === "appointment" ? maskForChat(cleanValue) : rawValue, "user");
   input.value = "";
-  const pending = appendChatMessage(mode === "appointment" ? "Consultando Huli..." : "Revisando información aprobada...", "bot", true);
+  const pending = appendChatMessage(mode === "appointment" ? "Revisando la agenda..." : "Revisando información aprobada...", "bot", true);
   const submitButton = $("#appointment-chat-form button[type='submit']");
   if (submitButton) submitButton.disabled = true;
 
