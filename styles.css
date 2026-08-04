@@ -975,6 +975,9 @@ h3 {
 .developer-credit {
   width: fit-content;
   color: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 650;
   text-decoration: underline;
   text-decoration-color: rgba(255, 255, 255, .32);
   text-underline-offset: 4px;
@@ -988,8 +991,15 @@ h3 {
   gap: 14px 24px;
   border-top: 1px solid rgba(255, 255, 255, .12);
   padding-top: 22px;
+  font-size: 14px;
   line-height: 1.5;
   color: rgba(255, 255, 255, .56);
+}
+
+.footer-bottom small,
+.footer-bottom .developer-credit {
+  font-size: inherit;
+  line-height: inherit;
 }
 
 .doctor-profile,
@@ -1236,6 +1246,14 @@ h3 {
   color: var(--muted);
   background: var(--white);
   font-size: 14px;
+  line-height: 1.5;
+}
+
+.site-footer p,
+.site-footer a {
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
 }
 
 .site-footer .developer-credit {
