@@ -919,8 +919,9 @@ h3 {
 
 .brand-footer {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(220px, .7fr);
+  grid-template-columns: minmax(0, 1.05fr) minmax(190px, .55fr) minmax(280px, .72fr);
   gap: clamp(28px, 5vw, 72px);
+  align-items: start;
   padding: clamp(42px, 6vw, 82px) clamp(22px, 6vw, 92px) 26px;
   color: rgba(255, 255, 255, .72);
   background:
@@ -930,7 +931,8 @@ h3 {
 
 .footer-brand span,
 .footer-links span,
-.footer-actions span {
+.footer-actions span,
+.footer-contact span {
   display: block;
   margin-bottom: 14px;
   color: rgba(255, 255, 255, .42);
@@ -950,7 +952,8 @@ h3 {
 }
 
 .footer-links,
-.footer-actions {
+.footer-actions,
+.footer-contact {
   display: grid;
   align-content: start;
   gap: 12px;
@@ -970,6 +973,53 @@ h3 {
   background: rgba(255, 255, 255, .07);
   cursor: pointer;
   font-weight: 850;
+}
+
+.footer-contact address {
+  max-width: 34ch;
+  color: rgba(255, 255, 255, .76);
+  font-style: normal;
+  line-height: 1.65;
+}
+
+.footer-socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.brand-footer .social-link,
+.site-footer .social-link {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .07);
+  color: var(--white);
+  transition: transform .2s ease, background .2s ease, border-color .2s ease;
+}
+
+.brand-footer .social-link:hover,
+.site-footer .social-link:hover {
+  border-color: rgba(255, 255, 255, .34);
+  background: rgba(255, 255, 255, .12);
+  transform: translateY(-2px);
+}
+
+.brand-footer .social-link svg,
+.site-footer .social-link svg {
+  width: 19px;
+  height: 19px;
+  fill: currentColor;
+}
+
+.footer-map-link {
+  margin-top: 2px;
+  color: rgba(255, 255, 255, .82);
+  font-weight: 760;
 }
 
 .developer-credit {
@@ -1240,6 +1290,7 @@ h3 {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  align-items: center;
   gap: 18px;
   padding: 28px clamp(20px, 5vw, 70px);
   border-top: 1px solid var(--line);
@@ -1250,10 +1301,37 @@ h3 {
 }
 
 .site-footer p,
-.site-footer a {
+.site-footer a,
+.site-footer address {
   margin: 0;
   font-size: inherit;
   line-height: inherit;
+}
+
+.site-footer address {
+  max-width: 34ch;
+  font-style: normal;
+}
+
+.site-footer .social-link {
+  width: 38px;
+  height: 38px;
+  border-color: rgba(19, 34, 53, .14);
+  background: rgba(6, 21, 34, .04);
+  color: var(--ink);
+}
+
+.site-footer .social-link:hover {
+  border-color: rgba(18, 132, 140, .34);
+  background: rgba(18, 132, 140, .1);
+}
+
+.site-footer-socials {
+  margin-top: 0;
+}
+
+.site-footer .footer-map-link {
+  color: var(--teal);
 }
 
 .site-footer .developer-credit {
@@ -2246,6 +2324,7 @@ h3 {
 
   .footer-brand,
   .footer-links,
+  .footer-contact,
   .footer-bottom {
     justify-items: center;
   }
@@ -2260,8 +2339,10 @@ h3 {
   .footer-brand span,
   .footer-links span,
   .footer-actions span,
+  .footer-contact span,
   .brand-footer a,
   .footer-action,
+  .footer-contact address,
   .footer-bottom,
   .footer-bottom small {
     font-size: 14px;
@@ -2270,10 +2351,20 @@ h3 {
 
   .footer-brand span,
   .footer-links span,
-  .footer-actions span {
+  .footer-actions span,
+  .footer-contact span {
     margin-bottom: 8px;
     text-transform: none;
     color: rgba(255, 255, 255, .62);
+  }
+
+  .footer-contact address {
+    max-width: 28ch;
+    text-align: center;
+  }
+
+  .footer-socials {
+    justify-content: center;
   }
 
   .footer-actions {
@@ -2293,6 +2384,12 @@ h3 {
     text-align: center;
   }
 
+  .brand-footer .social-link,
+  .site-footer .social-link {
+    width: 42px;
+    height: 42px;
+  }
+
   .footer-action {
     display: grid;
     place-items: center;
@@ -2302,6 +2399,16 @@ h3 {
     display: grid;
     gap: 8px;
     text-align: center;
+  }
+
+  .site-footer {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .site-footer address {
+    max-width: 28ch;
   }
 
   .appointment-chat {
