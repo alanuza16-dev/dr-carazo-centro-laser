@@ -1016,12 +1016,6 @@ h3 {
   fill: currentColor;
 }
 
-.footer-map-link {
-  margin-top: 2px;
-  color: rgba(255, 255, 255, .82);
-  font-weight: 760;
-}
-
 .developer-credit {
   width: fit-content;
   color: inherit;
@@ -1328,10 +1322,6 @@ h3 {
 
 .site-footer-socials {
   margin-top: 0;
-}
-
-.site-footer .footer-map-link {
-  color: var(--teal);
 }
 
 .site-footer .developer-credit {
