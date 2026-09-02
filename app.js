@@ -3,16 +3,17 @@ const CHAT_API_URL = "/api/appointment-chat";
 
 const QUICK_TOPICS = [
   "IncontiLase",
-  "Labioplastia",
+  "Labioplastía",
   "Hormonas bioidénticas",
-  "Displasia de cérvix"
+  "Displasia de cérvix",
+  "Infografías"
 ];
 
 const NEEDS = {
   orina: {
     count: "01",
     title: "IncontiLase FOTONA",
-    copy: "Información para mujeres con pérdidas de orina al toser, reír o hacer ejercicio.",
+    copy: "Información para mujeres con pérdidas de orina al toser, reír, saltar o hacer ejercicio.",
     image: "assets/incontilase-fotona-system.jpg",
     alt: "Equipo Fotona utilizado para procedimientos ginecológicos láser",
     visualClass: "need-visual-orina",
@@ -26,39 +27,39 @@ const NEEDS = {
   intima: {
     count: "02",
     title: "Salud íntima femenina",
-    copy: "Orientación sobre sequedad, incomodidad, salud vaginal y alternativas que requieren valoración individual.",
+    copy: "Orientación sobre sequedad vaginal, dolor durante relaciones, incomodidad y medicina regenerativa ginecológica.",
     image: "assets/incontilase-fotona-system.jpg",
     alt: "Equipo Fotona relacionado con procedimientos de salud íntima femenina",
     visualClass: "need-visual-intima",
     visualTitle: "Salud íntima",
     visualMeta: "Valoración individual",
     links: [
-      { label: "Ver servicios", href: "ginecologia.html#procedimientos" },
+      { label: "Ver salud íntima", href: "ginecologia.html#procedimientos" },
       { label: "Agendar valoración", href: "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" }
     ]
   },
   hormonas: {
     count: "03",
     title: "Menopausia y hormonas",
-    copy: "Información general sobre terapia con hormonas bioidénticas y acompañamiento médico durante cambios hormonales.",
+    copy: "Información general sobre estradiol, progesterona y eventualmente testosterona en terapia con hormonas bioidénticas.",
     image: "assets/dr-luis-diego-carazo-premium.png",
     alt: "Retrato del Dr. Luis Diego Carazo",
     visualClass: "need-visual-hormonas",
     visualTitle: "Balance hormonal",
     visualMeta: "Valoración médica",
     links: [
-      { label: "Leer hormonas", href: "ginecologia.html#procedimientos" },
+      { label: "Ver hormonas", href: "ginecologia.html#procedimientos" },
       { label: "Preguntar a Sofi", chat: true }
     ]
   },
   procedimientos: {
     count: "04",
     title: "Procedimientos ginecológicos",
-    copy: "Labioplastia, displasia de cérvix, tratamientos láser y procedimientos que requieren indicación clínica.",
+    copy: "Labioplastía y tratamiento láser de displasia de cérvix como procedimientos que requieren indicación clínica.",
     image: "assets/incontilase-fotona-system.jpg",
     alt: "Equipo Fotona usado como referencia tecnológica para procedimientos ginecológicos",
     visualClass: "need-visual-procedimientos",
-    visualTitle: "Plan clínico",
+    visualTitle: "Procedimientos",
     visualMeta: "Procedimientos",
     links: [
       { label: "Ver procedimientos", href: "ginecologia.html#procedimientos" },
@@ -67,16 +68,16 @@ const NEEDS = {
   },
   general: {
     count: "05",
-    title: "Consulta general",
-    copy: "Agenda una valoración si necesitas revisar síntomas, controles, ultrasonidos o dudas ginecológicas generales.",
+    title: "Infografías",
+    copy: "Información resumida, útil y sencilla sobre infecciones vaginales, ejercicios de Kegel y salud íntima femenina.",
     image: "assets/dr-luis-diego-carazo-premium.png",
     alt: "Retrato del Dr. Luis Diego Carazo",
     visualClass: "need-visual-general",
-    visualTitle: "Consulta",
-    visualMeta: "Agenda oficial",
+    visualTitle: "Infografías",
+    visualMeta: "Salud femenina",
     links: [
-      { label: "Agendar cita", href: "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" },
-      { label: "FAQ", href: "faq.html" }
+      { label: "Ver infografías", href: "articulos.html" },
+      { label: "Preguntar a Sofi", chat: true }
     ]
   }
 };
@@ -143,7 +144,7 @@ function ensureMobileMenuStructure() {
           ${mobileMenuLink("articulos.html", "06", "Artículos", "Lecturas aprobadas")}
         </div>
         <div class="mobile-menu-secondary">
-          <a href="https://jennydelgadocentroesteticalaser.adminlanzah.workers.dev/" data-close-menu>Jenny Delgado</a>
+          <a href="https://jennydelgadocentroesteticalaser.adminlanzah.workers.dev/" data-close-menu>Centro LASER de Estética</a>
           <a href="https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" data-close-menu>Agendar cita</a>
         </div>
       </div>
@@ -377,7 +378,7 @@ function renderAppointmentChatWidget() {
           <button type="button" data-chat-intent="info">Información básica</button>
         </div>
         <div class="chat-messages" id="appointment-chat-messages" aria-live="polite">
-          <div class="chat-message bot">Hola, soy Sofi. ¿En qué te puedo ayudar hoy? Puedo ayudarte a agendar, revisar una cita por cédula o responder preguntas básicas sobre tratamientos ginecológicos disponibles.</div>
+          <div class="chat-message bot">Hola, soy Sofi. ¿En qué te puedo ayudar hoy? Puedo ayudarte a agendar, revisar una cita por cédula o responder preguntas básicas aprobadas del Dr. Carazo.</div>
         </div>
         <form class="chat-form" id="appointment-chat-form">
           <label>
@@ -390,7 +391,7 @@ function renderAppointmentChatWidget() {
         <div class="chat-actions">
           <a class="button secondary wide" href="${HULI_SCHEDULE_URL}" rel="noopener">Agendar cita</a>
         </div>
-        <small>Sofí solo responde preguntas básicas de agenda e información de tratamientos disponibles en ginecología. No diagnostica, no sustituye consulta médica.</small>
+        <small>Sofí solo responde preguntas básicas de agenda e información aprobada del Dr. Carazo. No diagnostica, no sustituye consulta médica.</small>
       </div>
     </aside>
   `);
@@ -475,7 +476,7 @@ function handleChatIntent(intent) {
   if (intent === "info") {
     setChatMode("info");
     appendChatMessage("Quiero información básica", "user");
-    appendChatMessage("Claro. Pregúntame sobre tratamientos ginecológicos disponibles como IncontiLase, labioplastia, hormonas bioidénticas o displasia de cérvix.", "bot");
+    appendChatMessage("Claro. Pregúntame sobre información aprobada del Dr. Carazo: IncontiLase, labioplastía, hormonas bioidénticas, displasia de cérvix o infografías.", "bot");
     return;
   }
 
