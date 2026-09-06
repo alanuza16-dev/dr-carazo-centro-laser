@@ -3,84 +3,21 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Panel administrador para citas ginecológicas.">
-    <title>Panel administrador | Dr. Luis Diego Carazo</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Administración | Dr. Luis Diego Carazo</title>
+    <link rel="stylesheet" href="styles.css?v=approved-content-1">
     <script defer src="app.js"></script>
   </head>
   <body>
-    <header class="site-header">
-      <a class="brand" href="index.html" aria-label="Ir al inicio">
-        <span class="brand-mark">LC</span>
-        <span>
-          <strong>Dr. Luis Diego Carazo</strong>
-          <small>Ginecología especializada</small>
-        </span>
-      </a>
-      <nav class="main-nav" aria-label="Navegación principal">
-        <a href="index.html?section=ginecologia">Ginecología</a>
-        <a href="https://jennydelgadocentroesteticalaser.adminlanzah.workers.dev/">Estética</a>
-        <a href="https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542">Agendar</a>
-        <a href="login.html">Ingresar</a>
-      </nav>
-    </header>
-
-    <main>
-      <section class="page-hero">
-        <p class="eyebrow">Panel administrador</p>
-        <h1>Control de agenda ginecológica.</h1>
-        <p>El perfil médico administra únicamente los espacios de consulta y procedimientos ginecológicos.</p>
-      </section>
-
-      <section class="section admin-shell">
-        <div class="admin-layout dashboard-only">
-          <div class="admin-panel" id="admin-panel" hidden>
-            <div class="admin-topline">
-              <div>
-                <span class="tag" id="admin-role"></span>
-                <h3 id="admin-title">Agenda</h3>
-              </div>
-              <div class="inline-actions">
-                <button class="button secondary" id="seed-reset" type="button">Restaurar datos</button>
-                <button class="button secondary" id="admin-logout" type="button">Salir</button>
-              </div>
-            </div>
-
-            <div class="admin-tools">
-              <label>
-                Fecha para bloquear
-                <input id="block-date" type="date">
-              </label>
-              <label>
-                Hora
-                <select id="block-time"></select>
-              </label>
-              <label>
-                Motivo
-                <input id="block-reason" type="text" placeholder="Reunión, cirugía, descanso">
-              </label>
-              <button class="button secondary" id="block-slot" type="button">Bloquear espacio</button>
-            </div>
-
-            <div class="admin-summary" id="admin-summary"></div>
-            <div class="admin-columns">
-              <section>
-                <h4>Citas colocadas</h4>
-                <div class="admin-list" id="appointment-list"></div>
-              </section>
-              <section>
-                <h4>Espacios bloqueados</h4>
-                <div class="admin-list" id="block-list"></div>
-              </section>
-            </div>
-          </div>
+    <main class="section">
+      <div class="handoff-panel">
+        <p class="eyebrow">Administración</p>
+        <h1>La agenda se administra en Huli.</h1>
+        <p>La agenda del doctor se administra desde Huli. Para cambios reales de agenda, usa la cuenta administrativa autorizada.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="https://www.hulihealth.com/">Abrir Huli</a>
+          <a class="button secondary" href="index.html">Volver al sitio</a>
         </div>
-      </section>
+      </div>
     </main>
-
-    <footer class="site-footer">
-      <p>© 2026 Dr. Luis Diego Carazo.</p>
-      <p>Panel preparado para conectar posteriormente con autenticación y base de datos.</p>
-    </footer>
   </body>
 </html>

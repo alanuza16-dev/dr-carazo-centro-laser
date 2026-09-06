@@ -3,149 +3,262 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Consulta ginecológica especializada con medicina regenerativa, tecnología LASER y orientación a agenda médica.">
-    <title>Dr. Luis Diego Carazo | Centro LASER</title>
+    <meta name="description" content="Ginecología especializada del Dr. Luis Diego Carazo con tecnología láser, medicina íntima femenina y agenda oficial.">
+    <title>Dr. Luis Diego Carazo | Ginecología Láser</title>
     <link rel="preconnect" href="https://images.unsplash.com">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=approved-content-1">
     <script defer src="app.js"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Physician",
+        "name": "Dr. Luis Diego Carazo",
+        "medicalSpecialty": "Gynecologic",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Plaza Naos, tercer piso, consultorio 2",
+          "addressLocality": "Heredia",
+          "addressCountry": "CR"
+        },
+        "areaServed": "Costa Rica",
+        "url": "https://dr-carazo-centro-laser.adminlanzah.workers.dev/"
+      }
+    </script>
   </head>
-  <body data-account-widget="false">
+  <body class="brand-carazo">
     <header class="site-header">
       <a class="brand" href="index.html" aria-label="Ir al inicio">
         <span class="brand-mark">LC</span>
         <span>
           <strong>Dr. Luis Diego Carazo</strong>
-          <small>Ginecología especializada</small>
+          <small>Ginecología y Obstetricia</small>
         </span>
       </a>
-      <nav class="main-nav" aria-label="Navegación principal">
-        <a href="index.html?section=ginecologia">Ginecología</a>
-        <a href="https://jennydelgadocentroesteticalaser.adminlanzah.workers.dev/">Estética</a>
-        <a href="https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542">Agendar</a>
+      <button class="mobile-menu-toggle" id="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menú">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </button>
+      <nav class="main-nav" id="main-nav" aria-label="Navegación principal">
+        <div class="desktop-nav">
+          <a href="ginecologia.html">Servicios</a>
+          <a href="#necesidades">Orientación</a>
+          <a href="articulos.html">Artículos</a>
+          <a href="https://jennydelgadocentroesteticalaser.adminlanzah.workers.dev/">Centro LASER de Estética</a>
+          <button class="nav-cta" type="button" data-open-chat>Asistente de citas</button>
+        </div>
+        <div class="mobile-menu-shell" aria-label="Menú móvil">
+          <div class="mobile-menu-head">
+            <div>
+              <span class="brand-mark">LC</span>
+              <strong>Dr. Carazo</strong>
+              <small>Agenda y ginecología láser</small>
+            </div>
+            <button class="mobile-menu-close" type="button" data-close-menu aria-label="Cerrar menú">
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+            </button>
+          </div>
+          <button class="mobile-menu-cta" type="button" data-open-chat data-close-menu>
+            <span>Agenda</span>
+            <strong>Abrir asistente de citas</strong>
+            <small>Consultar por cédula con Sofi</small>
+          </button>
+          <div class="mobile-menu-links">
+            <a href="index.html" aria-current="page" data-close-menu><span>01</span><strong>Inicio</strong><small>Vista principal</small></a>
+            <a href="ginecologia.html" data-close-menu><span>02</span><strong>Tratamientos</strong><small>Servicios ginecológicos</small></a>
+            <a href="ginecologia.html#incontilase" data-close-menu><span>03</span><strong>Tecnología Fotona</strong><small>IncontiLase y láser</small></a>
+            <a href="#necesidades" data-close-menu><span>04</span><strong>Orientación</strong><small>Buscar por necesidad</small></a>
+            <a href="faq.html" data-close-menu><span>05</span><strong>FAQ</strong><small>Preguntas frecuentes</small></a>
+            <a href="articulos.html" data-close-menu><span>06</span><strong>Artículos</strong><small>Lecturas aprobadas</small></a>
+          </div>
+          <div class="mobile-menu-secondary">
+            <a href="https://jennydelgadocentroesteticalaser.adminlanzah.workers.dev/" data-close-menu>Centro LASER de Estética</a>
+            <a href="https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542" data-close-menu>Agendar cita</a>
+          </div>
+        </div>
       </nav>
     </header>
 
     <main id="inicio">
-      <section class="hero">
-        <img class="hero-image" src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1600&q=80" alt="Consulta médica moderna">
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-          <p class="eyebrow">Ginecología especializada</p>
-          <h1>Tratamientos ginecológicos con agenda médica dedicada.</h1>
-          <p>Una experiencia clara para pacientes: información confiable, selección de servicio ginecológico, horarios disponibles y confirmación inmediata para la consulta médica.</p>
+      <section class="medical-hero">
+        <div class="hero-grid-lines" aria-hidden="true"></div>
+        <div class="hero-kicker" aria-hidden="true">MED3758 / CR</div>
+        <div class="hero-copy reveal">
+          <p class="eyebrow">Medicina íntima femenina</p>
+          <h1>
+            <span class="desktop-title">Ginecología láser con criterio clínico, tecnología y acompañamiento.</span>
+            <span class="mobile-title">Ginecología láser con criterio clínico.</span>
+          </h1>
+          <p>Atención especializada para mujeres que buscan orientación seria, agenda clara y valoración médica con el Dr. Luis Diego Carazo.</p>
           <div class="hero-actions">
-            <a class="button primary" href="https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542">Agendar cita ginecológica</a>
-            <a class="button ghost" href="index.html?section=servicios">Ver servicios</a>
+            <button class="button primary" type="button" data-open-chat>Consultar cita con Sofi</button>
+            <a class="button secondary-on-dark" href="ginecologia.html">Explorar tratamientos</a>
           </div>
         </div>
-      </section>
-
-      <section class="section intro-band" aria-label="Resumen">
-        <div class="metric">
-          <strong>30+ años</strong>
-          <span>de experiencia en salud íntima femenina</span>
-        </div>
-        <div class="metric">
-          <strong>Agenda médica</strong>
-          <span>citas ginecológicas y procedimientos especializados</span>
-        </div>
-      </section>
-
-      <section class="section doctor-profile">
-        <div class="doctor-copy">
-          <p class="eyebrow">Dr. Luis Diego Carazo</p>
-          <h2>Ginecólogo con trayectoria, tecnología láser y enfoque humano.</h2>
-          <p>Atención especializada en salud íntima femenina, piso pélvico, incontinencia urinaria, hormonas bioidénticas y procedimientos ginecológicos con tecnología FOTONA.</p>
-          <div class="doctor-highlights">
-            <span>MED3758</span>
-            <span>Ginecología y Obstetricia</span>
-            <span>Agenda oficial en Huli</span>
-          </div>
-        </div>
-        <figure class="doctor-photo-card">
-          <img src="assets/dr-luis-diego-carazo.jpg" alt="Dr. Luis Diego Carazo, ginecólogo">
-          <figcaption>Atención médica especializada para cada etapa de la mujer.</figcaption>
+        <aside class="hero-proof reveal" aria-label="Credenciales principales">
+          <span><strong>30+</strong><em>años</em></span>
+          <span><strong>Ginecología</strong><em>y obstetricia</em></span>
+          <span><strong>Fotona</strong><em>tecnología láser</em></span>
+          <span><strong>Agenda</strong><em>oficial</em></span>
+        </aside>
+        <figure class="hero-portrait reveal">
+          <img src="assets/dr-luis-diego-carazo-premium.png" alt="Dr. Luis Diego Carazo">
         </figure>
-      </section>
-
-      <section class="section split" id="ginecologia">
-        <div>
-          <p class="eyebrow">Consulta ginecológica</p>
-          <h2>Incontinencia urinaria y salud íntima femenina</h2>
-          <p>El Dr. Luis Diego Carazo atiende mujeres con pérdidas de orina al toser, reír, saltar o hacer ejercicio, además de molestias como sequedad vaginal, dolor durante las relaciones o incomodidad íntima.</p>
-          <p>El tratamiento LASER FOTONA IncontiLase estimula la regeneración natural del tejido vaginal y uretral. Es un procedimiento médico, indoloro, seguro y sin tiempo de recuperación, aplicado con protocolos rigurosos.</p>
-          <ul class="check-list">
-            <li>Indicado para incontinencia urinaria de esfuerzo.</li>
-            <li>Orientado a pacientes que buscan una opción médica sin cirugía.</li>
-            <li>Protocolo de 3 sesiones aproximadas de 20 minutos.</li>
-          </ul>
-        </div>
-        <div class="feature-panel medical">
-          <h3>Otros servicios ginecológicos</h3>
-          <div class="service-row">
-            <strong>Labioplastía</strong>
-            <span>Corrección mínimamente invasiva para comodidad, función y estética íntima.</span>
-          </div>
-          <div class="service-row">
-            <strong>Hormonas bioidénticas</strong>
-            <span>Estradiol, progesterona y eventualmente testosterona por vía transdérmica, vaginal o pellets.</span>
-          </div>
-          <div class="service-row">
-            <strong>Displasia de cérvix</strong>
-            <span>Vaporización LASER para lesiones de bajo grado por VPH, sin incapacidad en la mayoría de casos.</span>
-          </div>
+        <div class="scroll-cue" aria-hidden="true">
+          <span></span>
+          Scroll
         </div>
       </section>
 
-      <section class="section services" id="servicios">
-        <div class="section-heading">
-          <p class="eyebrow">Servicios principales</p>
-          <h2>Atención ginecológica aquí, estética en su propio sitio.</h2>
+      <section class="authority-ribbon" aria-label="Datos de confianza">
+        <article>
+          <span>01</span>
+          <strong>MED3758</strong>
+          <p>Colegio de Médicos y Cirujanos de Costa Rica.</p>
+        </article>
+        <article>
+          <span>02</span>
+          <strong>Fotona</strong>
+          <p>Tecnología láser aplicada a salud íntima femenina.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <strong>Agenda</strong>
+          <p>Agenda oficial para reservar y consultar citas.</p>
+        </article>
+      </section>
+
+      <section class="section editorial-profile">
+        <div class="vertical-label">Perfil médico</div>
+        <div class="profile-copy reveal">
+          <p class="eyebrow">Dr. Luis Diego Carazo</p>
+          <h2>Una práctica ginecológica sobria, precisa y centrada en la paciente.</h2>
+          <p>Esta página concentra la consulta ginecológica, IncontiLase, labioplastía, hormonas bioidénticas, displasia de cérvix e infografías de salud femenina. Los servicios faciales, corporales y de estética láser se manejan en el Centro LASER de Estética.</p>
         </div>
-        <div class="service-grid">
-          <article class="service-card" id="estetica">
-            <img src="https://images.unsplash.com/photo-1620916297397-a4a5402a3c6c?auto=format&fit=crop&w=900&q=80" alt="Tratamiento estético facial">
-            <div>
-              <span class="tag">Centro LASER de Estética</span>
-              <h3>Facial y corporal</h3>
-              <p>Servicios de alta calidad realizados por una esteticista profesional experta en LASER FOTONA, con más de 10 años de experiencia y entrenamiento nacional e internacional.</p>
-              <a class="text-link" href="https://jennydelgadocentroesteticalaser.adminlanzah.workers.dev/">Ver más</a>
+        <div class="profile-aside reveal">
+          <strong>Filosofía de atención</strong>
+          <p>Orientar con claridad, valorar con criterio y mantener separada la información médica de los servicios estéticos.</p>
+          <a class="text-link" href="ginecologia.html">Ver servicios médicos</a>
+        </div>
+      </section>
+
+      <section class="section need-finder" id="necesidades">
+        <div class="finder-copy reveal">
+          <p class="eyebrow">Orientación</p>
+          <h2>¿Qué información estás buscando?</h2>
+          <p>Esta guía ayuda a encontrar contenido relacionado. No constituye diagnóstico ni reemplaza una valoración médica.</p>
+          <div class="need-tabs" role="tablist" aria-label="Necesidades frecuentes">
+            <button class="is-active" type="button" data-need="orina">Pérdidas de orina</button>
+            <button type="button" data-need="intima">Salud íntima</button>
+            <button type="button" data-need="hormonas">Menopausia y hormonas</button>
+            <button type="button" data-need="procedimientos">Procedimientos</button>
+            <button type="button" data-need="general">Infografías</button>
+          </div>
+        </div>
+        <article class="need-stage reveal" id="need-stage" aria-live="polite">
+          <figure class="need-visual need-visual-orina" id="need-visual" role="img" aria-label="Resumen visual para IncontiLase">
+            <span>01</span>
+            <strong>IncontiLase</strong>
+            <em>Pérdidas al esfuerzo</em>
+          </figure>
+          <div>
+            <span id="need-count">01</span>
+            <h3 id="need-title">IncontiLase FOTONA</h3>
+            <p id="need-copy">Información para mujeres con pérdidas de orina al toser, reír, saltar o hacer ejercicio.</p>
+            <div class="need-links" id="need-links">
+              <a href="ginecologia.html#incontilase">Ver IncontiLase</a>
+              <button type="button" data-open-chat>Preguntar a Sofi</button>
             </div>
-          </article>
-          <article class="service-card">
-            <img class="incontilase-image" src="assets/incontilase-fotona-system.jpg" alt="Equipo Fotona para tratamientos ginecológicos IncontiLase">
-            <div>
-              <span class="tag">Ginecología</span>
-              <h3>IncontiLase y medicina regenerativa</h3>
-              <p>Atención especializada para incontinencia de esfuerzo, salud íntima femenina y tratamientos ginecológicos con tecnología LASER.</p>
-              <a class="text-link" href="ginecologia.html">Ver más</a>
-            </div>
-          </article>
+          </div>
+        </article>
+      </section>
+
+      <section class="section treatment-editorial" id="servicios">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Tratamientos</p>
+          <h2>Temas ginecológicos aprobados para valoración médica.</h2>
         </div>
-        <div class="treatment-strip">
-          <span>IncontiLase FOTONA</span>
-          <span>Displasia de cérvix</span>
-          <span>Consulta ginecológica</span>
-          <span>Labioplastía</span>
-          <span>Hormonas bioidénticas</span>
-          <span>Displasia de cérvix</span>
+        <article class="featured-treatment-row reveal">
+          <span class="editorial-number">01</span>
+          <div>
+            <p class="eyebrow">Tratamiento destacado</p>
+            <h3>IncontiLase para incontinencia urinaria de esfuerzo</h3>
+            <p>Tratamiento con LASER FOTONA INCONTILASE© descrito para estimular la regeneración natural del tejido vaginal y uretral en pacientes seleccionadas.</p>
+            <a class="button secondary" href="ginecologia.html#incontilase">Ver detalle</a>
+          </div>
+          <img src="assets/incontilase-fotona-system.jpg" alt="Equipo Fotona utilizado para IncontiLase">
+        </article>
+        <div class="treatment-list reveal">
+          <a href="ginecologia.html#procedimientos"><span>Labioplastía</span><strong>Comodidad, función y estética íntima</strong></a>
+          <a href="ginecologia.html#procedimientos"><span>Hormonas bioidénticas</span><strong>Acompañamiento en menopausia y síntomas asociados</strong></a>
+          <a href="ginecologia.html#procedimientos"><span>Displasia de cérvix</span><strong>Tratamiento láser para lesiones seleccionadas por VPH</strong></a>
         </div>
       </section>
 
-      <section class="section action-band">
+      <section class="care-journey">
+        <div class="journey-sticky reveal">
+          <p class="eyebrow">Proceso</p>
+          <h2>Un recorrido claro desde la duda hasta la cita.</h2>
+        </div>
+        <ol class="journey-steps reveal">
+          <li><span>01</span><strong>Explora</strong><p>Lee información aprobada sobre salud íntima femenina.</p></li>
+          <li><span>02</span><strong>Pregunta</strong><p>Usa Sofi para orientarte o revisar una cita por cédula.</p></li>
+          <li><span>03</span><strong>Agenda</strong><p>Selecciona un espacio en el calendario oficial de citas.</p></li>
+          <li><span>04</span><strong>Valora</strong><p>El doctor confirma indicación y plan durante la consulta.</p></li>
+        </ol>
+      </section>
+
+      <section class="closing-scene">
         <div>
-          <p class="eyebrow">Siguiente paso</p>
-          <h2>Agenda tu visita ginecológica en el calendario oficial del doctor.</h2>
+          <p class="eyebrow">Agenda oficial</p>
+          <h2>Da el siguiente paso con una valoración ginecológica.</h2>
+          <p>Sofi puede orientarte para agendar, revisar una cita por cédula o resolver preguntas básicas sobre la información aprobada del Dr. Carazo.</p>
         </div>
         <div class="hero-actions">
-          <a class="button primary" href="https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542">Agendar cita ginecológica</a>
+          <button class="button primary" type="button" data-open-chat>Hablar con Sofi</button>
+          <a class="button secondary-on-dark" href="https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542">Agendar cita</a>
         </div>
       </section>
     </main>
 
-    <footer class="site-footer">
-      <p>© 2026 Dr. Luis Diego Carazo.</p>
-      <p>Contenido base exportado desde el sitio público de Leadpages. Esta versión no reemplaza criterio médico ni almacena datos reales en servidor.</p>
+    <div class="mobile-bottom-bar" aria-label="Acción rápida">
+      <button type="button" data-open-chat>
+        <span>Chat de citas</span>
+        <strong>Sofi</strong>
+      </button>
+    </div>
+
+    <footer class="brand-footer">
+      <div class="footer-brand">
+        <span>Medicina especializada</span>
+        <strong>Dr. Luis Diego Carazo</strong>
+      </div>
+      <nav class="footer-links" aria-label="Navegación secundaria">
+        <span>Explorar</span>
+        <a href="ginecologia.html">Servicios</a>
+        <a href="faq.html">FAQ</a>
+        <a href="articulos.html">Artículos</a>
+        <a href="https://jennydelgadocentroesteticalaser.adminlanzah.workers.dev/">Centro LASER de Estética</a>
+      </nav>
+      <div class="footer-contact">
+        <span>Ubicación</span>
+        <address>Plaza Naos, tercer piso, consultorio 2, Heredia, Costa Rica</address>
+        <div class="footer-socials" aria-label="Enlaces sociales y ubicación">
+          <a class="social-link" href="https://www.facebook.com/" target="_blank" rel="noopener" aria-label="Facebook del Dr. Luis Diego Carazo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8.5h2.2V5.1c-.4-.1-1.6-.2-3-.2-3 0-5 1.8-5 5.1v2.9H5v3.8h3.2V24h3.9v-7.3h3.1l.5-3.8h-3.6v-2.5c0-1.1.3-1.9 1.9-1.9Z"/></svg>
+          </a>
+          <a class="social-link" href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram del Dr. Luis Diego Carazo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.4 2h9.2A5.4 5.4 0 0 1 22 7.4v9.2a5.4 5.4 0 0 1-5.4 5.4H7.4A5.4 5.4 0 0 1 2 16.6V7.4A5.4 5.4 0 0 1 7.4 2Zm0 2A3.4 3.4 0 0 0 4 7.4v9.2A3.4 3.4 0 0 0 7.4 20h9.2a3.4 3.4 0 0 0 3.4-3.4V7.4A3.4 3.4 0 0 0 16.6 4H7.4Zm4.6 3.2a4.8 4.8 0 1 1 0 9.6 4.8 4.8 0 0 1 0-9.6Zm0 2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Zm5-2.3a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2Z"/></svg>
+          </a>
+          <a class="social-link" href="https://www.google.com/maps/search/?api=1&amp;query=Plaza%20Naos%2C%20Tercer%20piso%2C%20consultorio%202%2C%20Heredia%2C%20Costa%20Rica" target="_blank" rel="noopener" aria-label="Abrir ubicación en Google Maps">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7.2 7.2 0 0 1 7.2 7.2c0 5.2-7.2 12.8-7.2 12.8S4.8 14.4 4.8 9.2A7.2 7.2 0 0 1 12 2Zm0 4.6a2.6 2.6 0 1 0 0 5.2 2.6 2.6 0 0 0 0-5.2Z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <small>&copy; 2026 Dr. Luis Diego Carazo. Información educativa; no sustituye valoración médica.</small>
+        <a class="developer-credit" href="https://lanzahcr.com" target="_blank" rel="noopener">Desarrollado por Lanzah Enterprise. Todos los derechos reservados.</a>
+      </div>
     </footer>
   </body>
 </html>
