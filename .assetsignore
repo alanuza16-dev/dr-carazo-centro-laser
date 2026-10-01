@@ -2,6 +2,8 @@
 .git
 .wrangler
 functions
+tests
+test-results
 worker.js
 wrangler.toml
 dr-carazo-centro-laser-demo.zip

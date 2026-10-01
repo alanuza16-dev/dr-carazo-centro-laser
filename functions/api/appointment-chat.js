@@ -1,8 +1,14 @@
 const HULI_API_BASE_URL = "https://api.huli.io/practice/v2";
 const OPENAI_API_URL = "https://api.openai.com/v1/responses";
+const HULI_SCHEDULE_URL = "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542";
+const CLINICS = [
+  { id: "88", name: "Hospital Internacional La Católica" },
+  { id: "393", name: "Naos Plaza" }
+];
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 18;
 const requestBuckets = new Map();
+const bookingBuckets = new Map();
 const SCOPE_ONLY_REPLY = "Este asistente solo responde preguntas básicas de ginecología y agenda del Dr. Carazo. Para otros temas, agenda una valoración o comunícate directamente con la clínica.";
 const EXTENDED_TOPIC_REPLY = "Para ampliar ese tema o revisar un caso personal, lo correcto es sacar una cita con el Dr. Carazo. Sofi solo puede dar información básica de agenda y ginecología.";
 const BASIC_INFO_REPLY = "Puedo ayudar con agenda y preguntas básicas aprobadas del Dr. Carazo: IncontiLase, labioplastía, hormonas bioidénticas, displasia de cérvix e infografías de salud femenina.";
@@ -77,7 +83,7 @@ const KNOWLEDGE_BASE = [
   {
     topic: "Agenda",
     keywords: ["cita", "agenda", "huli", "agendar", "horario", "cancelar", "confirmar"],
-    answer: "Para agendar una cita nueva se usa el calendario oficial de citas del Dr. Carazo. Para revisar si existe una cita, usa el modo Cita y escribe la cédula con solo números; guiones y espacios se limpian automáticamente."
+    answer: "Puedo revisar tus próximas citas por cédula, mostrar horarios disponibles y ayudarte a reservar. También puedes usar el calendario oficial de Huli."
   }
 ];
 
@@ -163,52 +169,171 @@ export async function onRequestPost({ request, env }) {
     }
 
     const body = await parseJsonBody(request);
-    const mode = body.mode === "info" ? "info" : "appointment";
-    const rawValue = String(body.rawInput || body.message || body.query || "").trim();
-
-    if (mode === "info") {
-      return answerInfoQuestion(rawValue, env);
-    }
-
-    if (hasLetters(rawValue)) {
-      return json({ reply: "Ese dato no parece una cédula válida. Ingresa solo números; guiones y espacios se limpian automáticamente." }, 400);
-    }
-
-    const query = normalizeCedulaInput(body.query || rawValue);
-    if (!query) return json({ reply: "Necesito un número de cédula para revisar la agenda." }, 400);
-    if (query.length < 7) return json({ reply: "La cédula parece incompleta. Revisa el número e intenta de nuevo." }, 400);
+    const action = String(body.action || (body.mode === "info" ? "info" : "lookup"));
+    if (action === "info") return answerInfoQuestion(String(body.message || "").slice(0, 500).trim(), env);
+    if (!["lookup", "availability", "book"].includes(action)) return json({ reply: "No entendí la consulta. Intenta de nuevo." }, 400);
 
     const huliConfigError = validateHuliConfig(env);
-    if (huliConfigError) return json({ reply: huliConfigError }, 500);
-
-    const token = await getHuliToken(env);
-    const patientFiles = await searchHuliPatients(env, token, query);
-    const appointmentLookup = await getHuliAppointments(env, token, patientFiles);
-    const normalizedAppointments = appointmentLookup.appointments.map(normalizeHuliAppointment).filter(Boolean);
-
-    if (!env.OPENAI_API_KEY) {
-      return json({ reply: buildDeterministicAppointmentReply(patientFiles, normalizedAppointments) });
+    if (huliConfigError) return json({ reply: huliConfigError }, 503);
+    if (request.headers.get("Origin") && request.headers.get("Origin") !== new URL(request.url).origin) {
+      return json({ reply: "La consulta debe iniciarse desde esta página." }, 403);
     }
-
-    const prompt = [
-      `Cédula consultada: ${maskIdentifier(query)}`,
-      `Pacientes encontrados: ${JSON.stringify(patientFiles.map(normalizeHuliPatient))}`,
-      `Estrategia de citas: ${appointmentLookup.strategy}`,
-      `Citas encontradas: ${JSON.stringify(normalizedAppointments)}`
-    ].join("\n");
-
-    const reply = await askOpenAI(env, [
-      "Eres Sofi, asistente de agenda del Dr. Luis Diego Carazo.",
-      "Responde en espanol claro, breve y humano.",
-      "Usa solamente los datos devueltos por el sistema de agenda.",
-      "No diagnostiques, no recomiendes tratamientos y no muestres cédulas completas.",
-      "Si no hay citas, indica que se encontro el expediente si aplica y recomienda agendar una valoracion."
-    ].join(" "), prompt);
-
-    return json({ reply: reply || buildDeterministicAppointmentReply(patientFiles, normalizedAppointments) });
+    if (action === "lookup") return lookupAppointments(body, env);
+    if (action === "availability") return listAvailability(body, env);
+    if (!rateLimitBooking(request)) return json({ reply: "Espera antes de enviar otra reserva." }, 429);
+    return bookAppointment(body, env);
   } catch (error) {
     return json({ reply: getSafeErrorMessage(error) }, error.status || 500);
   }
+}
+
+async function lookupAppointments(body, env) {
+  const rawValue = String(body.cedula || body.query || "").trim();
+  if (hasLetters(rawValue)) return json({ reply: "Ingresa la cédula con números; puedes incluir guiones o espacios." }, 400);
+  const query = normalizeCedulaInput(rawValue);
+  if (query.length < 7 || query.length > 20) return json({ reply: "Revisa el número de cédula e intenta de nuevo." }, 400);
+  const token = await getHuliToken(env);
+  const patients = await searchHuliPatients(env, token, query);
+  if (!patients.length) return json({ reply: "No encontré un expediente con esos datos. Puedes revisar la cédula o agendar una valoración." });
+  const contact = String(body.contact || "").trim().toLowerCase();
+  if (!contact || !(await findVerifiedPatient(env, token, patients, contact, contact))) {
+    return json({ reply: "No pude verificar el contacto asociado a esa cédula. Usa el correo o teléfono registrado, o consulta directamente en Huli." }, 403);
+  }
+  const lookup = await getHuliAppointments(env, token, patients);
+  const appointments = lookup.appointments.map(normalizeHuliAppointment).filter(Boolean);
+  return json({ reply: buildDeterministicAppointmentReply(patients, appointments) });
+}
+
+async function listAvailability(body, env) {
+  if (!env.HULI_DOCTOR_ID) return json({ reply: "Falta configurar el doctor en la agenda." }, 503);
+  const offsetDays = Number(body.offsetDays || 0);
+  if (![0, 7, 14, 21].includes(offsetDays)) return json({ reply: "Solo puedo mostrar las próximas cuatro semanas." }, 400);
+  const token = await getHuliToken(env);
+  const slots = await getAvailableSlots(env, token, offsetDays);
+  return json({
+    reply: slots.length ? "Estos son los próximos espacios disponibles. Elige uno para continuar." : "No encontré espacios en esta semana. Puedes revisar la siguiente o abrir el calendario de Huli.",
+    slots: slots.slice(0, 50),
+    nextOffsetDays: offsetDays < 21 ? offsetDays + 7 : null,
+    scheduleUrl: HULI_SCHEDULE_URL
+  });
+}
+
+async function getAvailableSlots(env, token, offsetDays, clinicIds = CLINICS.map((clinic) => clinic.id)) {
+  const from = new Date(Date.now() + offsetDays * 86_400_000);
+  const to = new Date(from.getTime() + 7 * 86_400_000);
+  const clinics = CLINICS.filter((clinic) => clinicIds.includes(clinic.id));
+  const results = await Promise.all(clinics.map(async (clinic) => {
+    const url = new URL(`${HULI_API_BASE_URL}/availability/doctor/${env.HULI_DOCTOR_ID}/clinic/${clinic.id}`);
+    url.searchParams.set("from", from.toISOString());
+    url.searchParams.set("to", to.toISOString());
+    const response = await fetch(url, { headers: huliHeaders(env, token) });
+    if (!response.ok) throw new Error(`huli-availability-failed:${response.status}`);
+    const data = await response.json();
+    return (Array.isArray(data.slotDates) ? data.slotDates : []).flatMap((day) =>
+      (Array.isArray(day.slots) ? day.slots : []).map((slot) => normalizeAvailableSlot(clinic, slot)).filter(Boolean)
+    );
+  }));
+  // Huli labels dateTime with Z but presents its clock time as clinic-local time in Costa Rica.
+  return results.flat().filter((slot) => Date.parse(slot.dateTime) + 6 * 60 * 60 * 1000 > Date.now() + 60 * 60 * 1000)
+    .sort((a, b) => a.dateTime.localeCompare(b.dateTime));
+}
+
+function normalizeAvailableSlot(clinic, slot) {
+  const timestamp = String(slot.time || "");
+  const sourceEvent = String(slot.sourceEvent || "");
+  if (!/^\d{8}T\d{4}$/.test(timestamp) || !/^\d+$/.test(sourceEvent) || !slot.dateTime) return null;
+  const date = timestamp.slice(0, 4) + "-" + timestamp.slice(4, 6) + "-" + timestamp.slice(6, 8);
+  const time = timestamp.slice(9, 11) + ":" + timestamp.slice(11, 13);
+  const localLabel = new Intl.DateTimeFormat("es-CR", {
+    timeZone: "UTC", weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit", hour12: true
+  }).format(new Date(slot.dateTime));
+  return { clinicId: clinic.id, clinicName: clinic.name, date, time, dateTime: slot.dateTime, sourceEvent, label: `${localLabel} · ${clinic.name}` };
+}
+
+async function bookAppointment(body, env) {
+  if (!env.HULI_DOCTOR_ID) return json({ reply: "Falta configurar el doctor en la agenda." }, 503);
+  const patient = body.patient || {};
+  const name = String(patient.name || "").trim().replace(/\s+/g, " ").slice(0, 120);
+  const cedula = normalizeCedulaInput(patient.cedula);
+  const phone = onlyDigits(patient.phone);
+  const email = String(patient.email || "").trim().toLowerCase().slice(0, 160);
+  const requested = body.slot || {};
+  if (name.split(" ").length < 2 || cedula.length < 7 || cedula.length > 20 || phone.length < 8 || phone.length > 15 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return json({ reply: "Para reservar necesito nombre y apellido, cédula, teléfono y un correo válido." }, 400);
+  }
+  const clinic = CLINICS.find((item) => item.id === String(requested.clinicId));
+  if (!clinic || !/^\d{4}-\d{2}-\d{2}$/.test(String(requested.date)) || !/^\d{2}:\d{2}$/.test(String(requested.time)) || !/^\d+$/.test(String(requested.sourceEvent))) {
+    return json({ reply: "El horario seleccionado ya no es válido. Busca disponibilidad de nuevo." }, 400);
+  }
+  const token = await getHuliToken(env);
+  const offsetDays = Math.max(0, Math.floor((Date.parse(`${requested.date}T00:00:00Z`) - Date.now()) / 86_400_000));
+  if (offsetDays > 28) return json({ reply: "Busca disponibilidad de nuevo para reservar ese día." }, 400);
+  const freshSlots = await getAvailableSlots(env, token, offsetDays, [clinic.id]);
+  const slot = freshSlots.find((item) => item.clinicId === clinic.id && item.date === requested.date && item.time === requested.time && item.sourceEvent === String(requested.sourceEvent));
+  if (!slot) return json({ reply: "Ese espacio dejó de estar disponible. Te muestro otros horarios si escribes ‘agendar’." }, 409);
+
+  const matches = await searchHuliPatients(env, token, cedula);
+  let patientFileId = matches[0]?.id || matches[0]?.idPatientFile;
+  if (patientFileId && !(await findVerifiedPatient(env, token, matches, phone, email))) {
+    return json({ reply: "El contacto no coincide con el expediente de esa cédula. Para proteger tus datos, completa la reserva en el calendario oficial de Huli." }, 403);
+  }
+  if (!patientFileId) patientFileId = await createHuliPatient(env, token, { name, cedula, phone, email });
+  const response = await fetch(`${HULI_API_BASE_URL}/appointment`, {
+    method: "POST",
+    headers: { ...huliHeaders(env, token), "Content-Type": "application/json" },
+    body: JSON.stringify({
+      id_doctor: Number(env.HULI_DOCTOR_ID), id_clinic: Number(clinic.id), id_patient_file: Number(patientFileId),
+      source_event: Number(slot.sourceEvent), start_date: slot.date, time_from: `${slot.time}:00`
+    })
+  });
+  if (!response.ok) {
+    if (response.status === 400 || response.status === 409) return json({ reply: "Huli no pudo reservar ese espacio. Puede haberse ocupado; consulta otros horarios." }, 409);
+    throw new Error(`huli-booking-failed:${response.status}`);
+  }
+  const booked = await response.json();
+  if (!booked.idEvent) throw new Error("huli-booking-missing-id");
+  return json({ reply: `Tu cita quedó registrada para ${slot.label}. Código de cita: ${booked.idEvent}. Recibirás los avisos según la configuración de Huli.`, booked: true });
+}
+
+function patientContactMatches(patient, phone, email) {
+  const contact = patient.contact || {};
+  const knownEmail = String(contact.email || "").trim().toLowerCase();
+  const knownPhones = Array.isArray(contact.phones) ? contact.phones : [];
+  if (knownEmail && knownEmail === email) return true;
+  if (!/^\+?[\d\s-]{8,20}$/.test(String(phone))) return false;
+  const candidatePhone = onlyDigits(phone);
+  return knownPhones.some((item) => {
+    const known = onlyDigits(item.phoneNumber);
+    return known.length >= 8 && (known === candidatePhone || known.endsWith(candidatePhone) || candidatePhone.endsWith(known));
+  });
+}
+
+async function findVerifiedPatient(env, token, patients, phone, email) {
+  for (const patient of patients) {
+    if (patientContactMatches(patient, phone, email)) return patient;
+    const id = patient.id || patient.idPatientFile;
+    if (!id) continue;
+    const response = await fetch(`${HULI_API_BASE_URL}/patient-file/${id}`, { headers: huliHeaders(env, token) });
+    if (response.ok && patientContactMatches(await response.json(), phone, email)) return patient;
+  }
+  return null;
+}
+
+async function createHuliPatient(env, token, { name, cedula, phone, email }) {
+  const parts = name.split(" ");
+  const response = await fetch(`${HULI_API_BASE_URL}/patient-file`, {
+    method: "POST",
+    headers: { ...huliHeaders(env, token), "Content-Type": "application/json" },
+    body: JSON.stringify({
+      personalData: { firstName: parts[0], lastName: parts.slice(1).join(" "), patientIds: [{ idType: "ID_CARD", idNumber: cedula }] },
+      contact: { email, sendNotifications: true, phones: [{ type: "MOBILE", phoneNumber: Number(phone) }] }
+    })
+  });
+  if (!response.ok) throw new Error(`huli-patient-create-failed:${response.status}`);
+  const created = await response.json();
+  const id = created.id || created.idPatientFile || created.data?.id;
+  if (!id) throw new Error("huli-patient-create-missing-id");
+  return id;
 }
 
 export async function onRequestOptions() {
@@ -217,8 +342,10 @@ export async function onRequestOptions() {
 
 async function parseJsonBody(request) {
   try {
+    if (Number(request.headers.get("Content-Length")) > 8_192) throw new Error("request-too-large");
     return await request.json();
   } catch (error) {
+    if (error.message === "request-too-large") { error.status = 413; throw error; }
     const invalidJson = new Error("invalid-json-body");
     invalidJson.status = 400;
     throw invalidJson;
@@ -228,6 +355,9 @@ async function parseJsonBody(request) {
 async function answerInfoQuestion(rawQuestion, env) {
   const question = normalizeText(rawQuestion);
   if (!question) return json({ reply: BASIC_INFO_REPLY }, 400);
+  if (/precio|costo|cuanto cuesta|cuanto vale/.test(question)) {
+    return json({ reply: "No tengo precios confirmados. Puedes consultarlos directamente con la clínica o agendar una valoración." });
+  }
 
   if (hasPromptOverrideAttempt(question)) {
     return json({ reply: SCOPE_ONLY_REPLY });
@@ -251,11 +381,13 @@ async function answerInfoQuestion(rawQuestion, env) {
     return json({ reply: EXTENDED_TOPIC_REPLY });
   }
 
-  if (!env.OPENAI_API_KEY) {
-    return json({ reply: matches.map((item) => item.answer).join(" ") });
+  const approvedReply = matches.map((item) => item.answer).join(" ");
+  if (!env.OPENAI_API_KEY || question.split(" ").length < 12 || /\d{7,}|@/.test(rawQuestion)) {
+    return json({ reply: approvedReply });
   }
 
-  const reply = await askOpenAI(env, [
+  let reply = "";
+  try { reply = await askOpenAI(env, [
     "Eres Sofi, asistente informativa del sitio del Dr. Luis Diego Carazo.",
     "Tu alcance es estricto: agenda y preguntas basicas aprobadas de la pagina drcarazo.lpages.co.",
     "Responde solo con base en el contenido aprobado recibido.",
@@ -268,9 +400,9 @@ async function answerInfoQuestion(rawQuestion, env) {
   ].join(" "), [
     `Pregunta: ${rawQuestion}`,
     `Contenido aprobado: ${JSON.stringify(matches.map(({ topic, answer }) => ({ topic, answer })))}`
-  ].join("\n"));
+  ].join("\n")); } catch { /* The approved response remains available when OpenAI is unavailable. */ }
 
-  return json({ reply: reply || matches.map((item) => item.answer).join(" ") });
+  return json({ reply: reply || approvedReply });
 }
 
 async function askOpenAI(env, instructions, userInput) {
@@ -282,6 +414,9 @@ async function askOpenAI(env, instructions, userInput) {
     },
     body: JSON.stringify({
       model: env.OPENAI_MODEL || "gpt-5.4-nano",
+      max_output_tokens: 140,
+      reasoning: { effort: "none" },
+      store: false,
       input: [
         { role: "system", content: [{ type: "input_text", text: instructions }] },
         { role: "user", content: [{ type: "input_text", text: userInput }] }
@@ -447,6 +582,7 @@ function normalizeHuliAppointment(appointment) {
 }
 
 function buildDeterministicAppointmentReply(patientFiles, appointments) {
+  appointments = appointments.filter((item) => !["CANCELLED", "CANCELED", "DELETED"].includes(String(item.status || "").toUpperCase()));
   if (!patientFiles.length) {
     return "No encontré un expediente con esa cédula. Verifica el número o agenda una valoración para coordinar la cita.";
   }
@@ -475,6 +611,16 @@ function rateLimit(request) {
   bucket.count += 1;
   requestBuckets.set(ip, bucket);
   return bucket.count <= RATE_LIMIT_MAX;
+}
+
+function rateLimitBooking(request) {
+  const ip = request.headers.get("CF-Connecting-IP") || "local";
+  const now = Date.now();
+  const bucket = bookingBuckets.get(ip) || { count: 0, resetAt: now + 3_600_000 };
+  if (now > bucket.resetAt) { bucket.count = 0; bucket.resetAt = now + 3_600_000; }
+  bucket.count += 1;
+  bookingBuckets.set(ip, bucket);
+  return bucket.count <= 3;
 }
 
 function extractOutputText(payload) {
@@ -554,9 +700,7 @@ function json(payload, status = 200) {
 
 function corsHeaders() {
   return {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type"
+    "Vary": "Origin"
   };
 }
 
@@ -577,6 +721,16 @@ function getSafeErrorMessage(error) {
   if (message.startsWith("huli-doctor-appointments-failed")) {
     return "El sistema de agenda rechazó la lectura de citas por doctor. Hay que habilitar permisos de agenda.";
   }
+  if (message.startsWith("huli-availability-failed")) {
+    return "No pude consultar espacios libres en Huli. Puedes usar el calendario completo mientras tanto.";
+  }
+  if (message.startsWith("huli-patient-create-failed")) {
+    return "Huli no permitió crear el expediente para reservar. Puedes completar la cita en el calendario oficial.";
+  }
+  if (message.startsWith("huli-booking-failed") || message === "huli-booking-missing-id") {
+    return "Huli no confirmó la reserva. No la consideres agendada; intenta desde el calendario oficial.";
+  }
+  if (message === "request-too-large") return "El mensaje es demasiado largo. Intenta con uno más breve.";
   if (message === "invalid-json-body") {
     return "La solicitud del chat no tiene un formato valido. Intenta de nuevo.";
   }

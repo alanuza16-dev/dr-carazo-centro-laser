@@ -1,5 +1,6 @@
 const HULI_SCHEDULE_URL = "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542";
 const CHAT_API_URL = "/api/appointment-chat";
+const chatFlow = { step: "idle", slot: null, slots: [], visibleSlots: 0, patient: {}, lookupCedula: "", busy: false };
 
 const QUICK_TOPICS = [
   "IncontiLase",
@@ -367,31 +368,26 @@ function renderAppointmentChatWidget() {
           <span class="tag">Asistente del Dr. Carazo</span>
           <button class="icon-button text-close" id="appointment-chat-close" type="button" aria-label="Cerrar asistente">Cerrar</button>
         </div>
-        <h3>Agenda y orientación básica</h3>
-        <div class="chat-mode" role="tablist" aria-label="Modo de consulta">
-          <button class="is-active" type="button" data-chat-mode="appointment">Cita</button>
-          <button type="button" data-chat-mode="info">Información</button>
-        </div>
+        <h3>Conversemos</h3>
         <div class="chat-intent-actions" aria-label="Opciones principales de Sofi">
           <button type="button" data-chat-intent="schedule">Agendar cita</button>
           <button type="button" data-chat-intent="appointment">Revisar cita</button>
           <button type="button" data-chat-intent="info">Información básica</button>
         </div>
         <div class="chat-messages" id="appointment-chat-messages" aria-live="polite">
-          <div class="chat-message bot">Hola, soy Sofi. ¿En qué te puedo ayudar hoy? Puedo ayudarte a agendar, revisar una cita por cédula o responder preguntas básicas aprobadas del Dr. Carazo.</div>
+          <div class="chat-message bot">Hola, soy Sofi. Puedes preguntarme por los servicios, consultar una cita o reservar un espacio con el Dr. Carazo. ¿Qué necesitas?</div>
         </div>
         <form class="chat-form" id="appointment-chat-form">
           <label>
-            <span id="chat-input-label">Cédula</span>
-            <input id="appointment-chat-query" type="text" inputmode="numeric" autocomplete="off" placeholder="Ej. 101110111" required>
+            <span class="sr-only" id="chat-input-label">Tu mensaje</span>
+            <input id="appointment-chat-query" type="text" autocomplete="off" maxlength="500" placeholder="Escribe tu mensaje..." required>
           </label>
           <button class="button primary wide" type="submit">Enviar</button>
         </form>
-        <div class="quick-topics" id="quick-topics" hidden></div>
         <div class="chat-actions">
-          <a class="button secondary wide" href="${HULI_SCHEDULE_URL}" rel="noopener">Agendar cita</a>
+          <a class="chat-huli-link" href="${HULI_SCHEDULE_URL}" rel="noopener">Abrir calendario completo de Huli</a>
         </div>
-        <small>Sofí solo responde preguntas básicas de agenda e información aprobada del Dr. Carazo. No diagnostica, no sustituye consulta médica.</small>
+        <small>Sofi ofrece información general y consulta la agenda de Huli. No sustituye una valoración médica.</small>
       </div>
     </aside>
   `);
@@ -399,13 +395,9 @@ function renderAppointmentChatWidget() {
   $("#appointment-chat-toggle")?.addEventListener("click", toggleAppointmentChat);
   $("#appointment-chat-close")?.addEventListener("click", closeAppointmentChat);
   $("#appointment-chat-form")?.addEventListener("submit", submitAppointmentChat);
-  document.querySelectorAll("[data-chat-mode]").forEach((button) => {
-    button.addEventListener("click", () => setChatMode(button.dataset.chatMode));
-  });
   document.querySelectorAll("[data-chat-intent]").forEach((button) => {
     button.addEventListener("click", () => handleChatIntent(button.dataset.chatIntent));
   });
-  renderQuickTopics();
 }
 
 function toggleAppointmentChat() {
@@ -436,115 +428,261 @@ function closeAppointmentChat() {
   document.body.classList.remove("chat-open");
 }
 
-function setChatMode(mode) {
-  const input = $("#appointment-chat-query");
-  const label = $("#chat-input-label");
-  const topics = $("#quick-topics");
-  document.querySelectorAll("[data-chat-mode]").forEach((button) => {
-    button.classList.toggle("is-active", button.dataset.chatMode === mode);
-  });
-  document.body.dataset.chatMode = mode;
-  if (mode === "info") {
-    if (label) label.textContent = "Pregunta";
-    if (input) {
-      input.inputMode = "text";
-      input.placeholder = "Ej. ¿Qué es IncontiLase?";
-      input.value = "";
-      input.focus();
-    }
-    if (topics) topics.hidden = false;
-    return;
-  }
-
-  if (label) label.textContent = "Cédula";
-  if (input) {
-    input.inputMode = "numeric";
-    input.placeholder = "Ej. 101110111";
-    input.value = "";
-    input.focus();
-  }
-  if (topics) topics.hidden = true;
-}
-
 function handleChatIntent(intent) {
-  if (intent === "schedule") {
-    appendChatMessage("Quiero agendar una cita", "user");
-    appendChatMessage("Para agendar, Sofi te lleva al calendario oficial de citas. Ahí eliges el espacio disponible y completas los datos requeridos para la valoración con el Dr. Carazo.", "bot");
-    return;
-  }
-
   if (intent === "info") {
-    setChatMode("info");
     appendChatMessage("Quiero información básica", "user");
-    appendChatMessage("Claro. Pregúntame sobre información aprobada del Dr. Carazo: IncontiLase, labioplastía, hormonas bioidénticas, displasia de cérvix o infografías.", "bot");
+    resetChatFlow();
+    appendChatMessage(`Claro. Puedes preguntarme sobre ${QUICK_TOPICS.join(", ")} o la agenda.`, "bot");
     return;
   }
-
-  setChatMode("appointment");
-  appendChatMessage("Quiero revisar una cita", "user");
-  appendChatMessage("Escribe la cédula solo con números. Si tiene guiones o espacios, Sofi los limpia automáticamente.", "bot");
-}
-
-function renderQuickTopics() {
-  const container = $("#quick-topics");
-  if (!container) return;
-  container.innerHTML = QUICK_TOPICS
-    .map((topic) => `<button type="button" data-topic="${topic}">${topic}</button>`)
-    .join("");
-  container.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-topic]");
-    if (!button) return;
-    const input = $("#appointment-chat-query");
-    if (input) input.value = button.dataset.topic;
-    submitAppointmentChat(new Event("submit"));
-  });
+  if (intent === "appointment") {
+    appendChatMessage("Quiero revisar una cita", "user");
+    resetChatFlow();
+    chatFlow.step = "lookupCedula";
+    setChatInput("Número de cédula", "numeric");
+    appendChatMessage("Escribe tu cédula. Después verificaré el correo o teléfono registrado antes de mostrar tus citas.", "bot");
+    return;
+  }
+  appendChatMessage("Quiero agendar una cita", "user");
+  startChatBooking();
 }
 
 async function submitAppointmentChat(event) {
   event.preventDefault();
   const input = $("#appointment-chat-query");
-  if (!input) return;
-
-  const mode = document.body.dataset.chatMode === "info" ? "info" : "appointment";
+  if (!input || chatFlow.busy) return;
   const rawValue = input.value.trim();
-
-  if (!rawValue) {
-    appendChatMessage(mode === "info" ? "Escribe una pregunta sobre los servicios." : "Necesito un número de cédula para revisar la cita.", "bot", false, true);
-    return;
-  }
-
-  if (mode === "appointment" && hasLetters(rawValue)) {
-    appendChatMessage("Ese dato no parece una cédula válida. Ingresa solo números; guiones y espacios se limpian automáticamente.", "bot", false, true);
-    return;
-  }
-
-  const cleanValue = mode === "appointment" ? normalizeCedulaInput(rawValue) : rawValue;
-  if (mode === "appointment" && !cleanValue) {
-    appendChatMessage("Necesito un número de cédula para revisar la cita.", "bot", false, true);
-    return;
-  }
-
-  appendChatMessage(mode === "appointment" ? maskForChat(cleanValue) : rawValue, "user");
+  if (!rawValue) return;
+  const privateStep = ["lookupCedula", "bookingCedula", "bookingPhone"].includes(chatFlow.step) || (chatFlow.step === "lookupContact" && /^\+?[\d -]+$/.test(rawValue));
+  appendChatMessage(privateStep ? maskForChat(rawValue) : rawValue, "user");
   input.value = "";
-  const pending = appendChatMessage(mode === "appointment" ? "Revisando la agenda..." : "Revisando información aprobada...", "bot", true);
-  const submitButton = $("#appointment-chat-form button[type='submit']");
-  if (submitButton) submitButton.disabled = true;
+  await processChatMessage(rawValue);
+}
 
+async function processChatMessage(value) {
+  const message = normalizeChatText(value);
+  if (/^(cancelar|empezar de nuevo|reiniciar)$/.test(message)) {
+    resetChatFlow();
+    appendChatMessage("Listo, empezamos de nuevo. ¿Quieres agendar, revisar una cita o hacer una pregunta?", "bot");
+    return;
+  }
+  if (/^(hola|buenos dias|buenas tardes|buenas noches|hey)$/.test(message)) {
+    appendChatMessage("Hola. Puedo ayudarte a agendar, revisar una cita o responder dudas sobre los servicios del doctor.", "bot");
+    return;
+  }
+  if (/^(gracias|muchas gracias)$/.test(message)) {
+    appendChatMessage("Con gusto. ¿Te ayudo con algo más?", "bot");
+    return;
+  }
+  if (/(tengo|revisar|consultar|proxima|agendada|ya tengo).{0,30}cita|cita.{0,20}(proxima|agendada)/.test(message)) {
+    const includedCedula = value.match(/\b[\d -]{7,25}\b/)?.[0];
+    if (includedCedula && normalizeCedulaInput(includedCedula).length >= 7) {
+      resetChatFlow();
+      chatFlow.lookupCedula = normalizeCedulaInput(includedCedula);
+      chatFlow.step = "lookupContact";
+      setChatInput("Correo o teléfono registrado", "text");
+      appendChatMessage("Para proteger tus citas, escribe el correo o teléfono registrado en Huli.", "bot");
+    } else {
+      handleChatIntentWithoutEcho();
+    }
+    return;
+  }
+  if (/(agendar|reservar|disponibilidad|horarios|sacar una cita|nueva cita)/.test(message)) {
+    await startChatBooking();
+    return;
+  }
+  if (chatFlow.step !== "idle" && /[¿?]/.test(value) && /(incontilase|labioplast|hormona|menopausia|displasia|infografia|vph)/.test(message)) {
+    await requestChat({ action: "info", message: value }, "Preparando la respuesta...");
+    appendChatMessage("Podemos seguir con la cita cuando estés lista.", "bot");
+    return;
+  }
+  if (chatFlow.step === "lookupCedula") {
+    const cedula = normalizeCedulaInput(value);
+    if (hasLetters(value) || cedula.length < 7 || cedula.length > 20) {
+      appendChatMessage("La cédula debe tener al menos siete números. Revísala e intenta otra vez.", "bot", false, true);
+      return;
+    }
+    chatFlow.lookupCedula = cedula;
+    chatFlow.step = "lookupContact";
+    setChatInput("Correo o teléfono registrado", "text");
+    appendChatMessage("Para proteger tus citas, escribe el correo o teléfono registrado en Huli.", "bot");
+    return;
+  }
+  if (chatFlow.step === "lookupContact") {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && normalizeCedulaInput(value).length < 8) {
+      appendChatMessage("Ingresa el correo o el teléfono completo registrado en Huli.", "bot", false, true);
+      return;
+    }
+    const cedula = chatFlow.lookupCedula;
+    resetChatFlow();
+    await requestChat({ action: "lookup", cedula, contact: value }, "Buscando tus próximas citas...");
+    return;
+  }
+  if (chatFlow.step === "selectSlot") {
+    if (/^(mas horarios|ver mas|siguiente semana)$/.test(message)) return loadChatAvailability(chatFlow.offsetDays + 7);
+    if (message === "mas de esta semana") return showMoreChatSlots();
+    const selected = Number(message) - 1;
+    if (Number.isInteger(selected) && chatFlow.slots[selected]) return chooseChatSlot(selected);
+    appendChatMessage("Elige uno de los horarios que aparecen arriba o escribe su número. También puedes pedir más horarios.", "bot");
+    return;
+  }
+  if (chatFlow.step === "bookingName") {
+    const name = value.replace(/\s+/g, " ").trim();
+    if (name.split(" ").length < 2 || name.length > 120) return appendChatMessage("Necesito tu nombre y apellido para la reserva.", "bot", false, true);
+    chatFlow.patient.name = name;
+    chatFlow.step = "bookingCedula";
+    setChatInput("Número de cédula", "numeric");
+    appendChatMessage("Gracias. ¿Cuál es tu número de cédula?", "bot");
+    return;
+  }
+  if (chatFlow.step === "bookingCedula") {
+    const cedula = normalizeCedulaInput(value);
+    if (hasLetters(value) || cedula.length < 7 || cedula.length > 20) return appendChatMessage("Revisa la cédula; necesito entre 7 y 20 números.", "bot", false, true);
+    chatFlow.patient.cedula = cedula;
+    chatFlow.step = "bookingPhone";
+    setChatInput("Teléfono", "tel");
+    appendChatMessage("¿A qué teléfono podemos contactarte?", "bot");
+    return;
+  }
+  if (chatFlow.step === "bookingPhone") {
+    const phone = normalizeCedulaInput(value);
+    if (phone.length < 8 || phone.length > 15) return appendChatMessage("Ingresa un teléfono válido, de 8 a 15 números.", "bot", false, true);
+    chatFlow.patient.phone = phone;
+    chatFlow.step = "bookingEmail";
+    setChatInput("Correo electrónico", "email");
+    appendChatMessage("Por último, ¿cuál es tu correo electrónico?", "bot");
+    return;
+  }
+  if (chatFlow.step === "bookingEmail") {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return appendChatMessage("Ese correo no parece válido. Revísalo e intenta otra vez.", "bot", false, true);
+    chatFlow.patient.email = value;
+    chatFlow.step = "confirmBooking";
+    setChatInput("Confirma tu reserva", "text");
+    appendChatMessage(`Revisa la reserva: ${chatFlow.slot.label}. Paciente: ${chatFlow.patient.name}. Correo: ${value}. ¿Confirmas que deseas crear la cita en Huli?`, "bot");
+    appendChatChoices([{ label: "Confirmar reserva", value: "confirmar" }, { label: "Cancelar", value: "cancelar" }]);
+    return;
+  }
+  if (chatFlow.step === "confirmBooking") {
+    if (!/^(si|sí|confirmar|confirmo|acepto)$/.test(message)) return appendChatMessage("Escribe “confirmar” para crear la cita o “cancelar” para empezar de nuevo.", "bot");
+    const payload = await requestChat({ action: "book", slot: chatFlow.slot, patient: chatFlow.patient }, "Confirmando el espacio con Huli...");
+    if (payload?.booked) resetChatFlow();
+    return;
+  }
+  await requestChat({ action: "info", message: value }, "Preparando la respuesta...");
+}
+
+function handleChatIntentWithoutEcho() {
+  resetChatFlow();
+  chatFlow.step = "lookupCedula";
+  setChatInput("Número de cédula", "numeric");
+  appendChatMessage("Claro. Escribe tu cédula. Después verificaré el correo o teléfono registrado.", "bot");
+}
+
+async function startChatBooking() {
+  resetChatFlow();
+  chatFlow.step = "selectSlot";
+  appendChatMessage("Voy a consultar espacios libres del Dr. Carazo en sus dos sedes.", "bot");
+  await loadChatAvailability(0);
+}
+
+async function loadChatAvailability(offsetDays) {
+  if (offsetDays > 21) return appendChatMessage("Por ahora puedo revisar cuatro semanas. Para otras fechas abre el calendario de Huli.", "bot");
+  chatFlow.offsetDays = offsetDays;
+  chatFlow.slots = [];
+  const payload = await requestChat({ action: "availability", offsetDays }, "Consultando disponibilidad...");
+  if (!payload) return;
+  chatFlow.slots = payload.slots || [];
+  chatFlow.visibleSlots = 0;
+  if (chatFlow.slots.length) {
+    showMoreChatSlots();
+  }
+  if (payload.nextOffsetDays !== null) appendChatChoices([{ label: "Ver más horarios", value: "más horarios" }], false, false);
+}
+
+function showMoreChatSlots() {
+  const start = chatFlow.visibleSlots;
+  const end = Math.min(start + 6, chatFlow.slots.length);
+  appendChatChoices(chatFlow.slots.slice(start, end).map((slot, index) => ({ label: `${start + index + 1}. ${slot.label}`, value: String(start + index + 1) })), true);
+  chatFlow.visibleSlots = end;
+  if (end < chatFlow.slots.length) appendChatChoices([{ label: "Más de esta semana", value: "más de esta semana" }], false, false);
+}
+
+function chooseChatSlot(index) {
+  chatFlow.slot = chatFlow.slots[index];
+  chatFlow.step = "bookingName";
+  setChatInput("Nombre y apellido", "text");
+  appendChatMessage(`Elegiste ${chatFlow.slot.label}. ¿Cuál es tu nombre y apellido?`, "bot");
+}
+
+function appendChatChoices(choices, slotList = false, scroll = true) {
+  const list = $("#appointment-chat-messages");
+  if (!list) return;
+  const container = document.createElement("div");
+  container.className = slotList ? "chat-slot-list" : "chat-choice-list";
+  const stepAtCreation = chatFlow.step;
+  const slotsAtCreation = chatFlow.slots;
+  for (const choice of choices) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = choice.label;
+    button.addEventListener("click", async () => {
+      if (chatFlow.busy || chatFlow.step !== stepAtCreation || (slotList && chatFlow.slots !== slotsAtCreation)) return;
+      button.disabled = true;
+      appendChatMessage(choice.label, "user");
+      await processChatMessage(choice.value);
+    });
+    container.appendChild(button);
+  }
+  list.appendChild(container);
+  if (scroll) list.scrollTop = slotList ? container.offsetTop - list.offsetTop : list.scrollHeight;
+}
+
+async function requestChat(body, pendingText) {
+  const pending = appendChatMessage(pendingText, "bot", true);
+  const submitButton = $("#appointment-chat-form button[type='submit']");
+  chatFlow.busy = true;
+  if (submitButton) submitButton.disabled = true;
   try {
     const response = await fetch(CHAT_API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mode, query: cleanValue, message: rawValue, rawInput: rawValue })
+      body: JSON.stringify(body)
     });
     const payload = await response.json().catch(() => ({}));
     pending.remove();
     appendChatMessage(payload.reply || "No pude completar la consulta en este momento.", "bot", false, !response.ok);
+    return response.ok ? payload : null;
   } catch (error) {
     pending.remove();
     appendChatMessage("No pude conectar con el asistente en este momento. Intenta de nuevo en unos segundos.", "bot", false, true);
+    return null;
   } finally {
+    chatFlow.busy = false;
     if (submitButton) submitButton.disabled = false;
   }
+}
+
+function resetChatFlow() {
+  chatFlow.step = "idle";
+  chatFlow.slot = null;
+  chatFlow.slots = [];
+  chatFlow.visibleSlots = 0;
+  chatFlow.patient = {};
+  chatFlow.lookupCedula = "";
+  chatFlow.offsetDays = 0;
+  setChatInput("Tu mensaje", "text");
+}
+
+function setChatInput(placeholder, inputMode) {
+  const input = $("#appointment-chat-query");
+  if (!input) return;
+  input.placeholder = placeholder;
+  input.inputMode = inputMode;
+  input.focus();
+}
+
+function normalizeChatText(value) {
+  return String(value).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 }
 
 function appendChatMessage(message, type = "bot", pending = false, isError = false) {
