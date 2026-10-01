@@ -519,8 +519,8 @@ async function processChatMessage(value) {
     return;
   }
   if (chatFlow.step === "bookingDate") {
-    if (/^(proximos espacios|primeros espacios|cualquier dia|lo antes posible)$/.test(message)) {
-      return loadChatAvailability(0);
+    if (isNextSlotsRequest(message)) {
+      return loadChatAvailability(0, "", true);
     }
     const requestedDate = parseChatDate(value);
     if (!requestedDate) {
@@ -530,6 +530,7 @@ async function processChatMessage(value) {
     return loadChatAvailability(0, requestedDate);
   }
   if (chatFlow.step === "selectSlot") {
+    if (isNextSlotsRequest(message)) return loadChatAvailability(0, "", true);
     if (/^(mas horarios|ver mas|siguiente semana)$/.test(message)) return loadChatAvailability(chatFlow.offsetDays + 7);
     if (message === "mas de esta semana") return showMoreChatSlots();
     if (message === "otro dia") {
@@ -602,19 +603,20 @@ async function startChatBooking(message = "") {
   chatFlow.step = "bookingDate";
   const requestedDate = parseChatDate(message);
   if (requestedDate) return loadChatAvailability(0, requestedDate);
+  if (isNextSlotsRequest(normalizeChatText(message))) return loadChatAvailability(0, "", true);
   setChatInput("Día de la cita, por ejemplo 8 de octubre", "text");
   appendChatMessage("¿Qué día te gustaría agendar? Puedes escribir “8 de octubre” o pedir los próximos espacios disponibles.", "bot");
   appendChatChoices([{ label: "Próximos espacios", value: "próximos espacios" }]);
 }
 
-async function loadChatAvailability(offsetDays, requestedDate = "") {
+async function loadChatAvailability(offsetDays, requestedDate = "", nearest = false) {
   if (!requestedDate && offsetDays > 21) return appendChatMessage("Por ahora puedo revisar cuatro semanas. Para otras fechas abre el calendario de Huli.", "bot");
   chatFlow.step = "selectSlot";
   setChatInput("Elige un horario o escribe otra fecha", "text");
   chatFlow.offsetDays = offsetDays;
   chatFlow.requestedDate = requestedDate;
   chatFlow.slots = [];
-  const query = requestedDate ? { action: "availability", date: requestedDate } : { action: "availability", offsetDays };
+  const query = requestedDate ? { action: "availability", date: requestedDate } : { action: "availability", offsetDays, nearest };
   const payload = await requestChat(query, "Consultando disponibilidad...");
   if (!payload) {
     chatFlow.step = "bookingDate";
@@ -622,6 +624,7 @@ async function loadChatAvailability(offsetDays, requestedDate = "") {
     return;
   }
   chatFlow.slots = payload.slots || [];
+  chatFlow.offsetDays = payload.offsetDays ?? offsetDays;
   chatFlow.visibleSlots = 0;
   if (chatFlow.slots.length) {
     showMoreChatSlots();
@@ -721,6 +724,10 @@ function setChatInput(placeholder, inputMode) {
 
 function normalizeChatText(value) {
   return String(value).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+}
+
+function isNextSlotsRequest(message) {
+  return /\b(proximos|primeros)\s+(espacios|horarios)\b|\blo antes posible\b|\bcualquier dia\b/.test(message);
 }
 
 function parseChatDate(value) {

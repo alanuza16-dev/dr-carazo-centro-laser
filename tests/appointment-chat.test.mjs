@@ -41,6 +41,28 @@ test("availability reads both Huli clinics and returns selectable slots", async 
   } finally { globalThis.fetch = oldFetch; }
 });
 
+test("nearest availability skips an empty week and returns the earliest slots", async () => {
+  const oldFetch = globalThis.fetch;
+  const later = new Date(Date.now() + 9 * 86_400_000);
+  later.setUTCHours(17, 0, 0, 0);
+  const laterSlot = { dateTime: later.toISOString(), time: later.toISOString().slice(0, 10).replaceAll("-", "") + "T1700", sourceEvent: "12347" };
+  const availabilityCalls = [];
+  globalThis.fetch = async (url) => {
+    if (String(url).endsWith("/authorization/token")) return reply({ data: { jwt: "jwt" } });
+    const from = new URL(url).searchParams.get("from");
+    availabilityCalls.push(from);
+    return reply({ slotDates: [{ slots: Date.parse(from) > Date.now() + 6 * 86_400_000 ? [laterSlot] : [] }] });
+  };
+  try {
+    const result = await post({ action: "availability", offsetDays: 0, nearest: true });
+    assert.equal(result.status, 200);
+    assert.equal(result.data.offsetDays, 7);
+    assert.equal(result.data.nextOffsetDays, 14);
+    assert.equal(result.data.slots.length, 2);
+    assert.equal(availabilityCalls.length, 4);
+  } finally { globalThis.fetch = oldFetch; }
+});
+
 test("availability for a specific date queries one day and filters other dates", async () => {
   const oldFetch = globalThis.fetch;
   const calls = [];

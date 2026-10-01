@@ -210,14 +210,24 @@ async function listAvailability(body, env) {
   if (requestedDate && !isBookableDate(requestedDate)) {
     return json({ reply: "Puedo revisar fechas de las próximas cuatro semanas. Escribe otra fecha o abre el calendario de Huli." }, 400);
   }
-  const offsetDays = Number(body.offsetDays || 0);
+  let offsetDays = Number(body.offsetDays || 0);
   if (!requestedDate && ![0, 7, 14, 21].includes(offsetDays)) return json({ reply: "Solo puedo mostrar las próximas cuatro semanas." }, 400);
   const token = await getHuliToken(env);
-  const slots = await getAvailableSlots(env, token, offsetDays, CLINICS.map((clinic) => clinic.id), requestedDate);
+  let slots = await getAvailableSlots(env, token, offsetDays, CLINICS.map((clinic) => clinic.id), requestedDate);
+  if (!requestedDate && body.nearest === true && offsetDays === 0) {
+    while (!slots.length && offsetDays < 21) {
+      offsetDays += 7;
+      slots = await getAvailableSlots(env, token, offsetDays);
+    }
+  }
   const dayLabel = requestedDate ? formatDate(requestedDate) : "los próximos días";
   return json({
-    reply: slots.length ? `Encontré estos espacios para ${dayLabel}. Elige uno para continuar.` : `No encontré espacios para ${dayLabel}. Puedes consultar otro día o abrir el calendario de Huli.`,
+    reply: slots.length ? requestedDate
+      ? `Encontré estos espacios para ${dayLabel}. Elige uno para continuar.`
+      : "Encontré estos próximos espacios disponibles. Elige uno para continuar."
+      : `No encontré espacios para ${dayLabel}. Puedes consultar otro día o abrir el calendario de Huli.`,
     slots: slots.slice(0, 50),
+    offsetDays,
     nextOffsetDays: requestedDate ? null : offsetDays < 21 ? offsetDays + 7 : null,
     scheduleUrl: HULI_SCHEDULE_URL
   });
