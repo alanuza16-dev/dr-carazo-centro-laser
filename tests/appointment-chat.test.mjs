@@ -41,6 +41,41 @@ test("availability reads both Huli clinics and returns selectable slots", async 
   } finally { globalThis.fetch = oldFetch; }
 });
 
+test("availability for a specific date queries one day and filters other dates", async () => {
+  const oldFetch = globalThis.fetch;
+  const calls = [];
+  const requestedDate = future.toISOString().slice(0, 10);
+  const other = new Date(future.getTime() + 86_400_000);
+  const otherSlot = { dateTime: other.toISOString(), time: other.toISOString().slice(0, 10).replaceAll("-", "") + "T1700", sourceEvent: "12346" };
+  globalThis.fetch = async (url) => {
+    calls.push(String(url));
+    if (String(url).endsWith("/authorization/token")) return reply({ data: { jwt: "jwt" } });
+    return reply({ slotDates: [{ slots: [slot, otherSlot] }] });
+  };
+  try {
+    const result = await post({ action: "availability", date: requestedDate });
+    assert.equal(result.status, 200);
+    assert.equal(result.data.slots.length, 2);
+    assert.ok(result.data.slots.every((item) => item.date === requestedDate));
+    assert.equal(result.data.nextOffsetDays, null);
+    const query = new URL(calls.find((url) => url.includes("/availability/")));
+    assert.equal(query.searchParams.get("from"), `${requestedDate}T00:00:00.000Z`);
+    assert.equal(query.searchParams.get("to"), new Date(Date.parse(`${requestedDate}T00:00:00Z`) + 86_400_000).toISOString());
+  } finally { globalThis.fetch = oldFetch; }
+});
+
+test("specific-date availability rejects invalid or distant days before Huli requests", async () => {
+  const oldFetch = globalThis.fetch;
+  globalThis.fetch = async () => { throw new Error("unexpected network request"); };
+  try {
+    for (const date of ["2026-02-31", "not-a-date", new Date(Date.now() + 40 * 86_400_000).toISOString().slice(0, 10)]) {
+      const result = await post({ action: "availability", date });
+      assert.equal(result.status, 400);
+      assert.match(result.data.reply, /cuatro semanas/);
+    }
+  } finally { globalThis.fetch = oldFetch; }
+});
+
 test("short approved information answer does not spend OpenAI tokens", async () => {
   const oldFetch = globalThis.fetch;
   globalThis.fetch = async () => { throw new Error("unexpected network request"); };

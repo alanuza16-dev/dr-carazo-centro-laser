@@ -7,7 +7,7 @@ Sitio médico estático servido por Cloudflare Workers. La agenda real vive en H
 - Páginas públicas: `index.html`, `ginecologia.html`, `faq.html`, `articulos.html`.
 - Agenda nueva: enlace directo al calendario oficial Huli del doctor.
 - Revisión de cita: Sofi verifica cédula y correo o teléfono del expediente antes de consultar citas en Huli.
-- Disponibilidad: Sofi consulta las dos sedes del doctor en ventanas de siete días y muestra horarios de la clínica.
+- Disponibilidad: Sofi pregunta el día deseado (por ejemplo, "8 de octubre") y consulta las dos sedes solo para esa fecha. También puede mostrar los próximos espacios en ventanas de siete días.
 - Reserva: Sofi solicita nombre, cédula, teléfono y correo; vuelve a comprobar el espacio y crea expediente/cita en Huli tras la confirmación explícita.
 - Información general: respuestas frecuentes aprobadas sin OpenAI. Solo preguntas informativas largas utilizan `gpt-5.4-nano`, con salida limitada a 140 tokens y sin datos de pacientes.
 - Páginas internas heredadas (`agenda.html`, `login.html`, `admin.html`, `citas.html`) quedaron como referencias operativas sin agenda local ni usuarios locales.

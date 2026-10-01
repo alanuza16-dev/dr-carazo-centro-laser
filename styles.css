@@ -1592,6 +1592,20 @@ h3 {
   text-align: left;
 }
 
+.chat-slot-list button {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: chatSlotEnter 420ms ease-out forwards;
+  animation-delay: calc(var(--slot-index, 0) * 110ms);
+}
+
+@keyframes chatSlotEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .chat-choice-list {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -1701,6 +1715,12 @@ h3 {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .chat-slot-list button {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
   *,
   *::before,
   *::after {

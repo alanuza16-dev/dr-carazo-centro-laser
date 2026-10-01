@@ -1,9 +1,17 @@
 .dev.vars
+.dev.vars.*
 .git
+.git/**
+**/.git/**
 .wrangler
+.wrangler/**
+**/node_modules/**
 functions
 tests
 test-results
 worker.js
 wrangler.toml
 dr-carazo-centro-laser-demo.zip
+*.md
+.gitignore
+.assetsignore

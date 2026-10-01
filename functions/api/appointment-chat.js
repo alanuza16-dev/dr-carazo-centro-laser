@@ -206,21 +206,26 @@ async function lookupAppointments(body, env) {
 
 async function listAvailability(body, env) {
   if (!env.HULI_DOCTOR_ID) return json({ reply: "Falta configurar el doctor en la agenda." }, 503);
+  const requestedDate = String(body.date || "").trim();
+  if (requestedDate && !isBookableDate(requestedDate)) {
+    return json({ reply: "Puedo revisar fechas de las próximas cuatro semanas. Escribe otra fecha o abre el calendario de Huli." }, 400);
+  }
   const offsetDays = Number(body.offsetDays || 0);
-  if (![0, 7, 14, 21].includes(offsetDays)) return json({ reply: "Solo puedo mostrar las próximas cuatro semanas." }, 400);
+  if (!requestedDate && ![0, 7, 14, 21].includes(offsetDays)) return json({ reply: "Solo puedo mostrar las próximas cuatro semanas." }, 400);
   const token = await getHuliToken(env);
-  const slots = await getAvailableSlots(env, token, offsetDays);
+  const slots = await getAvailableSlots(env, token, offsetDays, CLINICS.map((clinic) => clinic.id), requestedDate);
+  const dayLabel = requestedDate ? formatDate(requestedDate) : "los próximos días";
   return json({
-    reply: slots.length ? "Estos son los próximos espacios disponibles. Elige uno para continuar." : "No encontré espacios en esta semana. Puedes revisar la siguiente o abrir el calendario de Huli.",
+    reply: slots.length ? `Encontré estos espacios para ${dayLabel}. Elige uno para continuar.` : `No encontré espacios para ${dayLabel}. Puedes consultar otro día o abrir el calendario de Huli.`,
     slots: slots.slice(0, 50),
-    nextOffsetDays: offsetDays < 21 ? offsetDays + 7 : null,
+    nextOffsetDays: requestedDate ? null : offsetDays < 21 ? offsetDays + 7 : null,
     scheduleUrl: HULI_SCHEDULE_URL
   });
 }
 
-async function getAvailableSlots(env, token, offsetDays, clinicIds = CLINICS.map((clinic) => clinic.id)) {
-  const from = new Date(Date.now() + offsetDays * 86_400_000);
-  const to = new Date(from.getTime() + 7 * 86_400_000);
+async function getAvailableSlots(env, token, offsetDays, clinicIds = CLINICS.map((clinic) => clinic.id), requestedDate = "") {
+  const from = requestedDate ? new Date(`${requestedDate}T00:00:00Z`) : new Date(Date.now() + offsetDays * 86_400_000);
+  const to = new Date(from.getTime() + (requestedDate ? 1 : 7) * 86_400_000);
   const clinics = CLINICS.filter((clinic) => clinicIds.includes(clinic.id));
   const results = await Promise.all(clinics.map(async (clinic) => {
     const url = new URL(`${HULI_API_BASE_URL}/availability/doctor/${env.HULI_DOCTOR_ID}/clinic/${clinic.id}`);
@@ -234,8 +239,19 @@ async function getAvailableSlots(env, token, offsetDays, clinicIds = CLINICS.map
     );
   }));
   // Huli labels dateTime with Z but presents its clock time as clinic-local time in Costa Rica.
-  return results.flat().filter((slot) => Date.parse(slot.dateTime) + 6 * 60 * 60 * 1000 > Date.now() + 60 * 60 * 1000)
+  return results.flat().filter((slot) => (!requestedDate || slot.date === requestedDate) && Date.parse(slot.dateTime) + 6 * 60 * 60 * 1000 > Date.now() + 60 * 60 * 1000)
     .sort((a, b) => a.dateTime.localeCompare(b.dateTime));
+}
+
+function isBookableDate(value) {
+  if (!/^20\d{2}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split("-").map(Number);
+  const selected = Date.UTC(year, month - 1, day);
+  const actual = new Date(selected);
+  if (actual.getUTCFullYear() !== year || actual.getUTCMonth() + 1 !== month || actual.getUTCDate() !== day) return false;
+  const current = Object.fromEntries(new Intl.DateTimeFormat("en-CA", { timeZone: "America/Costa_Rica", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date()).map((part) => [part.type, Number(part.value)]));
+  const today = Date.UTC(current.year, current.month - 1, current.day);
+  return selected >= today && selected < today + 28 * 86_400_000;
 }
 
 function normalizeAvailableSlot(clinic, slot) {

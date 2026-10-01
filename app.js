@@ -1,6 +1,6 @@
 const HULI_SCHEDULE_URL = "https://widgets.hulilabs.com/es/doctor/calendars?wid=dc0&did=542";
 const CHAT_API_URL = "/api/appointment-chat";
-const chatFlow = { step: "idle", slot: null, slots: [], visibleSlots: 0, patient: {}, lookupCedula: "", busy: false };
+const chatFlow = { step: "idle", slot: null, slots: [], visibleSlots: 0, patient: {}, lookupCedula: "", requestedDate: "", busy: false };
 
 const QUICK_TOPICS = [
   "IncontiLase",
@@ -487,8 +487,8 @@ async function processChatMessage(value) {
     }
     return;
   }
-  if (/(agendar|reservar|disponibilidad|horarios|sacar una cita|nueva cita)/.test(message)) {
-    await startChatBooking();
+  if (/(agendar|reservar|disponibilidad|horarios|espacios|sacar una cita|nueva cita)/.test(message)) {
+    await startChatBooking(value);
     return;
   }
   if (chatFlow.step !== "idle" && /[¿?]/.test(value) && /(incontilase|labioplast|hormona|menopausia|displasia|infografia|vph)/.test(message)) {
@@ -518,9 +518,28 @@ async function processChatMessage(value) {
     await requestChat({ action: "lookup", cedula, contact: value }, "Buscando tus próximas citas...");
     return;
   }
+  if (chatFlow.step === "bookingDate") {
+    if (/^(proximos espacios|primeros espacios|cualquier dia|lo antes posible)$/.test(message)) {
+      return loadChatAvailability(0);
+    }
+    const requestedDate = parseChatDate(value);
+    if (!requestedDate) {
+      appendChatMessage("Dime una fecha como “8 de octubre” o “08/10”. También puedes escribir “próximos espacios”.", "bot", false, true);
+      return;
+    }
+    return loadChatAvailability(0, requestedDate);
+  }
   if (chatFlow.step === "selectSlot") {
     if (/^(mas horarios|ver mas|siguiente semana)$/.test(message)) return loadChatAvailability(chatFlow.offsetDays + 7);
     if (message === "mas de esta semana") return showMoreChatSlots();
+    if (message === "otro dia") {
+      chatFlow.step = "bookingDate";
+      setChatInput("Día de la cita, por ejemplo 8 de octubre", "text");
+      appendChatMessage("¿Qué otro día te gustaría consultar?", "bot");
+      return;
+    }
+    const requestedDate = parseChatDate(value);
+    if (requestedDate) return loadChatAvailability(0, requestedDate);
     const selected = Number(message) - 1;
     if (Number.isInteger(selected) && chatFlow.slots[selected]) return chooseChatSlot(selected);
     appendChatMessage("Elige uno de los horarios que aparecen arriba o escribe su número. También puedes pedir más horarios.", "bot");
@@ -578,25 +597,42 @@ function handleChatIntentWithoutEcho() {
   appendChatMessage("Claro. Escribe tu cédula. Después verificaré el correo o teléfono registrado.", "bot");
 }
 
-async function startChatBooking() {
+async function startChatBooking(message = "") {
   resetChatFlow();
-  chatFlow.step = "selectSlot";
-  appendChatMessage("Voy a consultar espacios libres del Dr. Carazo en sus dos sedes.", "bot");
-  await loadChatAvailability(0);
+  chatFlow.step = "bookingDate";
+  const requestedDate = parseChatDate(message);
+  if (requestedDate) return loadChatAvailability(0, requestedDate);
+  setChatInput("Día de la cita, por ejemplo 8 de octubre", "text");
+  appendChatMessage("¿Qué día te gustaría agendar? Puedes escribir “8 de octubre” o pedir los próximos espacios disponibles.", "bot");
+  appendChatChoices([{ label: "Próximos espacios", value: "próximos espacios" }]);
 }
 
-async function loadChatAvailability(offsetDays) {
-  if (offsetDays > 21) return appendChatMessage("Por ahora puedo revisar cuatro semanas. Para otras fechas abre el calendario de Huli.", "bot");
+async function loadChatAvailability(offsetDays, requestedDate = "") {
+  if (!requestedDate && offsetDays > 21) return appendChatMessage("Por ahora puedo revisar cuatro semanas. Para otras fechas abre el calendario de Huli.", "bot");
+  chatFlow.step = "selectSlot";
+  setChatInput("Elige un horario o escribe otra fecha", "text");
   chatFlow.offsetDays = offsetDays;
+  chatFlow.requestedDate = requestedDate;
   chatFlow.slots = [];
-  const payload = await requestChat({ action: "availability", offsetDays }, "Consultando disponibilidad...");
-  if (!payload) return;
+  const query = requestedDate ? { action: "availability", date: requestedDate } : { action: "availability", offsetDays };
+  const payload = await requestChat(query, "Consultando disponibilidad...");
+  if (!payload) {
+    chatFlow.step = "bookingDate";
+    setChatInput("Otra fecha, por ejemplo 8 de octubre", "text");
+    return;
+  }
   chatFlow.slots = payload.slots || [];
   chatFlow.visibleSlots = 0;
   if (chatFlow.slots.length) {
     showMoreChatSlots();
+  } else if (requestedDate) {
+    chatFlow.step = "bookingDate";
+    setChatInput("Otra fecha, por ejemplo 8 de octubre", "text");
+    appendChatChoices([{ label: "Próximos espacios", value: "próximos espacios" }]);
+    return;
   }
-  if (payload.nextOffsetDays !== null) appendChatChoices([{ label: "Ver más horarios", value: "más horarios" }], false, false);
+  if (requestedDate) appendChatChoices([{ label: "Consultar otro día", value: "otro día" }], false, false);
+  else if (payload.nextOffsetDays !== null) appendChatChoices([{ label: "Ver más horarios", value: "más horarios" }], false, false);
 }
 
 function showMoreChatSlots() {
@@ -621,10 +657,11 @@ function appendChatChoices(choices, slotList = false, scroll = true) {
   container.className = slotList ? "chat-slot-list" : "chat-choice-list";
   const stepAtCreation = chatFlow.step;
   const slotsAtCreation = chatFlow.slots;
-  for (const choice of choices) {
+  for (const [index, choice] of choices.entries()) {
     const button = document.createElement("button");
     button.type = "button";
     button.textContent = choice.label;
+    if (slotList) button.style.setProperty("--slot-index", index);
     button.addEventListener("click", async () => {
       if (chatFlow.busy || chatFlow.step !== stepAtCreation || (slotList && chatFlow.slots !== slotsAtCreation)) return;
       button.disabled = true;
@@ -670,6 +707,7 @@ function resetChatFlow() {
   chatFlow.patient = {};
   chatFlow.lookupCedula = "";
   chatFlow.offsetDays = 0;
+  chatFlow.requestedDate = "";
   setChatInput("Tu mensaje", "text");
 }
 
@@ -683,6 +721,29 @@ function setChatInput(placeholder, inputMode) {
 
 function normalizeChatText(value) {
   return String(value).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+}
+
+function parseChatDate(value) {
+  const text = normalizeChatText(value);
+  const months = { ene: 1, enero: 1, feb: 2, febrero: 2, mar: 3, marzo: 3, abr: 4, abril: 4, may: 5, mayo: 5, jun: 6, junio: 6, jul: 7, julio: 7, ago: 8, agosto: 8, sep: 9, sept: 9, septiembre: 9, setiembre: 9, oct: 10, octubre: 10, nov: 11, noviembre: 11, dic: 12, diciembre: 12 };
+  const iso = text.match(/\b(20\d{2})-(\d{1,2})-(\d{1,2})\b/);
+  const named = text.match(/\b(\d{1,2})\s*(?:de\s+)?(enero|ene|febrero|feb|marzo|mar|abril|abr|mayo|may|junio|jun|julio|jul|agosto|ago|septiembre|setiembre|sept|sep|octubre|oct|noviembre|nov|diciembre|dic)\b(?:\s*(?:de\s+)?(20\d{2}))?/);
+  const numeric = text.match(/\b(\d{1,2})[\/-](\d{1,2})(?:[\/-](20\d{2}))?\b/);
+  if (!iso && !named && !numeric) return "";
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Costa_Rica", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date());
+  const parts = Object.fromEntries(today.map((part) => [part.type, Number(part.value)]));
+  const todayStamp = Date.UTC(parts.year, parts.month - 1, parts.day);
+  const day = Number(iso?.[3] || named?.[1] || numeric?.[1]);
+  const month = Number(iso?.[2] || months[named?.[2]] || numeric?.[2]);
+  let year = Number(iso?.[1] || named?.[3] || numeric?.[3] || parts.year);
+  let stamp = Date.UTC(year, month - 1, day);
+  if (!iso && !named?.[3] && !numeric?.[3] && stamp < todayStamp) {
+    year += 1;
+    stamp = Date.UTC(year, month - 1, day);
+  }
+  const actual = new Date(stamp);
+  if (actual.getUTCFullYear() !== year || actual.getUTCMonth() + 1 !== month || actual.getUTCDate() !== day) return "";
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
 function appendChatMessage(message, type = "bot", pending = false, isError = false) {
