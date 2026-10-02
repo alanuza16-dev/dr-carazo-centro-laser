@@ -4,3 +4,8 @@ node_modules/
 .wrangler/
 .dev.vars
 *.zip
+
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
